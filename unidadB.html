@@ -44,8 +44,8 @@
 .vbox{background:#fff;padding:14px 20px;min-width:150px;flex:1}
 .vbox small{display:block;font-size:21px;color:var(--ink);font-family:var(--mono)}
 .vbox b{display:block;font:600 44px var(--mono);margin-top:6px;color:var(--ink)}
-.vbox.ghost{background:var(--tone2)}
-.vbox.ghost b{color:var(--soft)}
+.vbox{min-height:150px}
+.vbox.ghost b{color:var(--ink)}
 .boxes{flex-wrap:nowrap!important}
 .msg{background:var(--tone);padding:14px 18px;font-size:21px;min-height:58px}
 /* validador */
@@ -72,15 +72,16 @@
 .expr{font:600 38px var(--mono);white-space:nowrap;background:#fff;padding:22px 28px;margin-top:24px;min-height:110px}
 .expr .on{background:var(--hi)}
 /* quiz de tipos */
-.quiz{display:grid;grid-template-columns:330px 1fr;gap:10px 22px;align-items:center;margin-top:24px;font-size:22px}
-.quiz .opts{display:flex;gap:6px;flex-wrap:wrap}
-.quiz .opts button{font-family:var(--mono);font-size:18px;padding:8px 12px}
+.quiz{display:grid;grid-template-columns:360px 1fr;gap:8px 22px;align-items:center;margin-top:24px;font-size:23px}
+.quiz .opts{display:flex;gap:8px;flex-wrap:wrap}
+.quiz .opts button{font-family:var(--mono);font-size:21px;padding:10px 16px;background:#fff}
 .quiz .opts button.right{background:#11663A;color:#fff}
 .quiz .opts button.wrong{background:#9A1B0F;color:#fff}
-.quiz .fb{grid-column:2;font-size:19px;color:var(--soft);min-height:0}
+.quiz .fb{grid-column:2;font-size:20px;color:var(--ink);min-height:0}
 /* estructura */
 .items .rl{cursor:pointer}
 .items .rl:hover{background:#E8F2FB}
+.items .rl{margin:0 -12px;padding:2px 12px}
 .items .rl[aria-pressed=true]{background:var(--hi)}
 .fields{display:grid;grid-template-columns:300px 1fr;font-size:22px;margin-top:14px}
 .fields dt{font-family:var(--mono);font-weight:600;padding:10px 0;border-bottom:2px solid var(--tone2)}
@@ -89,7 +90,9 @@
 .ol-num{list-style:none;padding:0;counter-reset:n}
 .ol-num li{counter-increment:n;position:relative;padding-left:52px;margin-bottom:18px}
 .ol-num li::before{content:counter(n);position:absolute;left:0;font-weight:800;color:var(--accent)}
+.discrow{position:absolute;left:72px;right:72px;bottom:40px}
 .prop2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.prop2>div{min-height:150px}
 .prop2>div{background:var(--ink);color:#fff;padding:20px 24px}
 .prop2>div.ok{background:var(--accent)}
 .prop2 b{display:block;font:600 30px var(--mono)}
@@ -171,22 +174,22 @@ cantidad = 2;            // asignar
 int vasos = 3;           // inicializar
 cantidad = cantidad + 1; // cambiar</pre>
       <div class="row" style="margin-top:14px"><button class="go" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="small stepn"></span></div>
-      <div class="term" style="margin-top:16px;font-size:18px"><span class="p">Si se usa una variable antes de asignarla, g++ -Wall avisa:</span>
-<span class="w">warning: 'total' is used uninitialized</span></div>
+      <p class="body" style="margin-top:22px">Si se usa una variable antes de asignarla, contiene «basura». g++ con <code>-Wall</code> avisa:</p>
+      <div class="term" style="margin-top:10px;font-size:20px"><span class="w">warning: 'total' is used uninitialized</span></div>
     </div>
     <div class="ws" data-a>
       <div class="boxes">
         <div class="vbox ghost" data-id="bc"><small>int cantidad</small><b data-id="c">?</b></div>
         <div class="vbox ghost" data-id="bv"><small>int vasos</small><b data-id="v">?</b></div>
       </div>
-      <p class="msg" data-id="msg" style="margin-top:16px">Pulse «Siguiente paso» para ejecutar la primera línea.</p>
+      <p class="msg" data-id="msg" style="margin-top:16px;min-height:120px">Pulse «Siguiente paso» para ejecutar la primera línea.</p>
     </div>
   </div>
 </section>
 
 <section class="slide" data-title="Reglas para los nombres">
   <h2 class="mask"><span>¿Ese nombre es válido en C++?</span></h2>
-  <div class="cols gap" style="grid-template-columns:1fr 480px;gap:48px">
+  <div class="cols gap" style="grid-template-columns:1fr 540px;gap:40px">
     <div data-a>
       <label for="id-in" class="body" style="font-weight:700">Escriba un nombre de variable:</label>
       <input id="id-in" class="field" style="margin-top:10px;font-size:30px" value="precioTotal" spellcheck="false" autocomplete="off">
@@ -234,7 +237,7 @@ IVU = 0.12;</pre>
 <section class="slide field-hi" data-title="Discusión: qué cambia y qué no">
   <p class="q mask"><span>En una venta, ¿qué datos cambian y cuáles quedan fijos?</span></p>
   <p class="body gap" data-a style="max-width:1000px">Hagan en parejas la lista de un recibo: nombre del producto, precio, cantidad, IVU, número de caja, fecha. Decidan cuáles serían variables y cuáles constantes.</p>
-  <div class="cols" style="grid-template-columns:auto 1fr;gap:64px;align-items:end;margin-top:16px"><div class="timer" data-timer="120" data-a></div>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
   <div class="prop2" data-a><div><b>cantidad</b><span>cambia en cada pedido</span></div><div class="ok" data-rv-box><b>IVU</b><button data-rv="Ocultar" class="pbtn">¿Variable o constante?</button><span class="reveal">fijo en todo el programa: constante</span></div></div></div>
 </section>
 
@@ -279,13 +282,7 @@ IVU = 0.12;</pre>
 int b = a++;   // usa a, luego suma
 int c = ++a;   // suma, luego usa a</pre>
       <div class="row" style="margin-top:14px"><button class="go" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="small stepn"></span></div>
-      <table class="t" style="margin-top:22px;font-size:21px">
-        <tr><th>Atajo</th><th>Equivale a</th><th>x = 10</th></tr>
-        <tr><td><code>x += 5</code></td><td><code>x = x + 5</code></td><td>15</td></tr>
-        <tr><td><code>x *= 2</code></td><td><code>x = x * 2</code></td><td>30</td></tr>
-        <tr><td><code>x -= 4</code></td><td><code>x = x - 4</code></td><td>26</td></tr>
-        <tr><td><code>x /= 3</code></td><td><code>x = x / 3</code></td><td>8</td></tr>
-      </table>
+      
     </div>
     <div class="ws" data-a>
       <div class="boxes">
@@ -296,6 +293,13 @@ int c = ++a;   // suma, luego usa a</pre>
       <p class="msg" data-id="msg" style="margin-top:16px">Pulse «Siguiente paso».</p>
     </div>
   </div>
+  <div data-a style="margin-top:22px;max-width:760px"><table class="t" style="font-size:21px">
+        <tr><th>Atajo</th><th>Equivale a</th><th>x = 10</th></tr>
+        <tr><td><code>x += 5</code></td><td><code>x = x + 5</code></td><td>15</td></tr>
+        <tr><td><code>x *= 2</code></td><td><code>x = x * 2</code></td><td>30</td></tr>
+        <tr><td><code>x -= 4</code></td><td><code>x = x - 4</code></td><td>26</td></tr>
+        <tr><td><code>x /= 3</code></td><td><code>x = x / 3</code></td><td>8</td></tr>
+      </table></div>
 </section>
 
 <section class="slide" data-title="Relacionales y lógicos">
@@ -342,8 +346,8 @@ int c = ++a;   // suma, luego usa a</pre>
 
 <section class="slide field-hi" data-title="Discusión: 7 / 2">
   <p class="q mask"><span>¿Por qué 7 / 2 da 3 en C++ y 3.5 en la calculadora?</span></p>
-  <p class="body gap" data-a style="max-width:1000px">Expliquen la diferencia con sus palabras y escriban dos maneras de obtener 3.5 en C++.</p>
-  <div class="cols" style="grid-template-columns:auto 1fr;gap:64px;align-items:end;margin-top:16px"><div class="timer" data-timer="120" data-a></div>
+  <p class="body gap" data-a style="max-width:1000px">Expliquen la diferencia con sus palabras y escriban dos maneras de obtener 3.5 en&nbsp;C++.</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
   <div class="prop2" data-a><div><b>7 / 2</b><span>da 3</span></div><div class="ok" data-rv-box><b>7.0 / 2</b><button data-rv="Ocultar" class="pbtn">¿Cuánto da?</button><span class="reveal">da 3.5: uno de los lados es decimal</span></div></div></div>
 </section>
 
@@ -379,7 +383,7 @@ int c = ++a;   // suma, luego usa a</pre>
   <h2 class="mask"><span>Cambiar de tipo tiene consecuencias</span></h2>
   <div class="cols gap" style="grid-template-columns:1fr 1fr;gap:48px">
     <div data-a>
-      <pre class="code" style="font-size:21px">double nota = 69.8;
+      <pre class="code" style="font-size:23px;line-height:1.65">double nota = 69.8;
 int n = (int)nota;            // 69: corta
 int suma = 245;
 suma / 3                      // 81
@@ -391,6 +395,7 @@ static_cast&lt;double&gt;(suma) / 3  // 81.6667</pre>
       <label for="ch-in" class="body" style="display:block;margin-top:12px">Escriba un carácter:</label>
       <div class="row" style="margin-top:8px;align-items:center"><input id="ch-in" class="field" maxlength="1" value="A" style="width:90px;font-size:40px;text-align:center"><span class="stamp" id="ch-out" style="font-size:96px;margin-left:16px">65</span></div>
       <p class="body sub" id="ch-why">(int)'A' es 65, su código ASCII. Por eso 'a' − 'A' da 32.</p>
+      <table class="t" style="margin-top:14px;font-size:22px;background:#fff"><tr><th>Carácter</th><td><code>'A'</code></td><td><code>'a'</code></td><td><code>'0'</code></td></tr><tr><th>Código</th><td>65</td><td>97</td><td>48</td></tr></table>
     </div>
   </div>
 </section>
@@ -405,7 +410,7 @@ cout &lt;&lt; x;</pre>
       <div class="term" style="margin-top:10px;font-size:19px">-2147483648
 <span class="e">runtime error: signed integer overflow:
 2147483647 + 1 cannot be represented in type 'int'</span></div>
-      <p class="body sub">Sin avisar, el número da la vuelta. El mensaje rojo solo aparece compilando con <code>-fsanitize=undefined</code>.</p>
+      <p class="body sub">Sin avisar, el número da la vuelta. El aviso rojo solo aparece con <code>-fsanitize=undefined</code>.</p>
     </div>
     <div data-a>
       <h3 style="font-size:28px">Pasó en el mundo real</h3>
@@ -425,7 +430,7 @@ cout &lt;&lt; x;</pre>
         <div class="rl" role="button" tabindex="0" data-i="1"><span>1 Empanadilla</span><span>1.75</span></div>
         <div class="rl" role="button" tabindex="0" data-i="2"><span>1 Jugo de china</span><span>1.50</span></div>
       </div>
-      <p class="body sub">Toque una línea del recibo.</p>
+      <p class="body sub">Toque una línea del recibo: cada línea es un <code>Producto</code> del arreglo <code>pedido</code>, y sus campos aparecen a la derecha.</p>
     </div>
     <div data-a>
       <pre class="code" style="font-size:21px">struct Producto {
@@ -442,7 +447,7 @@ Producto pedido[3];   // arreglo de 3</pre>
 <section class="slide field-hi" data-title="Discusión: dinero en double">
   <p class="q mask"><span>¿El dinero se guarda en double o en centavos con int?</span></p>
   <p class="body gap" data-a style="max-width:1000px">Recuerden que 0.1 + 0.2 no da exactamente 0.3. ¿Qué pasa con miles de ventas al día en la caja de un supermercado?</p>
-  <div class="cols" style="grid-template-columns:auto 1fr;gap:64px;align-items:end;margin-top:16px"><div class="timer" data-timer="120" data-a></div>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
   <div class="prop2" data-a><div><b>0.1 + 0.2</b><span>0.30000000000000004</span></div><div class="ok" data-rv-box><b>10 + 20</b><button data-rv="Ocultar" class="pbtn">Ver el resultado</button><span class="reveal">30 centavos, exactos</span></div></div></div>
 </section>
 

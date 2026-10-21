@@ -13,10 +13,10 @@
 .ch-title{font-size:100px;line-height:.98;letter-spacing:-.035em;font-weight:800;max-width:600px}
 .chapter .meta{margin-top:26px;font-size:var(--s)}
 .field-hi .q{font-size:64px;line-height:1.04;letter-spacing:-.03em;font-weight:800;max-width:1100px}
-#map button{background:#fff;opacity:.2;width:14px;height:24px}
-#map button.seen{opacity:.55}
-#map button.ch{opacity:.4;background:var(--hi)}
-#map button.cur{background:var(--hi);opacity:1}
+#map button{background:rgba(255,255,255,.2);width:14px;height:22px}
+#map button.seen{background:rgba(255,255,255,.6)}
+#map button.ch{height:32px}
+#map button.cur{background:var(--hi)}
 /* el recibo */
 .rcpt{background:#fff;color:var(--ink);font:500 21px/1.5 var(--mono);padding:26px 28px 40px;width:430px;
   -webkit-mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/18px 100%;mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/18px 100%}
@@ -41,10 +41,12 @@
 .anat .at b{background:var(--ink);color:#fff}.anat .an b{background:#CFE3F5}.anat .av b{background:var(--hi)}
 /* estado de variables */
 .boxes{display:flex;gap:14px;flex-wrap:wrap}
-.vbox{background:#fff;padding:12px 18px;min-width:170px}
-.vbox small{display:block;font-size:20px;color:var(--soft)}
-.vbox b{display:block;font:600 36px var(--mono);margin-top:4px}
-.vbox.ghost{opacity:.4}
+.vbox{background:#fff;padding:14px 20px;min-width:150px;flex:1}
+.vbox small{display:block;font-size:21px;color:var(--ink);font-family:var(--mono)}
+.vbox b{display:block;font:600 44px var(--mono);margin-top:6px;color:var(--ink)}
+.vbox.ghost{background:var(--tone2)}
+.vbox.ghost b{color:var(--soft)}
+.boxes{flex-wrap:nowrap!important}
 .msg{background:var(--tone);padding:14px 18px;font-size:21px;min-height:58px}
 /* validador */
 .verdict{font-size:var(--m);font-weight:700;margin-top:18px}
@@ -53,10 +55,10 @@
 .chips button{font-family:var(--mono);font-size:20px;padding:8px 14px}
 /* calculadora */
 .calc{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:20px}
-.calc div{background:#fff;padding:14px 16px}
-.calc small{display:block;font-size:20px;color:var(--soft);font-family:var(--mono)}
-.calc b{display:block;font:600 34px var(--mono);margin-top:6px;word-break:break-all}
-.calc .bad b{font:600 19px var(--sans);color:#9A1B0F}
+.calc div{background:#fff;padding:18px 20px;min-height:160px}
+.calc small{display:block;font-size:24px;color:var(--ink);font-family:var(--mono)}
+.calc b{display:block;font:600 64px var(--mono);margin-top:10px;word-break:break-all;line-height:1}
+.calc .bad b{font:600 21px/1.3 var(--sans);color:#9A1B0F}
 .inp{display:flex;gap:18px;align-items:end;flex-wrap:wrap}
 .inp label{font-size:20px;font-weight:600;display:block;margin-bottom:6px}
 .inp input{font:600 30px var(--mono);width:150px;padding:8px 12px;border:0;background:#fff;color:var(--ink)}
@@ -92,6 +94,9 @@
 .prop2>div.ok{background:var(--accent)}
 .prop2 b{display:block;font:600 30px var(--mono)}
 .prop2 span{display:block;font-size:22px;margin-top:10px}
+.prop2 .pbtn{margin-top:12px;background:#fff;color:var(--ink);font-size:18px;padding:8px 12px}
+.prop2 span.reveal{display:none}
+.prop2 .shown span.reveal{display:block}
 </style>
 </head>
 <body>
@@ -123,10 +128,13 @@
 <section class="slide" data-title="La unidad en tres temas">
   <h2 class="mask"><span>Tres temas, un recibo</span></h2>
   <p class="body sub" data-a style="max-width:1000px">Detrás de cada recibo de la cafetería hay un programa. Al final de la unidad usted podrá escribirlo completo.</p>
-  <div class="cols-3 gap" data-a>
-    <div class="tone"><p class="lead" style="font-weight:800;color:var(--accent)">1</p><h3 style="font-size:30px;margin-top:8px">Variables y constantes</h3><p class="body sub">Los datos que cambian, como la cantidad, y los que no, como el IVU.</p></div>
-    <div class="tone"><p class="lead" style="font-weight:800;color:var(--accent)">2</p><h3 style="font-size:30px;margin-top:8px">Operadores</h3><p class="body sub">Calcular el total, el IVU y el cambio en monedas.</p></div>
-    <div class="tone"><p class="lead" style="font-weight:800;color:var(--accent)">3</p><h3 style="font-size:30px;margin-top:8px">Tipos de datos</h3><p class="body sub">Por qué la cantidad es int, el precio double y el pedido una estructura.</p></div>
+  <div class="cols gap" style="grid-template-columns:1fr 470px;gap:48px">
+    <div data-a>
+      <p class="lead"><b>Variables y constantes:</b> los datos que cambian, como la cantidad, y los que no, como el IVU.</p>
+      <p class="lead" style="margin-top:22px"><b>Operadores:</b> calcular el subtotal, el IVU y el cambio en monedas.</p>
+      <p class="lead" style="margin-top:22px"><b>Tipos de datos:</b> por qué la cantidad es int, el precio double y el pedido un struct.</p>
+    </div>
+    <div class="rcpt topics0" data-a style="width:470px"></div>
   </div>
 </section>
 
@@ -140,7 +148,7 @@
 
 <section class="slide" data-title="Anatomía de una variable">
   <h2 class="mask"><span>Una variable es un dato con nombre</span></h2>
-  <p class="body sub" data-a style="max-width:1050px">Guarda un valor que puede cambiar mientras el programa corre. Toda variable tiene un <b>tipo</b>, un <b>nombre</b> y un <b>valor</b>, y vive en una dirección de memoria (la Unidad E se dedica a eso).</p>
+  <p class="body sub" data-a style="max-width:1050px">Guarda un valor que puede cambiar mientras el programa corre. Toda variable tiene un <b>tipo</b>, un <b>nombre</b> y un <b>valor</b>, y vive en una dirección de memoria.</p>
   <div class="anat" data-a>
     <div class="at"><b>int</b><span>tipo</span></div>
     <div class="an"><b>cantidad</b><span>nombre</span></div>
@@ -206,7 +214,8 @@ cantidad = cantidad + 1; // cambiar</pre>
       <pre class="code">const double IVU = 0.115;
 IVU = 0.12;</pre>
       <div class="term" style="margin-top:10px;font-size:19px"><span class="e">error: assignment of read-only variable 'IVU'</span></div>
-      <p class="body sub">Con <code>const</code>, el compilador impide que el valor cambie por error. El IVU de Puerto Rico es 11.5 % para todas las ventas del programa.</p>
+      <p class="body sub">Con <code>const</code>, el compilador impide que el valor cambie por error. El IVU de Puerto Rico es 11.5&nbsp;% para todas las ventas del programa.</p>
+      <p class="body sub">Escribir <code>total * 0.115</code> en diez lugares es un «número mágico». Si el IVU cambia, hay que encontrar los diez.</p>
     </div>
     <div data-a>
       <h3 style="font-size:28px">Los literales también son constantes</h3>
@@ -218,7 +227,6 @@ IVU = 0.12;</pre>
         <tr><td><code>"Empanadilla"</code></td><td>texto</td></tr>
         <tr><td><code>true</code></td><td>bool</td></tr>
       </table>
-      <p class="body sub">Escribir <code>total * 0.115</code> en diez lugares es un «número mágico». Si el IVU cambia, hay que encontrar los diez.</p>
     </div>
   </div>
 </section>
@@ -227,7 +235,7 @@ IVU = 0.12;</pre>
   <p class="q mask"><span>En una venta, ¿qué datos cambian y cuáles quedan fijos?</span></p>
   <p class="body gap" data-a style="max-width:1000px">Hagan en parejas la lista de un recibo: nombre del producto, precio, cantidad, IVU, número de caja, fecha. Decidan cuáles serían variables y cuáles constantes.</p>
   <div class="cols" style="grid-template-columns:auto 1fr;gap:64px;align-items:end;margin-top:16px"><div class="timer" data-timer="120" data-a></div>
-  <div class="prop2" data-a><div><b>cantidad</b><span>cambia en cada pedido</span></div><div class="ok"><b>IVU</b><span>fijo en todo el programa</span></div></div></div>
+  <div class="prop2" data-a><div><b>cantidad</b><span>cambia en cada pedido</span></div><div class="ok" data-rv-box><b>IVU</b><button data-rv="Ocultar" class="pbtn">¿Variable o constante?</button><span class="reveal">fijo en todo el programa: constante</span></div></div></div>
 </section>
 
 <!-- TEMA 2 -->
@@ -291,8 +299,8 @@ int c = ++a;   // suma, luego usa a</pre>
 </section>
 
 <section class="slide" data-title="Relacionales y lógicos">
-  <h2 class="mask"><span>Preguntas que se responden con true o false</span></h2>
-  <p class="body sub" data-a>Para aprobar se necesita nota de 70 o más y asistencia de 80 % o más. Mueva los valores.</p>
+  <h2 class="mask"><span>Preguntas de true o false</span></h2>
+  <p class="body sub" data-a>Para aprobar se necesita nota de 70 o más y asistencia de 80&nbsp;% o más. Mueva los valores.</p>
   <div data-a class="gap">
     <div class="inp">
       <div><label for="tv-n">nota</label><input id="tv-n" type="number" min="0" max="100" value="75"></div>
@@ -314,6 +322,7 @@ int c = ++a;   // suma, luego usa a</pre>
       <div class="expr" id="ex" aria-live="polite"></div>
       <div class="row" style="margin-top:14px"><button class="go" id="ex-next">Siguiente paso</button><button id="ex-reset">Reiniciar</button></div>
       <p class="msg" id="ex-msg" style="margin-top:14px"></p>
+      <ol id="ex-hist" style="margin:14px 0 0;padding-left:28px;font:500 22px/1.5 var(--mono)"></ol>
     </div>
     <div data-a>
       <table class="t" style="font-size:21px">
@@ -335,7 +344,7 @@ int c = ++a;   // suma, luego usa a</pre>
   <p class="q mask"><span>¿Por qué 7 / 2 da 3 en C++ y 3.5 en la calculadora?</span></p>
   <p class="body gap" data-a style="max-width:1000px">Expliquen la diferencia con sus palabras y escriban dos maneras de obtener 3.5 en C++.</p>
   <div class="cols" style="grid-template-columns:auto 1fr;gap:64px;align-items:end;margin-top:16px"><div class="timer" data-timer="120" data-a></div>
-  <div class="prop2" data-a><div><b>7 / 2</b><span>da 3</span></div><div class="ok"><b>7.0 / 2</b><span>da 3.5</span></div></div></div>
+  <div class="prop2" data-a><div><b>7 / 2</b><span>da 3</span></div><div class="ok" data-rv-box><b>7.0 / 2</b><button data-rv="Ocultar" class="pbtn">¿Cuánto da?</button><span class="reveal">da 3.5: uno de los lados es decimal</span></div></div></div>
 </section>
 
 <!-- TEMA 3 -->
@@ -434,14 +443,14 @@ Producto pedido[3];   // arreglo de 3</pre>
   <p class="q mask"><span>¿El dinero se guarda en double o en centavos con int?</span></p>
   <p class="body gap" data-a style="max-width:1000px">Recuerden que 0.1 + 0.2 no da exactamente 0.3. ¿Qué pasa con miles de ventas al día en la caja de un supermercado?</p>
   <div class="cols" style="grid-template-columns:auto 1fr;gap:64px;align-items:end;margin-top:16px"><div class="timer" data-timer="120" data-a></div>
-  <div class="prop2" data-a><div><b>0.1 + 0.2</b><span>0.30000000000000004</span></div><div class="ok"><b>10 + 20</b><span>30 centavos exactos</span></div></div></div>
+  <div class="prop2" data-a><div><b>0.1 + 0.2</b><span>0.30000000000000004</span></div><div class="ok" data-rv-box><b>10 + 20</b><button data-rv="Ocultar" class="pbtn">Ver el resultado</button><span class="reveal">30 centavos, exactos</span></div></div></div>
 </section>
 
 <section class="slide" data-title="El programa del recibo">
   <h2 class="mask"><span>Todo junto: el programa del recibo</span></h2>
   <div class="cols gap" style="grid-template-columns:1fr 430px;gap:36px">
     <div data-a>
-      <pre class="code" style="font-size:18px">const double IVU = 0.115;
+      <pre class="code" style="font-size:19px;line-height:1.7">const double IVU = 0.115;
 int subtotal = 0;
 for (int i = 0; i &lt; 3; i++)
     subtotal += pedido[i].precio * pedido[i].cantidad;
@@ -451,18 +460,26 @@ int cambio = 1000 - total;
 cout &lt;&lt; "Billetes de $1: " &lt;&lt; cambio / 100;
 cambio %= 100;
 cout &lt;&lt; "Monedas de 25: " &lt;&lt; cambio / 25;</pre>
-      <div class="row" style="margin-top:14px"><button class="go" id="pr-run">Ejecutar el programa</button><span class="small">Compilado con g++ -Wall -Wextra, sin advertencias.</span></div>
+      <p class="body" style="margin-top:14px;font-size:21px">Compilado con <code>g++ -Wall -Wextra</code>, sin advertencias.</p>
     </div>
-    <div class="rcpt" id="pr-out" aria-live="polite"><div class="rl ct">Pulse «Ejecutar el programa»</div></div>
+    <div><div class="rcpt" id="pr-out" aria-live="polite"></div><button class="go" id="pr-run" style="margin-top:14px;width:430px">Ejecutar el programa</button></div>
   </div>
 </section>
 
 <section class="slide" data-title="Lo esencial de la unidad">
   <h2 class="mask"><span>Lo que se lleva de esta unidad</span></h2>
-  <div class="cols-3 gap" data-a>
-    <div><h3 style="font-size:30px;color:var(--accent)">Variables y constantes</h3><p class="body sub">Tipo, nombre y valor. Nombres válidos y claros. <code>const</code> para lo que no cambia.</p></div>
-    <div><h3 style="font-size:30px;color:var(--accent)">Operadores</h3><p class="body sub">Entre enteros, <code>/</code> corta los decimales y <code>%</code> da el residuo. <code>a++</code> no es <code>++a</code>. Los paréntesis deciden el orden.</p></div>
-    <div><h3 style="font-size:30px;color:var(--accent)">Tipos</h3><p class="body sub">Cada tipo tiene un tamaño y un límite. Convertir corta. Un pedido completo se guarda en un <code>struct</code>.</p></div>
+  <div class="cols gap" style="grid-template-columns:1fr 470px;gap:48px">
+    <div data-a>
+      <h3 style="font-size:30px">Variables y constantes</h3><p class="body" style="margin-top:6px">Tipo, nombre y valor. Nombres válidos y claros. <code>const</code> para lo que no cambia.</p>
+      <h3 style="font-size:30px;margin-top:22px">Operadores</h3><p class="body" style="margin-top:6px">Entre enteros, <code>/</code> corta los decimales y <code>%</code> da el residuo. <code>a++</code> no es <code>++a</code>. Los paréntesis deciden el orden.</p>
+      <h3 style="font-size:30px;margin-top:22px">Tipos</h3><p class="body" style="margin-top:6px">Cada tipo tiene un tamaño y un límite. Convertir corta. Un pedido completo se guarda en un <code>struct</code>.</p>
+    </div>
+    <div class="rcpt" data-a style="width:470px">
+      <div class="rl ct">CAFETERIA ITPR MANATI</div><div class="rl ct">Unidad B</div><div class="sp"></div>
+      <div class="rl"><span>2 Cafe con leche</span><span>2.50</span></div><div class="rl"><span>1 Empanadilla</span><span>1.75</span></div><div class="rl"><span>1 Jugo de china</span><span>1.50</span></div><div class="sp"></div>
+      <div class="rl"><span>Subtotal</span><span>5.75</span></div><div class="rl"><span>IVU 11.5%</span><span>0.66</span></div><div class="rl big"><span>TOTAL</span><span>6.41</span></div><div class="sp"></div>
+      <div class="rl ct big">PAGADO</div>
+    </div>
   </div>
 </section>
 
@@ -504,6 +521,10 @@ var TEMAS=['Variables y constantes','Operadores','Tipos de datos'];
   h+='<div class="sp"></div><div class="rl big" style="--k:6"><span>Tema</span><span>'+t+' de 3</span></div>';
   sl.querySelector('.topics').innerHTML=h;
 });
+(function(){var h='<div class="rl ct">UNIDAD B</div><div class="rl ct">Elementos basicos</div><div class="sp"></div>';
+  TEMAS.forEach(function(n,i){h+='<div class="rl"><span>'+(i+1)+' '+n+'</span><span>tema</span></div>'});
+  h+='<div class="sp"></div><div class="rl big"><span>Temas</span><span>3</span></div><div class="rl ct">Al final: el programa del recibo</div>';
+  document.querySelector('.topics0').innerHTML=h;})();
 
 /* ---------- pasos: variables ---------- */
 Deck.steps.vars=[
@@ -562,7 +583,8 @@ function cambio(){
   var p=Math.round(parseFloat($('pago').value)*100),T=641,code=$('cmb-code'),r=$('cmb-rcpt');
   if(isNaN(p)||p<T){code.textContent='int pago = ?;';r.innerHTML='<div class="rl ct">El pago debe ser $6.41 o más</div>';return}
   var c=p-T,d=Math.floor(c/100),r1=c%100,q=Math.floor(r1/25),r2=r1%25,dm=Math.floor(r2/10),r3=r2%10,n=Math.floor(r3/5),pe=r3%5;
-  code.textContent='int cambio = '+p+' - 641;       // '+c+'\nint billetes = cambio / 100;  // '+d+'\ncambio %= 100;                // '+r1+'\nint de25 = cambio / 25;       // '+q+'\ncambio %= 25;                 // '+r2+'\nint de10 = cambio / 10;       // '+dm+'\ncambio %= 10;                 // '+r3+'\nint de5  = cambio / 5;        // '+n+'\nint de1  = cambio % 5;        // '+pe;
+  var L=[['int cambio = '+p+' - 641;',c],['int billetes = cambio / 100;',d],['cambio %= 100;',r1],['int de25 = cambio / 25;',q],['cambio %= 25;',r2],['int de10 = cambio / 10;',dm],['cambio %= 10;',r3],['int de5  = cambio / 5;',n],['int de1  = cambio % 5;',pe]];
+  code.textContent=L.map(function(x){return (x[0]+'                              ').slice(0,30)+'// '+x[1]}).join('\n');
   Deck.hl(code);
   var m=function(x){return (x/100).toFixed(2)};
   var lines=[['c','CAMBIO'],['','',''],['','Total',m(T)],['','Pago',m(p)],['big','Cambio',m(c)],['','',''],['','Billetes de $1',d],['','Monedas de 25',q],['','Monedas de 10',dm],['','Monedas de 5',n],['','Monedas de 1',pe]];
@@ -580,7 +602,7 @@ function tv(){
 
 /* ---------- precedencia ---------- */
 var EX=[['3 + <span class="on">4 * 2</span> > 10 && true','* va antes que +: 4 * 2 = 8.'],['<span class="on">3 + 8</span> > 10 && true','Ahora la suma: 3 + 8 = 11.'],['<span class="on">11 > 10</span> && true','La comparación va antes que &&: 11 > 10 es true.'],['<span class="on">true && true</span>','Por último el y lógico.'],['true','Resultado verificado con g++: true. Con paréntesis, (3 + 4) * 2 da 14.']],ek=0;
-function ex(){ $('ex').innerHTML=ek===0?'3 + 4 * 2 > 10 && true':EX[ek-1][0];$('ex-msg').textContent=ek===0?'Pulse «Siguiente paso».':EX[ek-1][1];$('ex-next').disabled=ek>=EX.length}
+function ex(){ $('ex-hist').innerHTML=EX.slice(0,Math.max(0,ek-1)).map(function(e){return '<li>'+e[0].replace(/<[^>]+>/g,'')+'</li>'}).join('');$('ex').innerHTML=ek===0?'3 + 4 * 2 > 10 && true':EX[ek-1][0];$('ex-msg').textContent=ek===0?'Pulse «Siguiente paso».':EX[ek-1][1];$('ex-next').disabled=ek>=EX.length}
 $('ex-next').onclick=function(){if(ek<EX.length){ek++;ex()}};$('ex-reset').onclick=function(){ek=0;ex()};ex();
 
 /* ---------- quiz de tipos ---------- */
@@ -608,6 +630,7 @@ st(0);
 
 /* ---------- programa del recibo ---------- */
 var OUT=[['c','CAFETERIA ITPR MANATI'],[],['','Subtotal','$5.75'],['','IVU','$0.66'],['big','Total','$6.41'],['','Cambio','$3.59'],[],['','Billetes de $1','3'],['','Monedas de 25','2'],['','Monedas de 10','0'],['','Monedas de 5','1'],['','Monedas de 1','4']];
+(function(){var r=$('pr-out');r.innerHTML=OUT.map(function(l){if(!l.length)return '<div class="sp"></div>';if(l[0]==='c')return '<div class="rl ct">'+l[1]+'</div>';return '<div class="rl '+l[0]+'"><span>'+l[1]+'</span><span>. . .</span></div>'}).join('')})();
 $('pr-run').onclick=function(){var r=$('pr-out');r.classList.remove('printing');
   r.innerHTML=OUT.map(function(l,k){if(!l.length)return '<div class="sp"></div>';if(l[0]==='c')return '<div class="rl ct" style="--k:'+k+'">'+l[1]+'</div>';return '<div class="rl '+l[0]+'" style="--k:'+k+'"><span>'+l[1]+'</span><span>'+l[2]+'</span></div>'}).join('');
   void r.offsetWidth;r.classList.add('printing');this.textContent='Ejecutar otra vez'};

@@ -139,3 +139,9 @@ pre.code.nums .ln::before{content:counter(ln);position:absolute;left:20px;color:
 
 /* el código se muestra tal como se escribe: sin ligaduras (>= no se convierte en ≥) */
 *{font-variant-ligatures:none!important;font-feature-settings:"liga" 0,"calt" 0!important}
+
+/* tipografía: sin palabras sueltas; el código no se parte */
+h1,h2,h3,.q,.lead{text-wrap:balance}
+p,li,dd{text-wrap:pretty}
+code{white-space:nowrap}
+.stepn{font-size:20px!important;color:var(--ink)!important}

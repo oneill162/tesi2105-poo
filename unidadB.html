@@ -72,9 +72,9 @@
 .expr{font:600 38px var(--mono);white-space:nowrap;background:#fff;padding:22px 28px;margin-top:24px;min-height:110px}
 .expr .on{background:var(--hi)}
 /* quiz de tipos */
-.quiz{display:grid;grid-template-columns:360px 1fr;gap:8px 22px;align-items:center;margin-top:24px;font-size:23px}
+.quiz{display:grid;grid-template-columns:440px 1fr;gap:8px 22px;align-items:center;margin-top:24px;font-size:23px}
 .quiz .opts{display:flex;gap:8px;flex-wrap:wrap}
-.quiz .opts button{font-family:var(--mono);font-size:21px;padding:10px 16px;background:#fff}
+.quiz .opts button{font-family:var(--mono);font-size:21px;padding:10px 18px;background:#fff}
 .quiz .opts button.right{background:#11663A;color:#fff}
 .quiz .opts button.wrong{background:#9A1B0F;color:#fff}
 .quiz .fb{grid-column:2;font-size:20px;color:var(--ink);min-height:0}
@@ -182,7 +182,7 @@ cantidad = cantidad + 1; // cambiar</pre>
         <div class="vbox ghost" data-id="bc"><small>int cantidad</small><b data-id="c">?</b></div>
         <div class="vbox ghost" data-id="bv"><small>int vasos</small><b data-id="v">?</b></div>
       </div>
-      <p class="msg" data-id="msg" style="margin-top:16px;min-height:120px">Pulse «Siguiente paso» para ejecutar la primera línea.</p>
+      <p class="msg" data-id="msg" style="margin-top:16px;min-height:250px">Pulse «Siguiente paso» para ejecutar la primera línea.</p>
     </div>
   </div>
 </section>
@@ -293,12 +293,10 @@ int c = ++a;   // suma, luego usa a</pre>
       <p class="msg" data-id="msg" style="margin-top:16px">Pulse «Siguiente paso».</p>
     </div>
   </div>
-  <div data-a style="margin-top:22px;max-width:760px"><table class="t" style="font-size:21px">
-        <tr><th>Atajo</th><th>Equivale a</th><th>x = 10</th></tr>
-        <tr><td><code>x += 5</code></td><td><code>x = x + 5</code></td><td>15</td></tr>
-        <tr><td><code>x *= 2</code></td><td><code>x = x * 2</code></td><td>30</td></tr>
-        <tr><td><code>x -= 4</code></td><td><code>x = x - 4</code></td><td>26</td></tr>
-        <tr><td><code>x /= 3</code></td><td><code>x = x / 3</code></td><td>8</td></tr>
+  <div data-a style="margin-top:22px"><table class="t" style="font-size:21px">
+        <tr><th>Atajo</th><td><code>x += 5</code></td><td><code>x *= 2</code></td><td><code>x -= 4</code></td><td><code>x /= 3</code></td></tr>
+        <tr><th>Equivale a</th><td><code>x = x + 5</code></td><td><code>x = x * 2</code></td><td><code>x = x - 4</code></td><td><code>x = x / 3</code></td></tr>
+        <tr><th>Si x empieza en 10</th><td>15</td><td>30</td><td>26</td><td>8</td></tr>
       </table></div>
 </section>
 
@@ -346,7 +344,7 @@ int c = ++a;   // suma, luego usa a</pre>
 
 <section class="slide field-hi" data-title="Discusión: 7 / 2">
   <p class="q mask"><span>¿Por qué 7 / 2 da 3 en C++ y 3.5 en la calculadora?</span></p>
-  <p class="body gap" data-a style="max-width:1000px">Expliquen la diferencia con sus palabras y escriban dos maneras de obtener 3.5 en&nbsp;C++.</p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:28px">Expliquen la diferencia con sus palabras y escriban dos maneras de obtener 3.5 en&nbsp;C++.</p>
   <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
   <div class="prop2" data-a><div><b>7 / 2</b><span>da 3</span></div><div class="ok" data-rv-box><b>7.0 / 2</b><button data-rv="Ocultar" class="pbtn">¿Cuánto da?</button><span class="reveal">da 3.5: uno de los lados es decimal</span></div></div></div>
 </section>

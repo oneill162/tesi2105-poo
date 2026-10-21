@@ -61,7 +61,7 @@ svg.flow .bx.on{fill:var(--hi)}
 /* trazas */
 table.trace{font-size:22px}
 table.trace td,table.trace th{padding:7px 14px;text-align:center}
-table.trace td{border-bottom:0}table.trace tr:nth-child(odd) td{background:#fff}table.trace tr.new td{background:#FFF1C2}
+table.trace td{border-bottom:0}table.trace tr:nth-child(odd) td{background:#fff}table.trace tr.new td{background:#FFF1C2}table.trace tr.ph td{opacity:.35}
 /* arreglo */
 .arr{display:flex;gap:10px;margin-top:18px}
 .arr div{width:96px;text-align:center}
@@ -79,7 +79,7 @@ table.trace td{border-bottom:0}table.trace tr:nth-child(odd) td{background:#fff}
 .grid .done{background:#CFE8DC}
 /* terminal del menú */
 .term.big{font-size:19px;height:250px;overflow:hidden}
-.keys button{font:600 20px var(--mono);min-width:56px;padding:10px 12px}
+.keys button{font:600 20px var(--sans);min-width:52px;padding:10px 11px;font-variant-numeric:tabular-nums}
 .ol-num{list-style:none;padding:0;counter-reset:n}
 .ol-num li{counter-increment:n;position:relative;padding-left:60px;margin-bottom:30px}
 .ol-num li::before{content:counter(n);position:absolute;left:0;font-weight:800;color:var(--field)}
@@ -296,7 +296,7 @@ for (int i = 1; i &lt;= n; i++) {
       <div class="vbox" style="margin-top:12px"><small>vueltas con do-while</small><b id="wh-d">1</b></div>
     </div>
   </div>
-  <div class="inp" data-a style="margin-top:20px"><div><label for="wh-n">n al empezar</label><input id="wh-n" type="number" min="0" max="9" value="0"></div><p class="body" id="wh-why" style="max-width:700px;margin-bottom:8px"></p></div>
+  <div class="cols" data-a style="gap:40px;margin-top:20px;align-items:end"><div class="inp"><div><label for="wh-n">n al empezar</label><input id="wh-n" type="number" min="0" max="9" value="0"></div></div><p class="msg" id="wh-why"></p></div>
 </section>
 
 <section class="slide" data-title="break y continue">
@@ -368,7 +368,7 @@ while (k &gt; 0) {
 
 <section class="slide" data-title="Todo junto: el menú de la cafetería">
   <h2 class="mask"><span>Todo junto: el menú de la cafetería</span></h2>
-  <div class="cols" style="grid-template-columns:600px 1fr;gap:36px;margin-top:20px;align-items:start">
+  <div class="cols" style="grid-template-columns:560px 1fr;gap:28px;margin-top:20px;align-items:start">
     <pre class="code" id="mn-code" data-a style="font-size:18px;line-height:1.5">int opcion, total = 0;      // en centavos
 do {
     cin &gt;&gt; opcion;
@@ -386,7 +386,8 @@ cout &lt;&lt; (total &gt; 500 ? "Pedido grande"
                      : "Pedido normal");</pre>
     <div data-a>
       <p class="body" style="font-weight:700">Usted es el cliente. Pida:</p>
-      <div class="row keys" style="margin-top:10px"><button data-mn="1">1 Café</button><button data-mn="2">2 Empanadilla</button><button data-mn="3">3 Jugo</button><button data-mn="9">9</button><button class="go" data-mn="0">0 Pagar</button></div>
+      <div class="row keys" style="margin-top:10px;gap:8px"><button data-mn="1">1 Café</button><button data-mn="2">2 Empanadilla</button><button data-mn="3">3 Jugo</button><button data-mn="9">9 No existe</button></div>
+      <div class="row keys" style="margin-top:8px"><button class="go" data-mn="0" style="flex:1">0 Pagar y salir del ciclo</button></div>
       <div class="term big" id="mn-out" style="margin-top:14px" aria-live="polite"></div>
       <p class="msg" id="mn-tot" style="margin-top:10px">En memoria: total = 0 centavos.</p>
     </div>
@@ -395,13 +396,13 @@ cout &lt;&lt; (total &gt; 500 ? "Pedido grande"
 
 <section class="slide" data-title="Lo esencial de la unidad">
   <h2 class="mask"><span>Lo que se lleva de esta unidad</span></h2>
-  <svg data-a class="gap" viewBox="0 0 1136 170" width="1136" height="170" aria-hidden="true" style="display:block;margin-top:28px">
+  <svg data-a class="gap" viewBox="0 -24 1136 194" width="1136" height="194" aria-hidden="true" style="display:block;margin-top:28px">
     <path d="M0 120 H1136" stroke="#0B6B47" stroke-width="22" fill="none"/>
-    <path d="M500 120 Q620 120 700 30 L740 0" stroke="#0B6B47" stroke-width="22" fill="none"/>
-    <circle cx="930" cy="98" r="62" stroke="#0B6B47" stroke-width="22" fill="#EEF2F0"/>
-    <path d="M0 120 H868 M992 120 H1136" stroke="#FFC425" stroke-width="4" stroke-dasharray="34 22" fill="none"/>
-    <path d="M500 120 Q620 120 700 30 L740 0" stroke="#FFC425" stroke-width="4" stroke-dasharray="34 22" fill="none"/>
-    <circle cx="930" cy="98" r="62" stroke="#FFC425" stroke-width="4" stroke-dasharray="20 16" fill="none"/>
+    <path d="M420 120 Q560 120 640 30 L680 -10" stroke="#0B6B47" stroke-width="22" stroke-linecap="round" fill="none"/>
+    <circle cx="958" cy="98" r="62" stroke="#0B6B47" stroke-width="22" fill="#EEF2F0"/>
+    <path d="M0 120 H896 M1020 120 H1136" stroke="#FFC425" stroke-width="4" stroke-dasharray="34 22" fill="none"/>
+    <path d="M420 120 Q560 120 640 30 L676 -6" stroke="#FFC425" stroke-width="4" stroke-dasharray="34 22" fill="none"/>
+    <circle cx="958" cy="98" r="62" stroke="#FFC425" stroke-width="4" stroke-dasharray="20 16" fill="none"/>
   </svg>
   <div class="cols-3" data-a style="gap:36px;margin-top:22px">
     <div><h3 style="font-size:30px">Secuenciales</h3><p class="body" style="margin-top:10px;font-size:27px">Arriba hacia abajo, sin saltos.</p><p class="body" style="margin-top:8px;font-size:27px">El orden de las líneas cambia el resultado.</p></div>
@@ -430,7 +431,7 @@ cout &lt;&lt; (total &gt; 500 ? "Pedido grande"
     <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Kumar, A. (2024). <i>Hands-on object-oriented programming: Mastering OOP features for real-world software systems development</i>. Apress.</p>
     <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Lutz, M. (2025). <i>Learning Python: Powerful object-oriented programming</i>. O’Reilly Media.</p>
   </div>
-  <p class="body gap" data-a style="font-size:20px">Kumar (2024) y Lutz (2025) son los textos oficiales del prontuario. Los programas y advertencias se verificaron con g++ 13.3 en Linux.</p>
+  <p class="body gap" data-a style="font-size:21px;color:var(--ink)">Kumar (2024) y Lutz (2025) son los textos oficiales del prontuario. Los programas y advertencias se verificaron con g++ 13.3 en Linux.</p>
 </section>
 
 </div></div>
@@ -516,9 +517,9 @@ swCode();sw(1);
 /* ---------- for con traza ---------- */
 var fi,fs,fn,fdone;
 function frReset(){fn=Math.max(1,Math.min(8,parseInt($('fr-n').value,10)||5));fi=1;fs=0;fdone=false;
-  $('fr-tab').innerHTML='<tr><th>Vuelta</th><th>i</th><th>i &lt;= '+fn+'</th><th>suma</th></tr><tr><td>inicio</td><td>1</td><td>—</td><td>0</td></tr>';$('fr-msg').textContent='suma empieza en 0 e i en 1. Pulse «Una vuelta».';$('fr-step').disabled=false;$('fr-all').disabled=false}
+  $('fr-tab').innerHTML='<tr><th>Vuelta</th><th>i</th><th>i &lt;= '+fn+'</th><th>suma</th></tr><tr><td>inicio</td><td>1</td><td>—</td><td>0</td></tr>';for(var q=1;q<=fn;q++)$('fr-tab').insertAdjacentHTML('beforeend','<tr class="ph"><td>'+q+'</td><td>'+q+'</td><td>?</td><td>?</td></tr>');$('fr-msg').textContent='suma empieza en 0 e i en 1. Pulse «Una vuelta».';$('fr-step').disabled=false;$('fr-all').disabled=false}
 function frStep(){if(fdone)return;var tab=$('fr-tab');[].forEach.call(tab.querySelectorAll('tr.new'),function(r){r.classList.remove('new')});
-  if(fi<=fn){fs+=fi;tab.insertAdjacentHTML('beforeend','<tr class="new"><td>'+fi+'</td><td>'+fi+'</td><td>true</td><td>'+fs+'</td></tr>');$('fr-msg').textContent='i = '+fi+': la condición se cumple, suma += '+fi+' → '+fs+'. Luego i++.';fi++}
+  if(fi<=fn){fs+=fi;var ph=tab.querySelector('tr.ph');ph.className='new';ph.innerHTML='<td>'+fi+'</td><td>'+fi+'</td><td>true</td><td>'+fs+'</td>';$('fr-msg').textContent='i = '+fi+': la condición se cumple, suma += '+fi+' → '+fs+'. Luego i++.';fi++}
   else{tab.insertAdjacentHTML('beforeend','<tr class="new"><td>—</td><td>'+fi+'</td><td>false</td><td>'+fs+'</td></tr>');$('fr-msg').textContent='i = '+fi+': '+fi+' <= '+fn+' es false. El ciclo termina con suma = '+fs+' en '+fn+' vueltas.';fdone=true;$('fr-step').disabled=true;$('fr-all').disabled=true}}
 $('fr-step').onclick=frStep;$('fr-all').onclick=function(){while(!fdone)frStep()};$('fr-reset').onclick=frReset;$('fr-n').addEventListener('input',frReset);frReset();
 

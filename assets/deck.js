@@ -14,7 +14,7 @@
   var unitName = stage.getAttribute('data-name') || '';
 
   /* ---------- highlight code ---------- */
-  var RX = /(\/\/.*$|#.*$)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|\b(int|double|float|char|bool|void|return|for|while|do|if|else|const|nullptr|using|namespace|include|true|false|class|public|static|print|def|cout|cin|endl|printf|program|end|Begin|End|DISPLAY|STOP|RUN|PROCEDURE|DIVISION|IDENTIFICATION|git)\b|\b(\d+(?:\.\d+)?)\b/gm;
+  var RX = /(\/\/.*$|#.*$)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|\b(int|double|float|char|bool|void|return|for|while|do|if|else|const|nullptr|using|namespace|include|true|false|class|struct|public|static|unsigned|long|short|sizeof|static_cast|string|print|def|cout|cin|endl|printf|program|end|Begin|End|DISPLAY|STOP|RUN|PROCEDURE|DIVISION|IDENTIFICATION|git)\b|\b(\d+(?:\.\d+)?)\b/gm;
   D.hl = function (pre) {
     var keepHash = pre.hasAttribute('data-hash');
     pre.innerHTML = pre.innerHTML.split('\n').map(function (l) {

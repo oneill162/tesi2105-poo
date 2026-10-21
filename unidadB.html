@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unidad B: Elementos básicos · TESI 2105</title>
+<meta name="description" content="TESI 2105 Programación Orientada a Objetos. Unidad B: variables y constantes, operadores y tipos de datos, contados con el recibo de la cafetería.">
+<link rel="preload" href="assets/fonts/schibsted-grotesk-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* Tema de la Unidad B: el recibo de la cafetería */
+:root{--ground:#EEF3F7;--tone:#DFE8F0;--tone2:#CCDAE7;--ink:#0E2A47;--accent:#1B75BC;--field:#1B75BC;--field-ink:#FFFFFF;--hi:#FFC425}
+.ch-title{font-size:100px;line-height:.98;letter-spacing:-.035em;font-weight:800;max-width:600px}
+.chapter .meta{margin-top:26px;font-size:var(--s)}
+.field-hi .q{font-size:64px;line-height:1.04;letter-spacing:-.03em;font-weight:800;max-width:1100px}
+#map button{background:#fff;opacity:.2;width:14px;height:24px}
+#map button.seen{opacity:.55}
+#map button.ch{opacity:.4;background:var(--hi)}
+#map button.cur{background:var(--hi);opacity:1}
+/* el recibo */
+.rcpt{background:#fff;color:var(--ink);font:500 21px/1.5 var(--mono);padding:26px 28px 40px;width:430px;
+  -webkit-mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/18px 100%;mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/18px 100%}
+.rcpt .rl{display:flex;justify-content:space-between;gap:16px;white-space:nowrap}
+.rcpt .ct{justify-content:center;font-weight:600}
+.rcpt .big{font-size:28px;font-weight:600}
+.rcpt .sp{height:14px}
+.rcpt .now{background:var(--hi);margin:0 -10px;padding:0 10px}
+.rcpt .done{opacity:.55}
+@media (prefers-reduced-motion:no-preference){
+  .entering .rcpt .rl{animation:print .32s var(--ease-out) both;animation-delay:calc(260ms + var(--k,0) * 70ms)}
+  .rcpt.printing .rl{animation:print .32s var(--ease-out) both;animation-delay:calc(var(--k,0) * 110ms)}
+}
+@keyframes print{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.chapter .rcpt{position:absolute;right:72px;top:56px;width:470px}
+.cover .rcpt{position:absolute;right:72px;top:40px;width:470px}
+/* anatomía */
+.anat{display:flex;gap:18px;align-items:flex-start;margin-top:30px}
+.anat div{text-align:center}
+.anat b{display:block;font:600 52px var(--mono);padding:10px 20px;background:#fff}
+.anat span{display:block;font-size:22px;margin-top:10px;font-weight:600}
+.anat .at b{background:var(--ink);color:#fff}.anat .an b{background:#CFE3F5}.anat .av b{background:var(--hi)}
+/* estado de variables */
+.boxes{display:flex;gap:14px;flex-wrap:wrap}
+.vbox{background:#fff;padding:12px 18px;min-width:170px}
+.vbox small{display:block;font-size:20px;color:var(--soft)}
+.vbox b{display:block;font:600 36px var(--mono);margin-top:4px}
+.vbox.ghost{opacity:.4}
+.msg{background:var(--tone);padding:14px 18px;font-size:21px;min-height:58px}
+/* validador */
+.verdict{font-size:var(--m);font-weight:700;margin-top:18px}
+.verdict.ok{color:#11663A}.verdict.no{color:#9A1B0F}.verdict.meh{color:#8A5A00}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chips button{font-family:var(--mono);font-size:20px;padding:8px 14px}
+/* calculadora */
+.calc{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:20px}
+.calc div{background:#fff;padding:14px 16px}
+.calc small{display:block;font-size:20px;color:var(--soft);font-family:var(--mono)}
+.calc b{display:block;font:600 34px var(--mono);margin-top:6px;word-break:break-all}
+.calc .bad b{font:600 19px var(--sans);color:#9A1B0F}
+.inp{display:flex;gap:18px;align-items:end;flex-wrap:wrap}
+.inp label{font-size:20px;font-weight:600;display:block;margin-bottom:6px}
+.inp input{font:600 30px var(--mono);width:150px;padding:8px 12px;border:0;background:#fff;color:var(--ink)}
+/* tabla de verdad */
+.tv{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:22px}
+.tv div{background:#fff;padding:16px 18px}
+.tv small{display:block;font:600 21px var(--mono);color:var(--soft)}
+.tv b{display:block;font:700 34px var(--sans);margin-top:6px}
+.tv .si b{color:#11663A}.tv .no b{color:#9A1B0F}
+/* precedencia */
+.expr{font:600 38px var(--mono);white-space:nowrap;background:#fff;padding:22px 28px;margin-top:24px;min-height:110px}
+.expr .on{background:var(--hi)}
+/* quiz de tipos */
+.quiz{display:grid;grid-template-columns:330px 1fr;gap:10px 22px;align-items:center;margin-top:24px;font-size:22px}
+.quiz .opts{display:flex;gap:6px;flex-wrap:wrap}
+.quiz .opts button{font-family:var(--mono);font-size:18px;padding:8px 12px}
+.quiz .opts button.right{background:#11663A;color:#fff}
+.quiz .opts button.wrong{background:#9A1B0F;color:#fff}
+.quiz .fb{grid-column:2;font-size:19px;color:var(--soft);min-height:0}
+/* estructura */
+.items .rl{cursor:pointer}
+.items .rl:hover{background:#E8F2FB}
+.items .rl[aria-pressed=true]{background:var(--hi)}
+.fields{display:grid;grid-template-columns:300px 1fr;font-size:22px;margin-top:14px}
+.fields dt{font-family:var(--mono);font-weight:600;padding:10px 0;border-bottom:2px solid var(--tone2)}
+.fields dd{margin:0;padding:10px 0;border-bottom:2px solid var(--tone2);font-family:var(--mono)}
+.stamp{font-size:120px;font-weight:800;letter-spacing:-.04em;line-height:.9}
+.ol-num{list-style:none;padding:0;counter-reset:n}
+.ol-num li{counter-increment:n;position:relative;padding-left:52px;margin-bottom:18px}
+.ol-num li::before{content:counter(n);position:absolute;left:0;font-weight:800;color:var(--accent)}
+.prop2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.prop2>div{background:var(--ink);color:#fff;padding:20px 24px}
+.prop2>div.ok{background:var(--accent)}
+.prop2 b{display:block;font:600 30px var(--mono)}
+.prop2 span{display:block;font-size:22px;margin-top:10px}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage" data-name="Unidad B · Elementos básicos" role="region" aria-roledescription="presentación" aria-label="Unidad B: Elementos básicos de un programa">
+
+<!-- 1 PORTADA -->
+<section class="slide chapter cover" data-title="Portada">
+  <h1 class="ch-title mask" style="font-size:96px;max-width:640px"><span>Elementos básicos</span></h1>
+  <p class="lead" data-a style="margin-top:22px;max-width:600px;font-weight:700">TESI 2105 · Programación Orientada a Objetos</p>
+  <p class="body" data-a style="margin-top:12px;max-width:600px">Variables, constantes, operadores y tipos de datos, contados con un recibo de la cafetería.</p>
+  <p class="body" data-a style="position:absolute;bottom:36px;left:72px;font-size:20px">Prof. Eduardo O. De Jesús Arroyo · ITPR, Recinto de Manatí</p>
+  <div class="rcpt" aria-label="Recibo de ejemplo">
+    <div class="rl ct" style="--k:0">CAFETERIA ITPR MANATI</div>
+    <div class="rl ct" style="--k:1">Unidad B</div><div class="sp"></div>
+    <div class="rl" style="--k:2"><span>int cantidad</span><span>2</span></div>
+    <div class="rl" style="--k:3"><span>double precio</span><span>1.25</span></div>
+    <div class="rl" style="--k:4"><span>char tamano</span><span>'M'</span></div>
+    <div class="rl" style="--k:5"><span>bool pagado</span><span>true</span></div>
+    <div class="rl" style="--k:6"><span>const IVU</span><span>0.115</span></div><div class="sp"></div>
+    <div class="rl" style="--k:7"><span>Subtotal</span><span>5.75</span></div>
+    <div class="rl" style="--k:8"><span>IVU</span><span>0.66</span></div>
+    <div class="rl big" style="--k:9"><span>TOTAL</span><span>6.41</span></div><div class="sp"></div>
+    <div class="rl" style="--k:10"><span>Cambio</span><span>3.59</span></div>
+    <div class="rl ct" style="--k:11">Gracias por su compra</div>
+  </div>
+</section>
+
+<!-- 2 MAPA -->
+<section class="slide" data-title="La unidad en tres temas">
+  <h2 class="mask"><span>Tres temas, un recibo</span></h2>
+  <p class="body sub" data-a style="max-width:1000px">Detrás de cada recibo de la cafetería hay un programa. Al final de la unidad usted podrá escribirlo completo.</p>
+  <div class="cols-3 gap" data-a>
+    <div class="tone"><p class="lead" style="font-weight:800;color:var(--accent)">1</p><h3 style="font-size:30px;margin-top:8px">Variables y constantes</h3><p class="body sub">Los datos que cambian, como la cantidad, y los que no, como el IVU.</p></div>
+    <div class="tone"><p class="lead" style="font-weight:800;color:var(--accent)">2</p><h3 style="font-size:30px;margin-top:8px">Operadores</h3><p class="body sub">Calcular el total, el IVU y el cambio en monedas.</p></div>
+    <div class="tone"><p class="lead" style="font-weight:800;color:var(--accent)">3</p><h3 style="font-size:30px;margin-top:8px">Tipos de datos</h3><p class="body sub">Por qué la cantidad es int, el precio double y el pedido una estructura.</p></div>
+  </div>
+</section>
+
+<!-- TEMA 1 -->
+<section class="slide chapter" data-title="Tema 1: Variables y constantes" data-topic="1">
+  <h1 class="ch-title mask"><span>Variables y constantes</span></h1>
+  <p class="meta" data-a>Tema 1 de 3</p>
+  <p class="lead" data-a style="margin-top:120px;max-width:600px;font-weight:500">Los datos que cambian, como la cantidad de cafés, y los que no, como el IVU.</p>
+  <div class="rcpt topics"></div>
+</section>
+
+<section class="slide" data-title="Anatomía de una variable">
+  <h2 class="mask"><span>Una variable es un dato con nombre</span></h2>
+  <p class="body sub" data-a style="max-width:1050px">Guarda un valor que puede cambiar mientras el programa corre. Toda variable tiene un <b>tipo</b>, un <b>nombre</b> y un <b>valor</b>, y vive en una dirección de memoria (la Unidad E se dedica a eso).</p>
+  <div class="anat" data-a>
+    <div class="at"><b>int</b><span>tipo</span></div>
+    <div class="an"><b>cantidad</b><span>nombre</span></div>
+    <div><b>=</b><span>asigna</span></div>
+    <div class="av"><b>2</b><span>valor</span></div>
+    <div><b>;</b><span>fin</span></div>
+  </div>
+  <div class="cols gap" data-a style="grid-template-columns:1fr 1fr">
+    <p class="body">En el recibo, «Café con leche × 2» es la variable <code>cantidad</code> con valor 2. Si el cliente pide otro, el valor cambia a 3; el nombre y el tipo no.</p>
+    <p class="body">C++ distingue mayúsculas de minúsculas: <code>cantidad</code>, <code>Cantidad</code> y <code>CANTIDAD</code> son tres variables distintas.</p>
+  </div>
+</section>
+
+<section class="slide" data-title="Declarar, asignar, inicializar">
+  <h2 class="mask"><span>Declarar, asignar e inicializar</span></h2>
+  <div class="cols gap" data-step="vars" style="grid-template-columns:640px 1fr;gap:36px">
+    <div data-a>
+      <pre class="code" style="font-size:21px">int cantidad;            // declarar
+cantidad = 2;            // asignar
+int vasos = 3;           // inicializar
+cantidad = cantidad + 1; // cambiar</pre>
+      <div class="row" style="margin-top:14px"><button class="go" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="small stepn"></span></div>
+      <div class="term" style="margin-top:16px;font-size:18px"><span class="p">Si se usa una variable antes de asignarla, g++ -Wall avisa:</span>
+<span class="w">warning: 'total' is used uninitialized</span></div>
+    </div>
+    <div class="ws" data-a>
+      <div class="boxes">
+        <div class="vbox ghost" data-id="bc"><small>int cantidad</small><b data-id="c">?</b></div>
+        <div class="vbox ghost" data-id="bv"><small>int vasos</small><b data-id="v">?</b></div>
+      </div>
+      <p class="msg" data-id="msg" style="margin-top:16px">Pulse «Siguiente paso» para ejecutar la primera línea.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Reglas para los nombres">
+  <h2 class="mask"><span>¿Ese nombre es válido en C++?</span></h2>
+  <div class="cols gap" style="grid-template-columns:1fr 480px;gap:48px">
+    <div data-a>
+      <label for="id-in" class="body" style="font-weight:700">Escriba un nombre de variable:</label>
+      <input id="id-in" class="field" style="margin-top:10px;font-size:30px" value="precioTotal" spellcheck="false" autocomplete="off">
+      <p class="verdict" id="id-v" aria-live="polite"></p>
+      <p class="body sub" id="id-why"></p>
+      <div class="chips" id="id-chips"></div>
+    </div>
+    <div data-a class="tone">
+      <h3 style="font-size:26px">Las reglas</h3>
+      <ul class="body" style="padding-left:24px;margin:12px 0 0;line-height:1.5">
+        <li>Letras, dígitos y <code>_</code></li>
+        <li>No empieza con dígito</li>
+        <li>Sin espacios ni símbolos</li>
+        <li>No puede ser una palabra reservada</li>
+        <li>Por costumbre: <code>precioTotal</code> para variables, <code>IVU</code> para constantes</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Constantes">
+  <h2 class="mask"><span>Una constante no cambia</span></h2>
+  <div class="cols gap" style="grid-template-columns:1fr 1fr;gap:48px">
+    <div data-a>
+      <pre class="code">const double IVU = 0.115;
+IVU = 0.12;</pre>
+      <div class="term" style="margin-top:10px;font-size:19px"><span class="e">error: assignment of read-only variable 'IVU'</span></div>
+      <p class="body sub">Con <code>const</code>, el compilador impide que el valor cambie por error. El IVU de Puerto Rico es 11.5 % para todas las ventas del programa.</p>
+    </div>
+    <div data-a>
+      <h3 style="font-size:28px">Los literales también son constantes</h3>
+      <table class="t" style="margin-top:14px">
+        <tr><th>Literal</th><th>Tipo</th></tr>
+        <tr><td><code>2</code></td><td>int</td></tr>
+        <tr><td><code>1.25</code></td><td>double</td></tr>
+        <tr><td><code>'M'</code></td><td>char</td></tr>
+        <tr><td><code>"Empanadilla"</code></td><td>texto</td></tr>
+        <tr><td><code>true</code></td><td>bool</td></tr>
+      </table>
+      <p class="body sub">Escribir <code>total * 0.115</code> en diez lugares es un «número mágico». Si el IVU cambia, hay que encontrar los diez.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: qué cambia y qué no">
+  <p class="q mask"><span>En una venta, ¿qué datos cambian y cuáles quedan fijos?</span></p>
+  <p class="body gap" data-a style="max-width:1000px">Hagan en parejas la lista de un recibo: nombre del producto, precio, cantidad, IVU, número de caja, fecha. Decidan cuáles serían variables y cuáles constantes.</p>
+  <div class="cols" style="grid-template-columns:auto 1fr;gap:64px;align-items:end;margin-top:16px"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b>cantidad</b><span>cambia en cada pedido</span></div><div class="ok"><b>IVU</b><span>fijo en todo el programa</span></div></div></div>
+</section>
+
+<!-- TEMA 2 -->
+<section class="slide chapter" data-title="Tema 2: Operadores" data-topic="2">
+  <h1 class="ch-title mask"><span>Operadores</span></h1>
+  <p class="meta" data-a>Tema 2 de 3</p>
+  <p class="lead" data-a style="margin-top:200px;max-width:600px;font-weight:500">Calcular el subtotal, el IVU y el cambio en monedas.</p>
+  <div class="rcpt topics"></div>
+</section>
+
+<section class="slide" data-title="Operadores aritméticos">
+  <h2 class="mask"><span>Cinco operaciones, dos sorpresas</span></h2>
+  <p class="body sub" data-a>Cambie los números y el tipo. Las sorpresas están en <code>/</code> y en <code>%</code>.</p>
+  <div data-a class="gap">
+    <div class="inp">
+      <div><label for="ca">a</label><input id="ca" value="7" inputmode="decimal"></div>
+      <div><label for="cb">b</label><input id="cb" value="2" inputmode="decimal"></div>
+      <div class="row" style="margin-bottom:4px"><button aria-pressed="true" data-ct="int">int</button><button data-ct="double">double</button></div>
+    </div>
+    <div class="calc" id="calc" aria-live="polite"></div>
+    <p class="msg" id="calc-why" style="margin-top:14px"></p>
+  </div>
+</section>
+
+<section class="slide" data-title="El cambio con / y %">
+  <h2 class="mask"><span>El cambio en monedas, con / y %</span></h2>
+  <div class="cols gap" style="grid-template-columns:1fr 470px;gap:40px">
+    <div data-a>
+      <div class="inp"><div><label for="pago">El cliente paga (total $6.41)</label><input id="pago" value="10.00" inputmode="decimal" style="width:200px"></div></div>
+      <pre class="code" style="margin-top:18px;font-size:20px" id="cmb-code" data-raw></pre>
+    </div>
+    <div class="rcpt" id="cmb-rcpt" data-a aria-live="polite" style="width:470px"></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Incremento y asignación compuesta">
+  <h2 class="mask"><span>a++ y ++a no son lo mismo</span></h2>
+  <div class="cols gap" data-step="inc" style="grid-template-columns:560px 1fr;gap:40px">
+    <div data-a>
+      <pre class="code" style="font-size:24px">int a = 5;
+int b = a++;   // usa a, luego suma
+int c = ++a;   // suma, luego usa a</pre>
+      <div class="row" style="margin-top:14px"><button class="go" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="small stepn"></span></div>
+      <table class="t" style="margin-top:22px;font-size:21px">
+        <tr><th>Atajo</th><th>Equivale a</th><th>x = 10</th></tr>
+        <tr><td><code>x += 5</code></td><td><code>x = x + 5</code></td><td>15</td></tr>
+        <tr><td><code>x *= 2</code></td><td><code>x = x * 2</code></td><td>30</td></tr>
+        <tr><td><code>x -= 4</code></td><td><code>x = x - 4</code></td><td>26</td></tr>
+        <tr><td><code>x /= 3</code></td><td><code>x = x / 3</code></td><td>8</td></tr>
+      </table>
+    </div>
+    <div class="ws" data-a>
+      <div class="boxes">
+        <div class="vbox ghost" data-id="ba"><small>int a</small><b data-id="a">?</b></div>
+        <div class="vbox ghost" data-id="bb"><small>int b</small><b data-id="b">?</b></div>
+        <div class="vbox ghost" data-id="bc"><small>int c</small><b data-id="c">?</b></div>
+      </div>
+      <p class="msg" data-id="msg" style="margin-top:16px">Pulse «Siguiente paso».</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Relacionales y lógicos">
+  <h2 class="mask"><span>Preguntas que se responden con true o false</span></h2>
+  <p class="body sub" data-a>Para aprobar se necesita nota de 70 o más y asistencia de 80 % o más. Mueva los valores.</p>
+  <div data-a class="gap">
+    <div class="inp">
+      <div><label for="tv-n">nota</label><input id="tv-n" type="number" min="0" max="100" value="75"></div>
+      <div><label for="tv-a">asistencia (%)</label><input id="tv-a" type="number" min="0" max="100" value="70"></div>
+    </div>
+    <div class="tv" id="tv" aria-live="polite"></div>
+    <table class="t" style="margin-top:22px;font-size:21px">
+      <tr><th>Relacionales</th><td><code>==</code> igual · <code>!=</code> distinto · <code>&lt;</code> · <code>&lt;=</code> · <code>&gt;</code> · <code>&gt;=</code></td></tr>
+      <tr><th>Lógicos</th><td><code>&amp;&amp;</code> y (las dos) · <code>||</code> o (al menos una) · <code>!</code> no</td></tr>
+    </table>
+  </div>
+</section>
+
+<section class="slide" data-title="Precedencia">
+  <h2 class="mask"><span>¿Qué se calcula primero?</span></h2>
+  <div class="cols" style="grid-template-columns:1fr 400px;gap:40px;margin-top:18px">
+    <div data-a>
+      <p class="body">C++ no lee de izquierda a derecha: sigue una jerarquía, como en matemáticas. Evalúe la expresión paso a paso.</p>
+      <div class="expr" id="ex" aria-live="polite"></div>
+      <div class="row" style="margin-top:14px"><button class="go" id="ex-next">Siguiente paso</button><button id="ex-reset">Reiniciar</button></div>
+      <p class="msg" id="ex-msg" style="margin-top:14px"></p>
+    </div>
+    <div data-a>
+      <table class="t" style="font-size:21px">
+        <tr><th>Primero</th></tr>
+        <tr><td><code>( )</code></td></tr>
+        <tr><td><code>++  --  !</code></td></tr>
+        <tr><td><code>*  /  %</code></td></tr>
+        <tr><td><code>+  -</code></td></tr>
+        <tr><td><code>&lt;  &lt;=  &gt;  &gt;=</code></td></tr>
+        <tr><td><code>==  !=</code></td></tr>
+        <tr><td><code>&amp;&amp;</code> antes que <code>||</code></td></tr>
+        <tr><td><code>=  +=  -=</code> (al final)</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: 7 / 2">
+  <p class="q mask"><span>¿Por qué 7 / 2 da 3 en C++ y 3.5 en la calculadora?</span></p>
+  <p class="body gap" data-a style="max-width:1000px">Expliquen la diferencia con sus palabras y escriban dos maneras de obtener 3.5 en C++.</p>
+  <div class="cols" style="grid-template-columns:auto 1fr;gap:64px;align-items:end;margin-top:16px"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b>7 / 2</b><span>da 3</span></div><div class="ok"><b>7.0 / 2</b><span>da 3.5</span></div></div></div>
+</section>
+
+<!-- TEMA 3 -->
+<section class="slide chapter" data-title="Tema 3: Tipos de datos" data-topic="3">
+  <h1 class="ch-title mask"><span>Tipos de datos</span></h1>
+  <p class="meta" data-a>Tema 3 de 3</p>
+  <p class="lead" data-a style="margin-top:120px;max-width:600px;font-weight:500">Por qué la cantidad es int, el precio double y el pedido completo un struct.</p>
+  <div class="rcpt topics"></div>
+</section>
+
+<section class="slide" data-title="Tipos simples">
+  <h2 class="mask"><span>Los tipos simples y lo que caben</span></h2>
+  <p class="body sub" data-a>Medido con <code>sizeof</code> y <code>numeric_limits</code> en g++ 13.3 (Linux, 64 bits).</p>
+  <table class="t gap" data-a style="font-size:22px">
+    <tr><th style="width:170px">Tipo</th><th style="width:110px">Bytes</th><th>Qué cabe</th><th style="width:270px">En el recibo</th></tr>
+    <tr><td><code>bool</code></td><td>1</td><td>true o false</td><td><code>pagado = true</code></td></tr>
+    <tr><td><code>char</code></td><td>1</td><td>un carácter (−128 a 127)</td><td><code>tamano = 'M'</code></td></tr>
+    <tr><td><code>int</code></td><td>4</td><td>−2,147,483,648 a 2,147,483,647</td><td><code>cantidad = 2</code></td></tr>
+    <tr><td><code>long long</code></td><td>8</td><td>hasta 9.2 × 10<sup>18</sup></td><td>ventas del año</td></tr>
+    <tr><td><code>float</code></td><td>4</td><td>unos 6 dígitos de precisión</td><td>poco usado</td></tr>
+    <tr><td><code>double</code></td><td>8</td><td>unos 15 dígitos de precisión</td><td><code>precio = 1.25</code></td></tr>
+  </table>
+</section>
+
+<section class="slide" data-title="Escoger el tipo">
+  <h2 class="mask"><span>¿Qué tipo usaría?</span></h2>
+  <p class="body sub" data-a>Escoja un tipo para cada dato. La explicación aparece al contestar.</p>
+  <div class="quiz" id="quiz" data-a></div>
+</section>
+
+<section class="slide" data-title="Conversiones">
+  <h2 class="mask"><span>Cambiar de tipo tiene consecuencias</span></h2>
+  <div class="cols gap" style="grid-template-columns:1fr 1fr;gap:48px">
+    <div data-a>
+      <pre class="code" style="font-size:21px">double nota = 69.8;
+int n = (int)nota;            // 69: corta
+int suma = 245;
+suma / 3                      // 81
+static_cast&lt;double&gt;(suma) / 3  // 81.6667</pre>
+      <p class="body sub">Pasar de double a int no redondea: corta los decimales. <code>static_cast</code> es la forma moderna y visible de convertir.</p>
+    </div>
+    <div data-a class="tone">
+      <h3 style="font-size:28px">Un char es un número</h3>
+      <label for="ch-in" class="body" style="display:block;margin-top:12px">Escriba un carácter:</label>
+      <div class="row" style="margin-top:8px;align-items:center"><input id="ch-in" class="field" maxlength="1" value="A" style="width:90px;font-size:40px;text-align:center"><span class="stamp" id="ch-out" style="font-size:96px;margin-left:16px">65</span></div>
+      <p class="body sub" id="ch-why">(int)'A' es 65, su código ASCII. Por eso 'a' − 'A' da 32.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Cuando el número no cabe">
+  <h2 class="mask"><span>Cuando el número no cabe</span></h2>
+  <div class="cols gap" style="grid-template-columns:1fr 1fr;gap:48px">
+    <div data-a>
+      <pre class="code" style="font-size:21px">int x = INT_MAX;   // 2147483647
+x = x + 1;
+cout &lt;&lt; x;</pre>
+      <div class="term" style="margin-top:10px;font-size:19px">-2147483648
+<span class="e">runtime error: signed integer overflow:
+2147483647 + 1 cannot be represented in type 'int'</span></div>
+      <p class="body sub">Sin avisar, el número da la vuelta. El mensaje rojo solo aparece compilando con <code>-fsanitize=undefined</code>.</p>
+    </div>
+    <div data-a>
+      <h3 style="font-size:28px">Pasó en el mundo real</h3>
+      <p class="body sub"><b>1996, cohete Ariane 5.</b> Un número decimal de 64 bits se convirtió a un entero de 16 bits que no lo podía contener. El cohete se destruyó 37 segundos después del despegue.</p>
+      <p class="body sub"><b>2014, YouTube.</b> «Gangnam Style» superó 2,147,483,647 vistas, el máximo de un int de 32 bits. YouTube tuvo que cambiar el contador a 64 bits.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Tipos estructurados">
+  <h2 class="mask"><span>Un pedido completo es un dato estructurado</span></h2>
+  <div class="cols gap" style="grid-template-columns:470px 1fr;gap:40px">
+    <div data-a>
+      <div class="rcpt items" style="width:470px" id="st-rcpt">
+        <div class="rl ct">CAFETERIA ITPR MANATI</div><div class="sp"></div>
+        <div class="rl" role="button" tabindex="0" data-i="0"><span>2 Cafe con leche</span><span>2.50</span></div>
+        <div class="rl" role="button" tabindex="0" data-i="1"><span>1 Empanadilla</span><span>1.75</span></div>
+        <div class="rl" role="button" tabindex="0" data-i="2"><span>1 Jugo de china</span><span>1.50</span></div>
+      </div>
+      <p class="body sub">Toque una línea del recibo.</p>
+    </div>
+    <div data-a>
+      <pre class="code" style="font-size:21px">struct Producto {
+    string nombre;
+    int precio;      // en centavos
+    int cantidad;
+};
+Producto pedido[3];   // arreglo de 3</pre>
+      <dl class="fields" id="st-out" aria-live="polite"></dl>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: dinero en double">
+  <p class="q mask"><span>¿El dinero se guarda en double o en centavos con int?</span></p>
+  <p class="body gap" data-a style="max-width:1000px">Recuerden que 0.1 + 0.2 no da exactamente 0.3. ¿Qué pasa con miles de ventas al día en la caja de un supermercado?</p>
+  <div class="cols" style="grid-template-columns:auto 1fr;gap:64px;align-items:end;margin-top:16px"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b>0.1 + 0.2</b><span>0.30000000000000004</span></div><div class="ok"><b>10 + 20</b><span>30 centavos exactos</span></div></div></div>
+</section>
+
+<section class="slide" data-title="El programa del recibo">
+  <h2 class="mask"><span>Todo junto: el programa del recibo</span></h2>
+  <div class="cols gap" style="grid-template-columns:1fr 430px;gap:36px">
+    <div data-a>
+      <pre class="code" style="font-size:18px">const double IVU = 0.115;
+int subtotal = 0;
+for (int i = 0; i &lt; 3; i++)
+    subtotal += pedido[i].precio * pedido[i].cantidad;
+int ivu    = static_cast&lt;int&gt;(subtotal * IVU + 0.5);
+int total  = subtotal + ivu;
+int cambio = 1000 - total;
+cout &lt;&lt; "Billetes de $1: " &lt;&lt; cambio / 100;
+cambio %= 100;
+cout &lt;&lt; "Monedas de 25: " &lt;&lt; cambio / 25;</pre>
+      <div class="row" style="margin-top:14px"><button class="go" id="pr-run">Ejecutar el programa</button><span class="small">Compilado con g++ -Wall -Wextra, sin advertencias.</span></div>
+    </div>
+    <div class="rcpt" id="pr-out" aria-live="polite"><div class="rl ct">Pulse «Ejecutar el programa»</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Lo esencial de la unidad">
+  <h2 class="mask"><span>Lo que se lleva de esta unidad</span></h2>
+  <div class="cols-3 gap" data-a>
+    <div><h3 style="font-size:30px;color:var(--accent)">Variables y constantes</h3><p class="body sub">Tipo, nombre y valor. Nombres válidos y claros. <code>const</code> para lo que no cambia.</p></div>
+    <div><h3 style="font-size:30px;color:var(--accent)">Operadores</h3><p class="body sub">Entre enteros, <code>/</code> corta los decimales y <code>%</code> da el residuo. <code>a++</code> no es <code>++a</code>. Los paréntesis deciden el orden.</p></div>
+    <div><h3 style="font-size:30px;color:var(--accent)">Tipos</h3><p class="body sub">Cada tipo tiene un tamaño y un límite. Convertir corta. Un pedido completo se guarda en un <code>struct</code>.</p></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Ejercicio de cierre">
+  <h2 class="mask"><span>Ejercicio de cierre</span></h2>
+  <p class="body sub" data-a>Haga los cuatro pasos en orden. La fecha de entrega se anuncia en OrbundSIS.</p>
+  <ol class="ol-num gap" data-a style="font-size:30px;line-height:1.4;max-width:1120px">
+    <li>Escriba un programa que pida la cantidad de cafés y de empanadillas, y calcule subtotal, IVU y total con una <b>constante</b> para el IVU.</li>
+    <li>Pida cuánto paga el cliente y muestre el cambio en billetes y monedas usando <code>/</code> y <code>%</code>.</li>
+    <li>Justifique en un comentario el <b>tipo</b> de cada variable.</li>
+    <li>Compílelo con <code>g++ -std=c++17 -Wall</code> sin advertencias y súbalo a su repositorio con dos commits.</li>
+  </ol>
+</section>
+
+<section class="slide" data-title="Referencias">
+  <h2 class="mask"><span>Referencias</span></h2>
+  <div class="gap" data-a style="font-size:21px;line-height:1.5;max-width:1080px">
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">cppreference.com. (s. f.). <i>Fundamental types</i>. https://en.cppreference.com/w/cpp/language/types</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">cppreference.com. (s. f.). <i>C++ operator precedence</i>. https://en.cppreference.com/w/cpp/language/operator_precedence</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Kumar, A. (2024). <i>Hands-on object-oriented programming: Mastering OOP features for real-world software systems development</i>. Apress.</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Lions, J. L. (1996). <i>ARIANE 5 Flight 501 failure: Report by the Inquiry Board</i>. Agencia Espacial Europea.</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Lutz, M. (2025). <i>Learning Python: Powerful object-oriented programming</i>. O’Reilly Media.</p>
+  </div>
+  <p class="body gap" data-a style="font-size:19px">Los programas y mediciones se verificaron con g++ 13.3 en Linux.</p>
+</section>
+
+</div></div>
+
+<script src="assets/deck.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id)};
+/* ---------- recibo de temas en cada capítulo ---------- */
+var TEMAS=['Variables y constantes','Operadores','Tipos de datos'];
+[].forEach.call(document.querySelectorAll('[data-topic]'),function(sl){
+  var t=+sl.dataset.topic,h='<div class="rl ct" style="--k:0">UNIDAD B</div><div class="rl ct" style="--k:1">Elementos basicos</div><div class="sp"></div>';
+  TEMAS.forEach(function(n,i){var st=i+1<t?'listo':i+1===t?'ahora':'';h+='<div class="rl'+(i+1===t?' now':i+1<t?' done':'')+'" style="--k:'+(i+2)+'"><span>'+(i+1)+' '+n+'</span><span>'+st+'</span></div>'});
+  h+='<div class="sp"></div><div class="rl big" style="--k:6"><span>Tema</span><span>'+t+' de 3</span></div>';
+  sl.querySelector('.topics').innerHTML=h;
+});
+
+/* ---------- pasos: variables ---------- */
+Deck.steps.vars=[
+ {l:0,rem:[['bc','ghost']],set:{c:'?'},msg:'Se reserva espacio para cantidad, pero todavía no tiene un valor conocido: contiene «basura».'},
+ {l:1,set:{c:'2'},flash:['bc'],msg:'Asignar: ahora cantidad vale 2.'},
+ {l:2,rem:[['bv','ghost']],set:{v:'3'},flash:['bv'],msg:'Declarar e inicializar en la misma línea: la forma recomendada.'},
+ {l:3,set:{c:'3'},flash:['bc'],msg:'Primero se calcula cantidad + 1 = 3, y luego se guarda en cantidad.'}
+];
+Deck.steps.inc=[
+ {l:0,rem:[['ba','ghost']],set:{a:'5'},flash:['ba'],msg:'a vale 5.'},
+ {l:1,rem:[['bb','ghost']],set:{b:'5',a:'6'},flash:['bb','ba'],msg:'a++ entrega el valor viejo (5) a b, y después a sube a 6.'},
+ {l:2,rem:[['bc','ghost']],set:{a:'7',c:'7'},flash:['ba','bc'],msg:'++a sube a primero (7) y entrega el valor nuevo a c. Resultado verificado: a=7, b=5, c=7.'}
+];
+
+/* ---------- validador de nombres ---------- */
+var RES=['int','double','float','char','bool','void','return','if','else','for','while','do','const','true','false','class','struct','public','private','switch','case','break','continue','new','delete','namespace','using','long','short','unsigned','signed','auto','static','sizeof','this','try','catch','throw','enum','union','default','goto','virtual','template','typename','operator','friend','nullptr'];
+function judge(n){
+  if(!n)return['meh','Escriba un nombre.',''];
+  if(/\s/.test(n))return['no','No es válido.','Tiene espacios. g++ dice: «expected initializer before…». Use precioTotal o precio_total.'];
+  if(/^[0-9]/.test(n))return['no','No es válido.','Empieza con un dígito. g++ dice: «expected unqualified-id before numeric constant».'];
+  if(RES.indexOf(n)>=0)return['no','No es válido.','«'+n+'» es una palabra reservada de C++.'];
+  if(/[^A-Za-z0-9_$À-ɏ]/.test(n))return['no','No es válido.','Contiene un símbolo que C++ no permite en nombres.'];
+  if(/\$/.test(n))return['meh','g++ lo acepta, pero evítelo.','El signo $ es una extensión de g++, no es C++ estándar. Otro compilador puede rechazarlo.'];
+  if(/[À-ɏ]/.test(n))return['meh','Válido, pero evítelo.','C++ moderno acepta letras como ñ o á, pero muchos equipos usan solo letras sin acento para evitar problemas al compartir código.'];
+  if(/^_[A-Z]|__/.test(n))return['meh','Válido, pero reservado.','Los nombres que empiezan con _ y mayúscula, o que tienen __, están reservados para el compilador.'];
+  if(/^[A-Z0-9_]+$/.test(n)&&/[A-Z]/.test(n))return['ok','Válido.','En mayúsculas se lee como constante, igual que IVU.'];
+  if(n.length===1)return['ok','Válido.','Funciona, pero un nombre de una letra no dice qué guarda. Prefiera cantidad a c.'];
+  return['ok','Válido.','Nombre claro y correcto.'];
+}
+function showId(){var r=judge($('id-in').value),v=$('id-v');v.className='verdict '+r[0];v.textContent=r[1];$('id-why').textContent=r[2]}
+$('id-in').addEventListener('input',showId);
+['precioTotal','2nota','nota final','double','precio$','año','IVU','_Total'].forEach(function(x){var b=document.createElement('button');b.textContent=x;b.onclick=function(){$('id-in').value=x;showId()};$('id-chips').appendChild(b)});
+showId();
+
+/* ---------- calculadora ---------- */
+var ctype='int';
+function calc(){
+  var a=parseFloat($('ca').value),b=parseFloat($('cb').value),out=$('calc'),why=$('calc-why');
+  if(isNaN(a)||isNaN(b)){out.innerHTML='';why.textContent='Escriba dos números.';return}
+  if(ctype==='int'){a=Math.trunc(a);b=Math.trunc(b)}
+  var f=function(x){return ctype==='int'?String(x):(Math.round(x*1e6)/1e6).toString()};
+  var cells=[['a + b',f(a+b)],['a - b',f(a-b)],['a * b',f(a*b)]];
+  if(b===0){cells.push(['a / b',null,'División entre cero: el programa se detiene']);cells.push(['a % b',null,'También se detiene'])}
+  else{cells.push(['a / b',ctype==='int'?String(Math.trunc(a/b)):f(a/b)]);cells.push(ctype==='int'?['a % b',String(a%b)]:['a % b',null,'No compila con double'])}
+  out.innerHTML=cells.map(function(c){return '<div class="'+(c[1]===null?'bad':'')+'"><small>'+c[0]+'</small><b>'+(c[1]===null?c[2]:c[1])+'</b></div>'}).join('');
+  if(b===0)why.textContent='Con int, dividir entre 0 produce «Floating point exception» (Unidad A).';
+  else if(ctype==='int')why.textContent='Con int, '+a+' / '+b+' corta los decimales y da '+Math.trunc(a/b)+'. El residuo, '+a+' % '+b+', es '+(a%b)+'.';
+  else why.textContent='Con double, la división conserva los decimales. El operador % no existe para double: g++ dice «invalid operands of types \'double\' and \'double\' to binary \'operator%\'».';
+}
+['ca','cb'].forEach(function(i){$(i).addEventListener('input',calc)});
+[].forEach.call(document.querySelectorAll('[data-ct]'),function(b){b.onclick=function(){ctype=b.dataset.ct;[].forEach.call(document.querySelectorAll('[data-ct]'),function(x){x.setAttribute('aria-pressed',x===b)});calc()}});
+calc();
+
+/* ---------- cambio ---------- */
+function cambio(){
+  var p=Math.round(parseFloat($('pago').value)*100),T=641,code=$('cmb-code'),r=$('cmb-rcpt');
+  if(isNaN(p)||p<T){code.textContent='int pago = ?;';r.innerHTML='<div class="rl ct">El pago debe ser $6.41 o más</div>';return}
+  var c=p-T,d=Math.floor(c/100),r1=c%100,q=Math.floor(r1/25),r2=r1%25,dm=Math.floor(r2/10),r3=r2%10,n=Math.floor(r3/5),pe=r3%5;
+  code.textContent='int cambio = '+p+' - 641;       // '+c+'\nint billetes = cambio / 100;  // '+d+'\ncambio %= 100;                // '+r1+'\nint de25 = cambio / 25;       // '+q+'\ncambio %= 25;                 // '+r2+'\nint de10 = cambio / 10;       // '+dm+'\ncambio %= 10;                 // '+r3+'\nint de5  = cambio / 5;        // '+n+'\nint de1  = cambio % 5;        // '+pe;
+  Deck.hl(code);
+  var m=function(x){return (x/100).toFixed(2)};
+  var lines=[['c','CAMBIO'],['','',''],['','Total',m(T)],['','Pago',m(p)],['big','Cambio',m(c)],['','',''],['','Billetes de $1',d],['','Monedas de 25',q],['','Monedas de 10',dm],['','Monedas de 5',n],['','Monedas de 1',pe]];
+  r.innerHTML=lines.map(function(l,k){if(l[0]==='c')return '<div class="rl ct">'+l[1]+'</div>';if(!l[1])return '<div class="sp"></div>';return '<div class="rl '+l[0]+'"><span>'+l[1]+'</span><span>'+l[2]+'</span></div>'}).join('');
+}
+$('pago').addEventListener('input',cambio);cambio();
+
+/* ---------- tabla de verdad ---------- */
+function tv(){
+  var n=+$('tv-n').value,a=+$('tv-a').value,A=n>=70,B=a>=80;
+  var c=[['nota >= 70',A],['asistencia >= 80',B],['A && B: aprueba',A&&B],['A || B',A||B]];
+  $('tv').innerHTML=c.map(function(x){return '<div class="'+(x[1]?'si':'no')+'"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>'}).join('');
+}
+['tv-n','tv-a'].forEach(function(i){$(i).addEventListener('input',tv)});tv();
+
+/* ---------- precedencia ---------- */
+var EX=[['3 + <span class="on">4 * 2</span> > 10 && true','* va antes que +: 4 * 2 = 8.'],['<span class="on">3 + 8</span> > 10 && true','Ahora la suma: 3 + 8 = 11.'],['<span class="on">11 > 10</span> && true','La comparación va antes que &&: 11 > 10 es true.'],['<span class="on">true && true</span>','Por último el y lógico.'],['true','Resultado verificado con g++: true. Con paréntesis, (3 + 4) * 2 da 14.']],ek=0;
+function ex(){ $('ex').innerHTML=ek===0?'3 + 4 * 2 > 10 && true':EX[ek-1][0];$('ex-msg').textContent=ek===0?'Pulse «Siguiente paso».':EX[ek-1][1];$('ex-next').disabled=ek>=EX.length}
+$('ex-next').onclick=function(){if(ek<EX.length){ek++;ex()}};$('ex-reset').onclick=function(){ek=0;ex()};ex();
+
+/* ---------- quiz de tipos ---------- */
+var QZ=[['Cantidad de cafés','int','Cuenta cosas enteras: no existen 2.5 cafés.'],['Precio del café','double','Tiene decimales. En una caja real se guardaría en centavos con int.',['int','Si el precio se guarda en centavos (125), int es exacto y es lo que usan las cajas registradoras.']],['Tamaño: P, M o G','char','Un solo carácter.'],['¿Pagó con tarjeta?','bool','Solo hay dos respuestas: true o false.'],['Nombre del cliente','string','Es texto de varias letras.'],['Ventas de todas las cafeterías del país en un año, en centavos','long long','Puede pasar de 2,147,483,647, el máximo de int.']];
+var OPTS=['int','double','char','bool','string','long long'];
+$('quiz').innerHTML=QZ.map(function(q,i){return '<div>'+q[0]+'</div><div class="opts" data-q="'+i+'">'+OPTS.map(function(o){return '<button>'+o+'</button>'}).join('')+'</div><div></div><div class="fb" data-fb="'+i+'"></div>'}).join('');
+[].forEach.call(document.querySelectorAll('#quiz .opts button'),function(b){b.onclick=function(){
+  var i=+b.parentNode.dataset.q,ok=b.textContent===QZ[i][1],alt=QZ[i][3]&&b.textContent===QZ[i][3][0];
+  [].forEach.call(b.parentNode.children,function(x){x.classList.remove('right','wrong')});
+  b.classList.add(ok||alt?'right':'wrong');document.querySelector('[data-fb="'+i+'"]').textContent=alt?'También es correcto. '+QZ[i][3][1]:(ok?'Correcto. ':'Mejor: '+QZ[i][1]+'. ')+QZ[i][2];
+}});
+
+/* ---------- char ---------- */
+function ch(){var v=$('ch-in').value;if(!v){$('ch-out').textContent='?';$('ch-why').textContent='Escriba un carácter.';return}
+  var c=v.charCodeAt(0);$('ch-out').textContent=c;
+  $('ch-why').textContent=c>127?'Ese carácter no es ASCII: en C++ ocupa más de un char (UTF-8).':"(int)'"+v+"' es "+c+(v>='A'&&v<='Z'?". Su minúscula, '"+v.toLowerCase()+"', es "+(c+32)+": la diferencia siempre es 32.":v>='a'&&v<='z'?". Su mayúscula, '"+v.toUpperCase()+"', es "+(c-32)+".":".")}
+$('ch-in').addEventListener('input',ch);ch();
+
+/* ---------- struct ---------- */
+var PED=[['"Cafe con leche"','125','2'],['"Empanadilla"','175','1'],['"Jugo de china"','150','1']];
+function st(i){[].forEach.call(document.querySelectorAll('#st-rcpt [data-i]'),function(r){r.setAttribute('aria-pressed',+r.dataset.i===i)});
+  var p=PED[i];$('st-out').innerHTML='<dt>pedido['+i+'].nombre</dt><dd>'+p[0]+'</dd><dt>pedido['+i+'].precio</dt><dd>'+p[1]+'</dd><dt>pedido['+i+'].cantidad</dt><dd>'+p[2]+'</dd>'}
+[].forEach.call(document.querySelectorAll('#st-rcpt [data-i]'),function(r){r.onclick=function(){st(+r.dataset.i)};r.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();st(+r.dataset.i)}}});
+st(0);
+
+/* ---------- programa del recibo ---------- */
+var OUT=[['c','CAFETERIA ITPR MANATI'],[],['','Subtotal','$5.75'],['','IVU','$0.66'],['big','Total','$6.41'],['','Cambio','$3.59'],[],['','Billetes de $1','3'],['','Monedas de 25','2'],['','Monedas de 10','0'],['','Monedas de 5','1'],['','Monedas de 1','4']];
+$('pr-run').onclick=function(){var r=$('pr-out');r.classList.remove('printing');
+  r.innerHTML=OUT.map(function(l,k){if(!l.length)return '<div class="sp"></div>';if(l[0]==='c')return '<div class="rl ct" style="--k:'+k+'">'+l[1]+'</div>';return '<div class="rl '+l[0]+'" style="--k:'+k+'"><span>'+l[1]+'</span><span>'+l[2]+'</span></div>'}).join('');
+  void r.offsetWidth;r.classList.add('printing');this.textContent='Ejecutar otra vez'};
+
+Deck.start();
+})();
+</script>
+</body>
+</html>

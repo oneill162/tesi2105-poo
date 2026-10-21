@@ -136,3 +136,6 @@ table.t td{padding:12px 16px;border-bottom:2px solid var(--tone2);vertical-align
 /* números de línea: <pre class="code nums" style="counter-reset:ln 3"> */
 pre.code.nums .ln{counter-increment:ln;padding-left:64px;position:relative}
 pre.code.nums .ln::before{content:counter(ln);position:absolute;left:20px;color:#6F8AA9}
+
+/* el código se muestra tal como se escribe: sin ligaduras (>= no se convierte en ≥) */
+*{font-variant-ligatures:none!important;font-feature-settings:"liga" 0,"calt" 0!important}

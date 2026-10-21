@@ -15,6 +15,7 @@ Página del curso: https://oneill162.github.io/tesi2105-poo/
 | `unidadC.html` | Unidad C: Estructuras de control (presentación interactiva) |
 | `unidadD.html` | Unidad D: Funciones (presentación interactiva) |
 | `unidadE.html` | Unidad E: Punteros (presentación interactiva) |
+| `ejemplos/` | Programas completos de los ejemplos de las presentaciones, verificados con g++ |
 | `assets/deck.css`, `assets/deck.js` | Motor común de las presentaciones: escala, transiciones, barra de navegación, índice, temporizador, paso a paso |
 | `assets/fonts/` | Schibsted Grotesk y JetBrains Mono (licencia SIL OFL), incluidas para no depender de servicios externos |
 | `presentaciones/` | Presentaciones en PDF |

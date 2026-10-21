@@ -18,9 +18,9 @@
 .sign .ways span{opacity:.55}
 .sign .ways span.on{opacity:1}
 .sign .ways span.on::after{content:"";display:block;height:6px;background:var(--hi);margin-top:8px}
-.sign .km{position:absolute;right:46px;top:40px;text-align:center;background:#fff;color:var(--field);padding:10px 16px;border-radius:8px;font-weight:800;font-size:22px;line-height:1.1}
+.sign .km{position:absolute;right:46px;top:40px;min-width:120px;text-align:center;background:#fff;color:var(--field);padding:10px 16px;border-radius:8px;font-weight:800;font-size:22px;line-height:1.1}
 .sign .km b{display:block;font-size:40px}
-.field-hi .q{font-size:62px;line-height:1.04;letter-spacing:-.03em;font-weight:800;max-width:1100px}
+.field-hi .discrow{bottom:32px}.field-hi .q{font-size:62px;line-height:1.04;letter-spacing:-.03em;font-weight:800;max-width:1100px}
 #map button{background:rgba(255,255,255,.2);width:14px;height:22px}
 #map button.seen{background:rgba(255,255,255,.6)}
 #map button.ch{height:32px;background:rgba(11,107,71,.0);box-shadow:inset 0 0 0 3px #3FA57B}
@@ -34,14 +34,14 @@
 .msg{background:var(--tone);padding:14px 18px;font-size:21px;min-height:58px}
 .boxes{display:flex;gap:12px}
 .vbox{background:#fff;padding:14px 20px;flex:1;min-height:110px}
-.vbox small{display:block;font:500 21px var(--mono);color:var(--ink)}
+.vbox small{display:block;font:600 21px var(--sans);color:var(--ink)}
 .vbox b{display:block;font:600 44px var(--mono);margin-top:6px}
 .inp{display:flex;gap:18px;align-items:end;flex-wrap:wrap}
 .inp label{font-size:21px;font-weight:600;display:block;margin-bottom:6px}
 .inp input{font:600 32px var(--mono);width:160px;padding:8px 12px;border:0;background:#fff;color:var(--ink)}
 .discrow{position:absolute;left:72px;right:72px;bottom:40px}
 .prop2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.prop2>div{background:var(--ink);color:#fff;padding:20px 24px;min-height:150px}
+.prop2>div{background:var(--ink);color:#fff;padding:20px 24px;min-height:170px}
 .prop2>div.ok{background:var(--field)}
 .prop2 b{display:block;font:600 28px var(--mono)}
 .prop2 span{display:block;font-size:22px;margin-top:10px}
@@ -61,7 +61,7 @@ svg.flow .bx.on{fill:var(--hi)}
 /* trazas */
 table.trace{font-size:22px}
 table.trace td,table.trace th{padding:7px 14px;text-align:center}
-table.trace tr.new td{background:#FFF1C2}
+table.trace td{border-bottom:0}table.trace tr:nth-child(odd) td{background:#fff}table.trace tr.new td{background:#FFF1C2}
 /* arreglo */
 .arr{display:flex;gap:10px;margin-top:18px}
 .arr div{width:96px;text-align:center}
@@ -81,7 +81,7 @@ table.trace tr.new td{background:#FFF1C2}
 .term.big{font-size:19px;height:250px;overflow:hidden}
 .keys button{font:600 20px var(--mono);min-width:56px;padding:10px 12px}
 .ol-num{list-style:none;padding:0;counter-reset:n}
-.ol-num li{counter-increment:n;position:relative;padding-left:52px;margin-bottom:18px}
+.ol-num li{counter-increment:n;position:relative;padding-left:60px;margin-bottom:30px}
 .ol-num li::before{content:counter(n);position:absolute;left:0;font-weight:800;color:var(--field)}
 </style>
 </head>
@@ -91,12 +91,11 @@ table.trace tr.new td{background:#FFF1C2}
 <!-- 1 PORTADA -->
 <section class="slide chapter" data-title="Portada">
   <div class="sign">
-    <span class="exit" data-a>TESI 2105 · Unidad C</span>
-    <h1 class="ch-title mask" style="margin-top:26px"><span>Estructuras de control</span></h1>
+    <h1 class="ch-title mask" style="margin-top:10px"><span>Estructuras de control</span></h1>
     <p class="lead" data-a style="margin-top:18px;max-width:820px">Cómo decide un programa qué hacer, en qué orden y cuántas veces. Con la Carretera #2 como mapa.</p>
     <div class="km" data-a>PR<b>2</b>km 47.3</div>
     <div class="ways" data-a><span class="on">Secuenciales</span><span class="on">Selectivas</span><span class="on">Repetitivas</span></div>
-    <p class="body" data-a style="margin-top:18px;font-size:20px">Prof. Eduardo O. De Jesús Arroyo · ITPR, Recinto de Manatí</p>
+    <p class="body" data-a style="margin-top:18px;font-size:20px">TESI 2105, Unidad C · Prof. Eduardo O. De Jesús Arroyo · ITPR, Recinto de Manatí</p>
   </div>
   <div class="road"></div>
 </section>
@@ -124,8 +123,8 @@ table.trace tr.new td{background:#FFF1C2}
 <!-- TEMA 1 -->
 <section class="slide chapter" data-title="Tema 1: Estructuras secuenciales" data-topic="1">
   <div class="sign">
-    <span class="exit" data-a>Salida 1</span>
-    <h1 class="ch-title mask" style="margin-top:26px"><span>Estructuras secuenciales</span></h1>
+    <div class="km" data-a>SALIDA<b>1</b></div>
+    <h1 class="ch-title mask" style="margin-top:10px"><span>Estructuras secuenciales</span></h1>
     <p class="lead" data-a style="margin-top:18px;max-width:760px">Una instrucción después de otra, en el orden escrito.</p>
     <div class="ways" data-a></div>
   </div>
@@ -150,8 +149,8 @@ table.trace tr.new td{background:#FFF1C2}
 <!-- TEMA 2 -->
 <section class="slide chapter" data-title="Tema 2: Estructuras selectivas" data-topic="2">
   <div class="sign">
-    <span class="exit" data-a>Salida 2</span>
-    <h1 class="ch-title mask" style="margin-top:26px"><span>Estructuras selectivas</span></h1>
+    <div class="km" data-a>SALIDA<b>2</b></div>
+    <h1 class="ch-title mask" style="margin-top:10px"><span>Estructuras selectivas</span></h1>
     <p class="lead" data-a style="margin-top:18px;max-width:760px">Según una condición, el programa toma un camino u otro.</p>
     <div class="ways" data-a></div>
   </div>
@@ -187,7 +186,8 @@ table.trace tr.new td{background:#FFF1C2}
   <div class="cols" style="grid-template-columns:470px 1fr;gap:36px;margin-top:22px">
     <div data-a>
       <div class="inp"><div><label for="nt">nota</label><input id="nt" value="75" inputmode="decimal"></div><button class="go" id="nt-go" style="margin-bottom:6px">Recorrer</button></div>
-      <pre class="code" id="nt-code" style="margin-top:16px;font-size:20px">if (nota &gt;= 90)      letra = 'A';
+      <pre class="code" id="nt-code" style="margin-top:16px;font-size:20px">double nota;  cin &gt;&gt; nota;
+if (nota &gt;= 90)      letra = 'A';
 else if (nota &gt;= 80) letra = 'B';
 else if (nota &gt;= 70) letra = 'C';
 else if (nota &gt;= 60) letra = 'D';
@@ -218,7 +218,7 @@ else                 letra = 'F';</pre>
 
 <section class="slide" data-title="Errores comunes con if">
   <h2 class="mask"><span>Tres errores que compilan</span></h2>
-  <p class="body sub" data-a>Los tres programas corren, pero hacen otra cosa. g++ con <code>-Wall</code> avisa en los tres.</p>
+  <p class="body sub" data-a>Los tres programas corren, pero hacen otra cosa. g++ con <code>-Wall -Wextra</code> avisa en los tres.</p>
   <div data-tabs="e1" style="margin-top:22px">
     <div class="row" data-a><button data-tab="e1">= en lugar de ==</button><button data-tab="e2">Punto y coma de más</button><button data-tab="e3">Llaves que faltan</button></div>
     <div class="cols" style="margin-top:20px;gap:40px" data-a>
@@ -245,14 +245,14 @@ cout &lt;&lt; "Aprobado";</pre><div class="term" style="margin-top:10px;font-siz
   <p class="q mask"><span>¿Cadena else-if o switch para el menú de la cafetería?</span></p>
   <p class="body gap" data-a style="max-width:1000px;font-size:27px">Piensen qué pasa si el menú crece a 15 opciones y si alguna opción depende de un rango, como «más de $5».</p>
   <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
-  <div class="prop2" data-a><div><b>switch</b><span>compara un valor exacto: 1, 2, 3</span></div><div class="ok" data-rv-box><b>else if</b><button data-rv="Ocultar" class="pbtn">¿Cuándo es mejor?</button><span class="reveal">para rangos: nota &gt;= 90, total &gt; 500</span></div></div></div>
+  <div class="prop2" data-a><div><b>switch</b><span>compara un valor exacto: 1, 2, 3</span></div><div class="ok" data-rv-box><b>else if</b><span>evalúa condiciones y rangos</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">menú: switch · «más de $5»: else if</span></div></div></div>
 </section>
 
 <!-- TEMA 3 -->
 <section class="slide chapter" data-title="Tema 3: Estructuras repetitivas" data-topic="3">
   <div class="sign">
-    <span class="exit" data-a>Salida 3</span>
-    <h1 class="ch-title mask" style="margin-top:26px"><span>Estructuras repetitivas</span></h1>
+    <div class="km" data-a>SALIDA<b>3</b></div>
+    <h1 class="ch-title mask" style="margin-top:10px"><span>Estructuras repetitivas</span></h1>
     <p class="lead" data-a style="margin-top:18px;max-width:760px">Dar vueltas mientras se cumpla una condición, y salir cuando no.</p>
     <div class="ways" data-a></div>
   </div>
@@ -301,19 +301,19 @@ for (int i = 1; i &lt;= n; i++) {
 
 <section class="slide" data-title="break y continue">
   <h2 class="mask"><span>break sale de la rotonda; continue da otra vuelta</span></h2>
-  <p class="body sub" data-a style="max-width:1050px">Recorremos las notas buscando la primera menor de 60. Un −1 es una nota que falta: se salta con <code>continue</code>.</p>
+  <p class="body sub" data-a style="max-width:1050px">Buscamos la primera nota menor de 60. Un −1 es una nota que falta: <code>continue</code> la salta. Con g++ el programa imprime «85 92 en 3».</p>
   <div class="cols" style="grid-template-columns:1fr 500px;gap:28px;margin-top:10px">
     <div data-a>
       <div class="arr" id="bc-arr"></div>
       <div class="row" style="margin-top:20px"><button class="go" id="bc-step">Siguiente vuelta</button><button id="bc-reset">Reiniciar</button></div>
       <p class="msg" id="bc-msg" style="margin-top:14px" aria-live="polite"></p>
     </div>
-    <pre class="code" data-a style="font-size:18px">for (int i = 0; i &lt; 6; i++) {
+    <pre class="code" data-a style="font-size:20px">for (int i = 0; i &lt; 6; i++) {
     if (notas[i] &lt; 0)
-        continue;   // la salta
+        continue;
     if (notas[i] &lt; 60) {
         cout &lt;&lt; "en " &lt;&lt; i;
-        break;      // sale
+        break;
     }
     cout &lt;&lt; notas[i] &lt;&lt; " ";
 }</pre>
@@ -343,7 +343,7 @@ for (int i = 1; i &lt;= n; i++) {
     <div data-a>
       <pre class="code" style="font-size:22px">for (int i = 0; i &lt; 10; i--) {
     // i baja: 0, -1, -2...
-    // nunca llega a 10
+    // en la práctica no termina
 }</pre>
       <pre class="code" style="font-size:22px;margin-top:14px">int k = 10;
 while (k &gt; 0) {
@@ -363,7 +363,7 @@ while (k &gt; 0) {
   <p class="q mask"><span>¿for, while o do-while para pedir una nota válida?</span></p>
   <p class="body gap" data-a style="max-width:1000px;font-size:27px">El programa debe pedir la nota hasta que esté entre 0 y 100. ¿Sabemos cuántas veces habrá que preguntar?</p>
   <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
-  <div class="prop2" data-a><div><b>for</b><span>cuando se sabe cuántas vueltas</span></div><div class="ok" data-rv-box><b>do-while</b><button data-rv="Ocultar" class="pbtn">¿Por qué?</button><span class="reveal">pregunta al menos una vez y repite si no es válida</span></div></div></div>
+  <div class="prop2" data-a><div><b>for · while</b><span>for: vueltas conocidas · while: puede no entrar</span></div><div class="ok" data-rv-box><b>do-while</b><span>pregunta primero, revisa después</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">do-while: hay que preguntar al menos una vez</span></div></div></div>
 </section>
 
 <section class="slide" data-title="Todo junto: el menú de la cafetería">
@@ -380,6 +380,7 @@ do {
         default: cout &lt;&lt; "Opcion invalida";
     }
 } while (opcion != 0);
+cout &lt;&lt; fixed &lt;&lt; setprecision(2);
 cout &lt;&lt; "Total: $" &lt;&lt; total / 100.0;
 cout &lt;&lt; (total &gt; 500 ? "Pedido grande"
                      : "Pedido normal");</pre>
@@ -394,24 +395,29 @@ cout &lt;&lt; (total &gt; 500 ? "Pedido grande"
 
 <section class="slide" data-title="Lo esencial de la unidad">
   <h2 class="mask"><span>Lo que se lleva de esta unidad</span></h2>
-  <div class="cols-3 gap" data-a style="gap:36px">
-    <div><h3 style="font-size:30px">Secuenciales</h3><p class="body" style="margin-top:8px">El programa corre de arriba hacia abajo. El orden de las líneas cambia el resultado.</p></div>
-    <div><h3 style="font-size:30px">Selectivas</h3><p class="body" style="margin-top:8px"><code>if</code>, <code>else if</code> para rangos, <code>switch</code> para valores exactos, siempre con <code>break</code>. Llaves siempre, y <code>==</code> para comparar.</p></div>
-    <div><h3 style="font-size:30px">Repetitivas</h3><p class="body" style="margin-top:8px"><code>for</code> si se sabe cuántas vueltas, <code>while</code> si no, <code>do-while</code> si al menos una. Cada ciclo necesita una salida.</p></div>
-  </div>
-  <div class="row gap" data-a style="gap:0">
-    <svg viewBox="0 0 1136 60" width="1136" height="60" aria-hidden="true"><path d="M0 30 H1136" stroke="#0B6B47" stroke-width="14"/><path d="M0 30 H1136" stroke="#FFC425" stroke-width="4" stroke-dasharray="40 26"/></svg>
+  <svg data-a class="gap" viewBox="0 0 1136 170" width="1136" height="170" aria-hidden="true" style="display:block;margin-top:28px">
+    <path d="M0 120 H1136" stroke="#0B6B47" stroke-width="22" fill="none"/>
+    <path d="M500 120 Q620 120 700 30 L740 0" stroke="#0B6B47" stroke-width="22" fill="none"/>
+    <circle cx="930" cy="98" r="62" stroke="#0B6B47" stroke-width="22" fill="#EEF2F0"/>
+    <path d="M0 120 H868 M992 120 H1136" stroke="#FFC425" stroke-width="4" stroke-dasharray="34 22" fill="none"/>
+    <path d="M500 120 Q620 120 700 30 L740 0" stroke="#FFC425" stroke-width="4" stroke-dasharray="34 22" fill="none"/>
+    <circle cx="930" cy="98" r="62" stroke="#FFC425" stroke-width="4" stroke-dasharray="20 16" fill="none"/>
+  </svg>
+  <div class="cols-3" data-a style="gap:36px;margin-top:22px">
+    <div><h3 style="font-size:30px">Secuenciales</h3><p class="body" style="margin-top:10px;font-size:27px">Arriba hacia abajo, sin saltos.</p><p class="body" style="margin-top:8px;font-size:27px">El orden de las líneas cambia el resultado.</p></div>
+    <div><h3 style="font-size:30px">Selectivas</h3><p class="body" style="margin-top:10px;font-size:27px"><code>else if</code> para rangos; <code>switch</code> con <code>break</code> para valores exactos.</p><p class="body" style="margin-top:8px;font-size:27px">Llaves siempre. <code>==</code> compara; <code>=</code> asigna.</p></div>
+    <div><h3 style="font-size:30px">Repetitivas</h3><p class="body" style="margin-top:10px;font-size:27px"><code>for</code>, vueltas conocidas; <code>while</code>, puede no entrar; <code>do-while</code>, al menos una.</p><p class="body" style="margin-top:8px;font-size:27px">Toda rotonda necesita salida.</p></div>
   </div>
 </section>
 
 <section class="slide" data-title="Ejercicio de cierre">
   <h2 class="mask"><span>Ejercicio de cierre</span></h2>
   <p class="body sub" data-a>Haga los cuatro pasos en orden. La fecha de entrega se anuncia en OrbundSIS.</p>
-  <ol class="ol-num gap" data-a style="font-size:29px;line-height:1.4;max-width:1120px">
+  <ol class="ol-num gap" data-a style="font-size:32px;line-height:1.35;max-width:1120px;margin-top:48px">
     <li>Pida una nota con un <code>do-while</code> hasta que esté entre 0 y 100.</li>
     <li>Muestre la letra con una cadena <code>else if</code> (A 90, B 80, C 70, D 60).</li>
     <li>Repita para cinco estudiantes con un <code>for</code> y muestre el promedio del grupo.</li>
-    <li>Compile con <code>g++ -std=c++17 -Wall</code> sin advertencias y súbalo a su repositorio.</li>
+    <li>Compile con <code>g++ -std=c++17 -Wall -Wextra</code> sin advertencias y súbalo a su repositorio.</li>
   </ol>
 </section>
 
@@ -424,7 +430,7 @@ cout &lt;&lt; (total &gt; 500 ? "Pedido grande"
     <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Kumar, A. (2024). <i>Hands-on object-oriented programming: Mastering OOP features for real-world software systems development</i>. Apress.</p>
     <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Lutz, M. (2025). <i>Learning Python: Powerful object-oriented programming</i>. O’Reilly Media.</p>
   </div>
-  <p class="body gap" data-a style="font-size:19px">Los programas y advertencias se verificaron con g++ 13.3 en Linux.</p>
+  <p class="body gap" data-a style="font-size:20px">Kumar (2024) y Lutz (2025) son los textos oficiales del prontuario. Los programas y advertencias se verificaron con g++ 13.3 en Linux.</p>
 </section>
 
 </div></div>
@@ -442,7 +448,7 @@ var W=['Secuenciales','Selectivas','Repetitivas'];
 /* ---------- ordenar instrucciones ---------- */
 var OK=['cin >> precio;','cin >> cantidad;','total = precio * cantidad;','cout << total;'];
 var cur;
-function mix(){cur=[2,3,0,1];drawOrd();$('ord-out').innerHTML='<span class="p">$ ./venta</span>';$('ord-why').textContent='Use las flechas para subir o bajar cada línea.'}
+function mix(){cur=[2,3,0,1];drawOrd();$('ord-out').innerHTML='<span class="p">$ ./venta\n(pulse «Ejecutar» para correrlo)</span>';$('ord-why').textContent='Use las flechas para subir o bajar cada línea.'}
 function drawOrd(){
   $('ord').innerHTML=cur.map(function(k,i){return '<div class="it"><code>'+OK[k].replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</code><button aria-label="Subir" data-u="'+i+'"'+(i===0?' disabled':'')+'>▲</button><button aria-label="Bajar" data-d="'+i+'"'+(i===3?' disabled':'')+'>▼</button></div>'}).join('');
   [].forEach.call($('ord').querySelectorAll('[data-u]'),function(b){b.onclick=function(){var i=+b.dataset.u;var t=cur[i];cur[i]=cur[i-1];cur[i-1]=t;drawOrd()}});
@@ -464,10 +470,10 @@ var svg=$('nt-svg'),NS='http://www.w3.org/2000/svg';
   h+='<rect class="bx" id="n-start" x="40" y="4" width="200" height="44" rx="22"/><text x="140" y="33" font-size="19" font-weight="700" text-anchor="middle" fill="#0E2A47">Leer nota</text>';
   L.forEach(function(r,i){var y=70+i*96;
     h+='<path class="p" id="n-in'+i+'" d="M140 '+(i?y-30:48)+' V'+y+'"/>';
-    h+='<polygon class="bx" id="n-d'+i+'" points="140,'+y+' 250,'+(y+33)+' 140,'+(y+66)+' 30,'+(y+33)+'"/><text x="140" y="'+(y+40)+'" font-size="18" font-weight="700" text-anchor="middle" fill="#0E2A47">'+r[0]+'</text>';
-    h+='<path class="p" id="n-y'+i+'" d="M250 '+(y+33)+' H420"/><text x="300" y="'+(y+24)+'" font-size="17" fill="#0E2A47">Sí</text>';
+    h+='<polygon class="bx" id="n-d'+i+'" points="140,'+y+' 262,'+(y+33)+' 140,'+(y+66)+' 18,'+(y+33)+'"/><text x="140" y="'+(y+40)+'" font-size="20" font-weight="700" text-anchor="middle" fill="#0E2A47">'+r[0]+'</text>';
+    h+='<path class="p" id="n-y'+i+'" d="M262 '+(y+33)+' H420"/><text x="300" y="'+(y+24)+'" font-size="20" font-weight="600" fill="#0E2A47">Sí</text>';
     h+='<rect class="bx" id="n-r'+i+'" x="420" y="'+(y+8)+'" width="160" height="50"/><text x="500" y="'+(y+41)+'" font-size="22" font-weight="800" text-anchor="middle" fill="#0E2A47">'+r[1]+'</text>';
-    h+='<text x="150" y="'+(y+86)+'" font-size="17" fill="#0E2A47">No</text>';
+    h+='<text x="150" y="'+(y+86)+'" font-size="20" font-weight="600" fill="#0E2A47">No</text>';
   });
   h+='<path class="p" id="n-in4" d="M140 '+(70+3*96+66)+' V'+(70+4*96-6)+'"/>';
   h+='<rect class="bx" id="n-r4" x="60" y="'+(70+4*96-6)+'" width="160" height="50"/><text x="140" y="'+(70+4*96+27)+'" font-size="22" font-weight="800" text-anchor="middle" fill="#0E2A47">F</text>';
@@ -486,7 +492,7 @@ function run(){
   var red=matchMedia('(prefers-reduced-motion: reduce)').matches;
   seq.forEach(function(id,i){ntTimer.push(setTimeout(function(){var e=$(id);if(e)e.classList.add('on')},red?0:i*170))});
   var letra='ABCDF'[k],asked=Math.min(k+1,4);
-  ntTimer.push(setTimeout(function(){lines[Math.min(k,4)].classList.add('cur');
+  ntTimer.push(setTimeout(function(){lines[Math.min(k,4)+1].classList.add('cur');
     m.textContent=k===4?'Con '+v+' ninguna de las 4 condiciones se cumplió: salió por el else final, F.':'Con '+v+' el programa hizo '+asked+' pregunta'+(asked>1?'s':'')+' y salió por '+letra+'.'+(k<3?' Las condiciones de abajo ni se miran.':'')},red?0:seq.length*170));
 }
 $('nt-go').onclick=run;$('nt').addEventListener('keydown',function(e){if(e.key==='Enter')run()});
@@ -510,7 +516,7 @@ swCode();sw(1);
 /* ---------- for con traza ---------- */
 var fi,fs,fn,fdone;
 function frReset(){fn=Math.max(1,Math.min(8,parseInt($('fr-n').value,10)||5));fi=1;fs=0;fdone=false;
-  $('fr-tab').innerHTML='<tr><th>Vuelta</th><th>i</th><th>i &lt;= '+fn+'</th><th>suma</th></tr>';$('fr-msg').textContent='suma empieza en 0 e i en 1. Pulse «Una vuelta».';$('fr-step').disabled=false;$('fr-all').disabled=false}
+  $('fr-tab').innerHTML='<tr><th>Vuelta</th><th>i</th><th>i &lt;= '+fn+'</th><th>suma</th></tr><tr><td>inicio</td><td>1</td><td>—</td><td>0</td></tr>';$('fr-msg').textContent='suma empieza en 0 e i en 1. Pulse «Una vuelta».';$('fr-step').disabled=false;$('fr-all').disabled=false}
 function frStep(){if(fdone)return;var tab=$('fr-tab');[].forEach.call(tab.querySelectorAll('tr.new'),function(r){r.classList.remove('new')});
   if(fi<=fn){fs+=fi;tab.insertAdjacentHTML('beforeend','<tr class="new"><td>'+fi+'</td><td>'+fi+'</td><td>true</td><td>'+fs+'</td></tr>');$('fr-msg').textContent='i = '+fi+': la condición se cumple, suma += '+fi+' → '+fs+'. Luego i++.';fi++}
   else{tab.insertAdjacentHTML('beforeend','<tr class="new"><td>—</td><td>'+fi+'</td><td>false</td><td>'+fs+'</td></tr>');$('fr-msg').textContent='i = '+fi+': '+fi+' <= '+fn+' es false. El ciclo termina con suma = '+fs+' en '+fn+' vueltas.';fdone=true;$('fr-step').disabled=true;$('fr-all').disabled=true}}
@@ -522,7 +528,7 @@ function wh(){var n=Math.max(0,Math.min(9,parseInt($('wh-n').value,10)||0));$('w
 $('wh-n').addEventListener('input',wh);wh();
 
 /* ---------- break y continue ---------- */
-var NOTAS=[85,92,58,77,-1,64],bi,bdone;
+var NOTAS=[85,-1,92,58,77,64],bi,bdone;
 function bcDraw(states,labels){$('bc-arr').innerHTML=NOTAS.map(function(v,i){return '<div class="'+(states[i]||'')+'"><b>'+v+'</b><small>'+(labels[i]||'['+i+']')+'</small></div>'}).join('')}
 var bst,blb;
 function bcReset(){bi=0;bdone=false;bst=[];blb=[];bcDraw(bst,blb);$('bc-msg').textContent='Pulse «Siguiente vuelta».';$('bc-step').disabled=false}
@@ -550,7 +556,7 @@ function hl(i){[].forEach.call(mlines.querySelectorAll('.ln'),function(l,j){l.cl
 [].forEach.call(document.querySelectorAll('[data-mn]'),function(b){b.onclick=function(){
   if(mdone)mnReset();var op=+b.dataset.mn;mlog+='\n<span class="p">'+op+'</span>';
   if(MP[op]){mt+=MP[op];hl(op+3)}else if(op!==0){mlog+='\nOpcion invalida';hl(8)}
-  if(op===0){hl(11);mlog+='\nTotal: $'+(mt/100).toFixed(2)+'\n'+(mt>500?'Pedido grande':'Pedido normal');mdone=true}
+  if(op===0){hl(12);mlog+='\nTotal: $'+(mt/100).toFixed(2)+'\n'+(mt>500?'Pedido grande':'Pedido normal');mdone=true}
   $('mn-tot').textContent=mdone?'Verificado con g++: 1, 2, 9, 1, 0 da $4.25 y «Pedido normal».':'En memoria: total = '+mt+' centavos.';mnShow()}});
 mnReset();
 

@@ -103,7 +103,7 @@ table.t.rules td,table.t.rules th{padding:7px 12px}
 .rules tr.on td{background:var(--hi)}
 /* git */
 .areas{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:22px}
-.areas>div{background:var(--tone);padding:14px 16px;min-height:200px}
+.areas>div{background:var(--tone);padding:14px 16px;min-height:150px}
 .areas h3{font-size:21px;margin-bottom:10px}
 .areas .f{display:block;font:500 19px var(--mono);background:#fff;padding:6px 10px;margin-bottom:6px}
 .areas .cm{display:block;font:500 18px var(--mono);padding:6px 10px;margin-bottom:6px;background:var(--ink);color:#fff}
@@ -308,7 +308,7 @@ cout &lt;&lt; edad &lt;&lt; endl;</pre>
 </section>
 
 <section class="slide field-hi" data-title="Discusión: el promedio con int">
-  <p class="q mask"><span>El promedio se guarda como int. ¿A quién perjudica?</span></p>
+  <p class="q mask"><span>Promedio guardado como int: ¿a&nbsp;quién perjudica?</span></p>
   <p class="body gap" data-a style="max-width:900px">Piense en un estudiante con 69.8. ¿Qué nota final recibe? ¿Quién es responsable del error: la computadora o el programador?</p>
   <div class="cols" style="grid-template-columns:auto 1fr;gap:64px;align-items:end;margin-top:20px"><div class="timer" data-timer="120" data-a></div>
   <div class="prop" data-a><span class="pv">69.8</span><span class="pa">→</span><span class="pv bad">69</span><p class="body" style="margin-top:8px">Con double, C. Con int, D.</p></div></div>
@@ -344,13 +344,13 @@ cout &lt;&lt; edad &lt;&lt; endl;</pre>
       <button data-tab="sint">De compilación</button><button data-tab="ejec">De ejecución</button><button data-tab="logi">De lógica</button>
     </div>
     <div class="cols" style="margin-top:22px" data-a>
-      <div data-panel="sint"><pre class="code nums" style="counter-reset:ln 3">int edad = 20
-cout &lt;&lt; edad &lt;&lt; endl;</pre><div class="term" style="margin-top:10px"><span class="e">e1.cpp:5:5: error: expected ',' or ';' before 'cout'</span></div></div>
+      <div data-panel="sint"><pre class="code nums" style="counter-reset:ln 3;font-size:26px;padding:28px 0">int edad = 20
+cout &lt;&lt; edad &lt;&lt; endl;</pre><div class="term" style="margin-top:10px;font-size:22px;padding:22px"><span class="e">e1.cpp:5:5: error: expected ',' or ';' before 'cout'</span></div></div>
       <div data-panel="sint"><p class="lead" style="font-size:36px">El programa ni siquiera se crea.</p><p class="body sub">g++ señala la línea 5, pero el punto y coma falta en la 4: el compilador se da cuenta en la línea siguiente. Lea siempre la línea anterior.</p></div>
-      <div data-panel="ejec" hidden><pre class="code nums" style="counter-reset:ln 3">int total = 245, estudiantes = 0;
-cout &lt;&lt; total / estudiantes;</pre><div class="term" style="margin-top:10px"><span class="e">Floating point exception</span></div></div>
+      <div data-panel="ejec" hidden><pre class="code nums" style="counter-reset:ln 3;font-size:26px;padding:28px 0">int total = 245, estudiantes = 0;
+cout &lt;&lt; total / estudiantes;</pre><div class="term" style="margin-top:10px;font-size:22px;padding:22px"><span class="e">Floating point exception</span></div></div>
       <div data-panel="ejec" hidden><p class="lead" style="font-size:36px">Compila sin quejas y se cae al correr.</p><p class="body sub">Dividir un entero entre cero detiene el programa. El compilador no podía saber que estudiantes valdría 0.</p></div>
-      <div data-panel="logi" hidden><pre class="code nums" style="counter-reset:ln 4">double promedio = n1 + n2 + n3 / 3;</pre><div class="term" style="margin-top:10px">198.333</div></div>
+      <div data-panel="logi" hidden><pre class="code nums" style="counter-reset:ln 4;font-size:26px;padding:28px 0">double promedio = n1 + n2 + n3 / 3;</pre><div class="term" style="margin-top:10px;font-size:22px;padding:22px">198.333</div></div>
       <div data-panel="logi" hidden><p class="lead" style="font-size:36px">Compila, corre y da un resultado equivocado.</p><p class="body sub">Faltan paréntesis: solo n3 se divide entre 3. Con 90, 85 y 70 el promedio debía ser 81.67. Es el error más peligroso, porque nadie avisa.</p></div>
     </div>
   </div>
@@ -427,17 +427,17 @@ cout &lt;&lt; total / estudiantes;</pre><div class="term" style="margin-top:10px
     </div>
     <div class="flow" data-a>
       <svg viewBox="0 0 480 430" width="480" height="430" role="img" aria-label="Diagrama de flujo del algoritmo del promedio">
-        <rect x="170" y="4" width="140" height="44" rx="22" fill="#0E2A47"/><text x="240" y="32" fill="#fff" font-size="18" font-weight="700" text-anchor="middle">Inicio</text>
+        <rect x="170" y="4" width="140" height="44" rx="22" fill="#0E2A47"/><text x="240" y="32" fill="#fff" font-size="21" font-weight="700" text-anchor="middle">Inicio</text>
         <path d="M240 48 v26" stroke="#0E2A47" stroke-width="3" marker-end="url(#fa)"/>
-        <polygon points="140,78 360,78 340,124 120,124" fill="#D2DDE8"/><text x="240" y="107" fill="#0E2A47" font-size="17" text-anchor="middle">Leer n1, n2, n3</text>
+        <polygon points="140,78 360,78 340,124 120,124" fill="#D2DDE8"/><text x="240" y="107" fill="#0E2A47" font-size="20" text-anchor="middle">Leer n1, n2, n3</text>
         <path d="M240 124 v24" stroke="#0E2A47" stroke-width="3" marker-end="url(#fa)"/>
-        <rect x="120" y="152" width="240" height="46" fill="#fff"/><text x="240" y="181" fill="#0E2A47" font-size="17" text-anchor="middle">promedio ← suma / 3</text>
+        <rect x="120" y="152" width="240" height="46" fill="#fff"/><text x="240" y="181" fill="#0E2A47" font-size="20" text-anchor="middle">promedio ← suma / 3</text>
         <path d="M240 198 v22" stroke="#0E2A47" stroke-width="3" marker-end="url(#fa)"/>
-        <polygon points="240,224 330,268 240,312 150,268" fill="#FFC425"/><text x="240" y="274" fill="#0E2A47" font-size="17" font-weight="700" text-anchor="middle">≥ 70</text>
-        <path d="M150 268 H70 v70" stroke="#0E2A47" stroke-width="3" fill="none" marker-end="url(#fa)"/><text x="104" y="258" fill="#0E2A47" font-size="16">Sí</text>
-        <path d="M330 268 H410 v70" stroke="#0E2A47" stroke-width="3" fill="none" marker-end="url(#fa)"/><text x="360" y="258" fill="#0E2A47" font-size="16">No</text>
-        <rect x="6" y="342" width="128" height="44" fill="#fff"/><text x="70" y="370" fill="#0E2A47" font-size="16" text-anchor="middle">Aprobado</text>
-        <rect x="346" y="342" width="128" height="44" fill="#fff"/><text x="410" y="370" fill="#0E2A47" font-size="16" text-anchor="middle">No aprobado</text>
+        <polygon points="240,224 330,268 240,312 150,268" fill="#FFC425"/><text x="240" y="274" fill="#0E2A47" font-size="21" font-weight="700" text-anchor="middle">≥ 70</text>
+        <path d="M150 268 H70 v70" stroke="#0E2A47" stroke-width="3" fill="none" marker-end="url(#fa)"/><text x="98" y="256" fill="#0E2A47" font-size="20" font-weight="700">Sí</text>
+        <path d="M330 268 H410 v70" stroke="#0E2A47" stroke-width="3" fill="none" marker-end="url(#fa)"/><text x="352" y="256" fill="#0E2A47" font-size="20" font-weight="700">No</text>
+        <rect x="6" y="342" width="128" height="44" fill="#fff"/><text x="70" y="370" fill="#0E2A47" font-size="19" text-anchor="middle">Aprobado</text>
+        <rect x="346" y="342" width="128" height="44" fill="#fff"/><text x="410" y="370" fill="#0E2A47" font-size="19" text-anchor="middle">No aprobado</text>
         <defs><marker id="fa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#0E2A47"/></marker></defs>
       </svg>
     </div>
@@ -513,7 +513,7 @@ cout &lt;&lt; total / estudiantes;</pre><div class="term" style="margin-top:10px
     <div><h3>Repositorio local</h3><div id="g-lo"></div></div>
     <div><h3>GitHub</h3><div id="g-re"></div></div>
   </div>
-  <div class="term" id="g-term" style="margin-top:12px;min-height:52px" aria-live="polite"><span class="p">$ </span></div>
+  <div class="term" id="g-term" style="margin-top:12px;min-height:110px;font-size:22px" aria-live="polite"><span class="p">$ </span></div>
 </section>
 
 <section class="slide" data-title="Comandos esenciales">
@@ -582,7 +582,7 @@ hola</pre>
     <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Lutz, M. (2025). <i>Learning Python: Powerful object-oriented programming</i>. O’Reilly Media.</p>
     <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Turing, A. M. (1936). On computable numbers, with an application to the Entscheidungsproblem. <i>Proceedings of the London Mathematical Society, 2</i>(42), 230-265.</p>
   </div>
-  <p class="small gap" data-a style="font-size:18px">Los programas y mediciones se verificaron con g++ 13.3, Python 3 y Java en Linux. Tipografía: Schibsted Grotesk y JetBrains Mono (licencia SIL OFL).</p>
+  <p class="body gap" data-a style="font-size:19px">Los programas y mediciones se verificaron con g++ 13.3, Python 3 y Java en Linux. Tipografía: Schibsted Grotesk y JetBrains Mono (licencia SIL OFL).</p>
 </section>
 
 </div></div>

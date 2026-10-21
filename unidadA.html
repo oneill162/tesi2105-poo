@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unidad A: Introducción · TESI 2105</title>
+<meta name="description" content="TESI 2105 Programación Orientada a Objetos. Unidad A: lenguajes, historia, compiladores, IDE, algoritmos, modelos de computación y Git.">
+<link rel="preload" href="assets/fonts/schibsted-grotesk-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* Tema de la Unidad A: la tarjeta perforada */
+:root{--ground:#F3F6F9;--tone:#E3EAF1;--tone2:#D2DDE8;--ink:#0E2A47;--accent:#1B75BC;--field:#0E2A47;--field-ink:#F3F6F9;--hi:#FFC425}
+.ch-title{font-size:96px;line-height:.98;letter-spacing:-.035em;font-weight:800;max-width:1100px}
+.chapter .meta{margin-top:30px;font-size:var(--s)}
+.chapter .strip{position:absolute;left:72px;bottom:28px}
+.card .hole.now{fill:var(--hi);stroke:var(--ink);stroke-width:2}
+.field-hi .q{font-size:64px;line-height:1.04;letter-spacing:-.03em;font-weight:800;max-width:1080px}
+.field-hi .small{color:var(--ink)}
+/* card */
+.card svg{display:block}
+.card .hole{fill:var(--ink)}
+.cover .hole{fill:var(--field)}
+@media (prefers-reduced-motion:no-preference){
+  .entering .card .hole{animation:punch .18s var(--ease-out) both;animation-delay:calc(260ms + var(--c) * 26ms)}
+}
+@keyframes punch{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:none}}
+.card .hole{transform-box:fill-box;transform-origin:center}
+/* bar map as card columns */
+#map button{width:12px;height:30px;background:#F3F6F9;opacity:.18}
+#map button.seen{opacity:.55}
+#map button.cur{background:var(--hi);opacity:1}
+#map button.ch{width:12px;opacity:.32}
+#map button.ch.seen{opacity:.7}
+#map button.ch.cur{opacity:1}
+/* props de discusión */
+.prop{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 18px}
+.prop .pv{font-size:104px;font-weight:800;letter-spacing:-.04em;line-height:.9}
+.prop .pv.bad{color:#9A1B0F}
+.prop .pa{font-size:72px;font-weight:700}
+.prop p{flex-basis:100%}
+.prop2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.prop2>div{background:var(--ink);color:#fff;padding:22px 24px;min-height:150px}
+.prop2>div.ok{background:var(--accent)}
+.prop2 b{display:block;font-size:26px;line-height:1.15}
+.prop2 span{display:block;font-size:22px;margin-top:14px;opacity:.9}
+.ac{background:#0B2038;color:#D9E4EF;font:28px var(--mono);padding:22px 26px;max-width:460px}
+.ac-l .cur{display:inline-block;width:3px;height:30px;background:var(--hi);vertical-align:middle;margin-left:2px}
+.ac-m{background:#16375A;margin-top:10px;width:240px}
+.ac-m div{padding:6px 14px}
+.ac-m div.on{background:var(--accent)}
+.prop4{display:grid;grid-template-columns:140px 1fr;margin:0;background:var(--ink);color:#E6EEF6;padding:18px 22px;gap:8px 16px}
+.prop4 dt{font-weight:700;font-size:19px;color:var(--hi)}
+.prop4 dd{margin:0;font:500 19px var(--mono);white-space:nowrap}
+/* tokens */
+.toks{display:flex;flex-wrap:wrap;gap:12px 18px;margin-top:22px;align-content:flex-start}
+.tok{display:flex;flex-direction:column;align-items:center;text-align:center;max-width:150px}
+.tok b{font:600 24px var(--mono);padding:8px 12px;background:#fff}
+.tok span{font-size:19px;margin-top:6px;color:var(--soft)}
+.tok.kw b{background:var(--ink);color:#fff}
+.tok.id b{background:#CFE3F5}
+.tok.num b{background:var(--hi)}
+.tok.str b{background:#FFE3B8}
+.tok.op b{background:var(--tone2)}
+.tok.bad b{background:#FFD9D4;color:#8A1C10}
+/* timeline */
+.years{display:flex;gap:6px;flex-wrap:wrap}
+.years button{font-variant-numeric:tabular-nums;padding:10px 16px;font-size:21px}
+.tl{display:grid;grid-template-columns:1fr 520px;gap:40px;margin-top:30px}
+.tl .who{font-size:var(--m);font-weight:700;letter-spacing:-.01em}
+/* classification */
+.attrs{display:grid;grid-template-columns:220px 1fr;font-size:var(--s);margin-top:28px}
+.attrs dt{font-weight:700;padding:14px 0;border-bottom:2px solid var(--tone2)}
+.attrs dd{margin:0;padding:14px 0;border-bottom:2px solid var(--tone2)}
+/* pipeline */
+.pipe{display:flex;gap:0;margin-top:30px}
+.pipe button{flex:1;text-align:left;padding:16px 18px;font-size:18px;line-height:1.25;background:var(--tone)}
+.pipe button[aria-pressed=true]{background:var(--ink);color:#fff}
+.pipe button small{display:block;font-weight:500;font-size:18px;opacity:.85;margin-top:4px}
+.metric{font-size:72px;font-weight:800;letter-spacing:-.03em;line-height:1}
+/* ide */
+.ide{display:grid;grid-template-columns:200px 1fr;grid-template-rows:auto 1fr 120px;background:#0B2038;color:#D9E4EF;font:15px var(--sans);height:390px}
+.ide>div{padding:10px 14px;transition:box-shadow .2s,background .2s}
+.ide .top{grid-column:1/3;background:#081A2E;display:flex;gap:18px;font-size:14px;opacity:.9}
+.ide .files{background:#0E2741;line-height:1.9}
+.ide .edit{font:16px/1.6 var(--mono)}
+.ide .out{grid-column:1/3;background:#081A2E;font:15px/1.5 var(--mono);color:#5EE08A}
+.ide .lit{box-shadow:inset 0 0 0 4px var(--hi);background:#16375A}
+.parts button{display:block;width:100%;text-align:left;margin-bottom:8px}
+/* algorithm */
+.vars{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.vars div{min-height:110px}
+.vars div{background:#fff;padding:10px 12px}
+.vars small{display:block;font-size:20px;color:var(--soft)}
+.vars b{font:600 32px var(--mono);display:block;margin-top:6px}
+.msg{background:var(--tone);padding:14px 18px;font-size:20px;min-height:58px}
+/* turing */
+.tape{display:flex;gap:6px;margin-top:28px}
+.tape div{width:72px;height:72px;background:#fff;display:flex;align-items:center;justify-content:center;font:600 32px var(--mono);position:relative;transition:background .2s}
+.tape div.head{background:var(--hi)}
+.tape div.head::after{content:"▲";position:absolute;bottom:-34px;font:22px var(--sans);color:var(--ink)}
+table.t.rules{font-size:20px}
+table.t.rules td,table.t.rules th{padding:7px 12px}
+.rules tr.on td{background:var(--hi)}
+/* git */
+.areas{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:22px}
+.areas>div{background:var(--tone);padding:14px 16px;min-height:200px}
+.areas h3{font-size:21px;margin-bottom:10px}
+.areas .f{display:block;font:500 19px var(--mono);background:#fff;padding:6px 10px;margin-bottom:6px}
+.areas .cm{display:block;font:500 18px var(--mono);padding:6px 10px;margin-bottom:6px;background:var(--ink);color:#fff}
+.areas .cm.remote{background:var(--accent)}
+.flow svg text{font-family:var(--sans)}
+.ol-big{font-size:34px;line-height:1.5;margin:0;padding:0;font-weight:600;list-style:none;counter-reset:n var(--from,0)}
+.ol-big li,.ol-num li{counter-increment:n;position:relative;padding-left:52px;margin-bottom:6px}
+.ol-big li::before,.ol-num li::before{content:counter(n);position:absolute;left:0;font-weight:800;color:var(--accent)}
+.ol-num{list-style:none;padding:0;counter-reset:n}
+.two-list{display:grid;grid-template-columns:1fr 1fr;gap:6px 56px}
+.stds{display:flex;gap:8px;margin-top:36px}
+.stds div{flex:1;background:var(--tone);padding:22px 10px 18px;min-height:190px;font-weight:800;font-size:32px;letter-spacing:-.02em;display:flex;flex-direction:column;justify-content:space-between}
+.stds div small{display:block;font-size:20px;font-weight:500;line-height:1.2}
+.stds div.now{background:var(--ink);color:#fff}
+.stds div.us{background:var(--hi)}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage" data-name="Unidad A · Introducción" role="region" aria-roledescription="presentación" aria-label="Unidad A: Introducción">
+
+<!-- 1 -->
+<section class="slide chapter cover" data-title="Portada">
+  <h1 class="mask"><span>Introducción</span></h1>
+  <p class="lead" data-a style="margin-top:18px;color:#F3F6F9;font-weight:700">TESI 2105 · Programación Orientada a Objetos</p>
+  <p class="body" data-a style="margin-top:8px;color:#CFE0F0">Lenguajes, compiladores, algoritmos y Git: las herramientas con las que vamos a construir todo el curso.</p>
+  <div class="card" id="cover-card" data-a style="margin-top:26px"></div>
+  <p class="body" data-a style="margin-top:18px;font-size:20px;color:#E6EEF6">Prof. Eduardo O. De Jesús Arroyo · Instituto Tecnológico de Puerto Rico, Recinto de Manatí</p>
+</section>
+
+<!-- 2 -->
+<section class="slide" data-title="La unidad en nueve temas">
+  <h2 class="mask"><span>La unidad en nueve temas</span></h2>
+  <p class="body sub" data-a>Del idioma que entiende la computadora hasta guardar su trabajo en GitHub.</p>
+  <div class="cols gap" data-a>
+    <ol class="ol-big"><li>Qué es un lenguaje de programación</li><li>Historia y evolución</li><li>Clasificación de los lenguajes</li><li>Conceptos fundamentales</li><li>Qué es un compilador</li></ol>
+    <ol class="ol-big" style="--from:5"><li>Qué es un IDE</li><li>Qué es un algoritmo</li><li>Modelos de computación</li><li>Git y GitHub</li></ol>
+  </div>
+</section>
+
+<!-- TEMA 1 -->
+<section class="slide chapter" data-title="Tema 1: Qué es un lenguaje de programación" data-topic="1">
+  <h1 class="ch-title mask"><span>¿Qué es un lenguaje de programación?</span></h1>
+  <p class="meta" data-a>Tema 1 de 9</p><div class="strip card"></div>
+</section>
+
+<section class="slide" data-title="Un idioma con reglas exactas">
+  <h2 class="mask"><span>Un idioma con reglas exactas</span></h2>
+  <p class="body sub" data-a style="max-width:1040px">Un lenguaje de programación es un idioma artificial para darle instrucciones a una computadora. Igual que el español, tiene <b>palabras</b> (léxico), <b>gramática</b> (sintaxis) y <b>significado</b> (semántica). El compilador lee su código en ese mismo orden.</p>
+  <div class="tone gap" data-a>
+    <label for="tk-in" class="body" style="font-weight:700">Escriba una línea de C++ y vea cómo la separa el compilador en palabras:</label>
+    <input id="tk-in" class="field" style="margin-top:12px" value="double promedio = suma / 3;" spellcheck="false" autocomplete="off">
+    <div class="toks" id="tk-out" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Humano o computadora">
+  <h2 class="mask"><span>El español tolera dudas; C++ no</span></h2>
+  <div class="cols gap">
+    <div data-a>
+      <p class="lead">«Nos vemos en el banco.»</p>
+      <p class="body sub">¿El banco del parque o el banco donde se deposita? Una persona lo resuelve por el contexto. Si falta una coma, igual entiende.</p>
+    </div>
+    <div data-a>
+      <pre class="code">int edad = 20
+cout &lt;&lt; edad &lt;&lt; endl;</pre>
+      <div class="term" style="margin-top:10px"><span class="e">error: expected ',' or ';' before 'cout'</span></div>
+      <p class="body sub">Una computadora no adivina. Cada instrucción tiene un solo significado, y si falta un punto y coma, el programa no se crea.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: cientos de lenguajes">
+  <p class="q mask"><span>¿Por qué cientos de lenguajes si todo es binario?</span></p>
+  <p class="body gap" data-a style="max-width:960px">Discuta en parejas por dos minutos. Piense en quién escribe el código, qué problema resuelve y cuánto cuesta equivocarse.</p>
+  <div class="cols" style="grid-template-columns:auto 1fr;gap:56px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <dl class="prop4" data-a>
+    <dt>C++</dt><dd>return suma / 3;</dd>
+    <dt>Python</dt><dd>return suma // 3</dd>
+    <dt>Ensamblador</dt><dd>imul rdx, rdx, 0x55555556</dd>
+    <dt>Binario</dt><dd>01001000 01101001 …</dd>
+  </dl></div>
+</section>
+
+<!-- TEMA 2 -->
+<section class="slide chapter" data-title="Tema 2: Historia y evolución" data-topic="2">
+  <h1 class="ch-title mask"><span>Historia y evolución</span></h1>
+  <p class="meta" data-a>Tema 2 de 9</p><div class="strip card"></div>
+</section>
+
+<section class="slide" data-title="Línea de tiempo">
+  <h2 class="mask"><span>De la nota de Ada a C++26</span></h2>
+  <p class="body sub" data-a>Escoja un año. Cada lenguaje resolvió un problema que el anterior dejaba abierto.</p>
+  <div class="years gap" id="tl-years" data-a></div>
+  <div class="tl" id="tl-box" data-a aria-live="polite">
+    <div><p class="who" id="tl-who"></p><p class="body sub" id="tl-why"></p></div>
+    <div id="tl-code"></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Por qué nació la POO">
+  <h2 class="mask"><span>La POO nació de una crisis</span></h2>
+  <div class="cols gap">
+    <div data-a>
+      <p class="lead">En 1968, una conferencia de la OTAN en Garmisch, Alemania, le puso nombre al problema: la <b>crisis del software</b>.</p>
+      <p class="body sub">Los programas crecían más rápido que la capacidad de entenderlos. Salían tarde, costaban más de lo previsto y fallaban.</p>
+    </div>
+    <div data-a>
+      <table class="t">
+        <tr><th>Año</th><th>Respuesta</th></tr>
+        <tr><td>1967</td><td>Simula 67 introduce clases y objetos (Dahl y Nygaard, Noruega)</td></tr>
+        <tr><td>1970s</td><td>Programación estructurada: sin saltos goto, con bloques claros</td></tr>
+        <tr><td>1972</td><td>Smalltalk lleva los objetos a todo el lenguaje (Alan Kay)</td></tr>
+        <tr><td>1985</td><td>C++ une la velocidad de C con las clases de Simula (Stroustrup)</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="C++ sigue evolucionando">
+  <h2 class="mask"><span>C++ no se quedó quieto</span></h2>
+  <p class="body sub" data-a style="max-width:1000px">Un comité de la ISO publica una versión nueva cada tres años. El código de hace veinte años todavía compila, y el lenguaje sigue sumando herramientas.</p>
+  <div class="stds" data-a>
+    <div>C++98<small>primer estándar</small></div><div>C++03<small>correcciones</small></div><div>C++11<small>auto, lambdas</small></div><div>C++14<small>ajustes</small></div>
+    <div class="us">C++17<small>el de este curso</small></div><div>C++20<small>módulos, conceptos</small></div><div>C++23<small>std::print</small></div><div class="now">C++26<small>terminado en 2026</small></div>
+  </div>
+  <p class="body gap" data-a>En este curso compilamos con <code>g++ -std=c++17</code>, disponible en cualquier compilador actual.</p>
+</section>
+
+<!-- TEMA 3 -->
+<section class="slide chapter" data-title="Tema 3: Clasificación" data-topic="3">
+  <h1 class="ch-title mask"><span>Clasificación de los lenguajes</span></h1>
+  <p class="meta" data-a>Tema 3 de 9</p><div class="strip card"></div>
+</section>
+
+<section class="slide" data-title="Cuatro preguntas para clasificar">
+  <h2 class="mask"><span>Cuatro preguntas para clasificar</span></h2>
+  <p class="body sub" data-a>Escoja un lenguaje y compare sus respuestas.</p>
+  <div class="row gap" id="cl-btns" data-a></div>
+  <dl class="attrs" id="cl-out" data-a aria-live="polite"></dl>
+</section>
+
+<section class="slide" data-title="Compilado o interpretado">
+  <h2 class="mask"><span>Compilado o interpretado: depende</span></h2>
+  <table class="t gap" data-a>
+    <tr><th style="width:240px">Forma</th><th>Cuándo traduce</th><th style="width:330px">Ejemplo</th></tr>
+    <tr><td>Compilado</td><td>Todo el programa, antes de correr</td><td>C++ con g++</td></tr>
+    <tr><td>Interpretado</td><td>Instrucción por instrucción, mientras corre</td><td>Python con CPython</td></tr>
+    <tr><td>Híbrido</td><td>A un código intermedio, y luego al vuelo (JIT)</td><td>Java con la JVM</td></tr>
+  </table>
+  <div class="cols gap" data-a>
+    <p class="body">El mismo código Python corre de dos maneras: <b>CPython</b>, el intérprete oficial, lo ejecuta paso a paso; <b>PyPy</b> lo compila mientras corre y suele ser más rápido.</p>
+    <p class="body">Por eso, cuando alguien diga «Python es interpretado», la respuesta precisa es: <b>su implementación más usada</b> lo es.</p>
+  </div>
+</section>
+
+<!-- TEMA 4 -->
+<section class="slide chapter" data-title="Tema 4: Conceptos fundamentales" data-topic="4">
+  <h1 class="ch-title mask"><span>Conceptos fundamentales</span></h1>
+  <p class="meta" data-a>Tema 4 de 9</p><div class="strip card"></div>
+</section>
+
+<section class="slide" data-title="Las piezas de todo programa">
+  <h2 class="mask"><span>Las piezas de todo programa</span></h2>
+  <div class="two-list gap" data-a>
+    <table class="t">
+      <tr><th style="width:200px">Pieza</th><th>En C++</th></tr>
+      <tr><td>Variable</td><td><code>int edad = 20;</code></td></tr>
+      <tr><td>Constante</td><td><code>const double IVU = 0.115;</code></td></tr>
+      <tr><td>Operador</td><td><code>total = precio * 2;</code></td></tr>
+      <tr><td>Entrada y salida</td><td><code>cin &gt;&gt; nota; cout &lt;&lt; nota;</code></td></tr>
+    </table>
+    <table class="t">
+      <tr><th style="width:200px">Pieza</th><th>En C++</th></tr>
+      <tr><td>Decisión</td><td><code>if (nota &gt;= 70) …</code></td></tr>
+      <tr><td>Repetición</td><td><code>for (int i = 0; i &lt; 3; i++)</code></td></tr>
+      <tr><td>Función</td><td><code>double promedio(…)</code></td></tr>
+      <tr><td>Comentario</td><td><code>// para personas</code></td></tr>
+    </table>
+  </div>
+  <p class="body gap" data-a>Una variable tiene cuatro cosas: <b>nombre</b>, <b>tipo</b>, <b>dirección</b> en memoria y <b>valor</b>. La dirección será la protagonista de la Unidad E.</p>
+</section>
+
+<section class="slide" data-title="Dos trampas de los números">
+  <h2 class="mask"><span>Dos trampas que todo programador pisa</span></h2>
+  <div class="cols gap">
+    <div data-a>
+      <h3>División entre enteros</h3>
+      <pre class="code" id="div-code" style="margin-top:12px">cout &lt;&lt; (90 + 85 + 70) / 3;</pre>
+      <div class="row" style="margin-top:12px"><button aria-pressed="true" data-div="3">Dividir entre 3</button><button data-div="3.0">Dividir entre 3.0</button></div>
+      <div class="term" id="div-out" style="margin-top:12px">81</div>
+      <p class="body sub" id="div-why">Si los dos lados son enteros, C++ corta los decimales: 245 / 3 da 81.</p>
+    </div>
+    <div data-a>
+      <h3>Decimales que no son exactos</h3>
+      <pre class="code" style="margin-top:12px">cout &lt;&lt; (0.1 + 0.2 == 0.3);</pre>
+      <div class="term" style="margin-top:12px">false
+<span class="p">0.1 + 0.2 = 0.30000000000000004441</span></div>
+      <p class="body sub">La computadora guarda los decimales en binario y 0.1 no tiene representación exacta. Se compara con una tolerancia:</p>
+      <pre class="code" style="margin-top:10px;font-size:19px">fabs((0.1 + 0.2) - 0.3) &lt; 1e-9   // true</pre>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: el promedio con int">
+  <p class="q mask"><span>El promedio se guarda como int. ¿A quién perjudica?</span></p>
+  <p class="body gap" data-a style="max-width:900px">Piense en un estudiante con 69.8. ¿Qué nota final recibe? ¿Quién es responsable del error: la computadora o el programador?</p>
+  <div class="cols" style="grid-template-columns:auto 1fr;gap:64px;align-items:end;margin-top:20px"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop" data-a><span class="pv">69.8</span><span class="pa">→</span><span class="pv bad">69</span><p class="body" style="margin-top:8px">Con double, C. Con int, D.</p></div></div>
+</section>
+
+<!-- TEMA 5 -->
+<section class="slide chapter" data-title="Tema 5: Qué es un compilador" data-topic="5">
+  <h1 class="ch-title mask"><span>¿Qué es un compilador?</span></h1>
+  <p class="meta" data-a>Tema 5 de 9</p><div class="strip card"></div>
+</section>
+
+<section class="slide" data-title="De hola.cpp al ejecutable">
+  <h2 class="mask"><span>Siete líneas que se vuelven un programa</span></h2>
+  <p class="body sub" data-a>Recorra las cuatro etapas de g++. Los números son reales: medidos con g++ 13.3 en Linux.</p>
+  <div class="pipe" id="pp-btns" data-a>
+    <button data-pp="0" aria-pressed="true">hola.cpp<small>lo que usted escribe</small></button>
+    <button data-pp="1">Preprocesador<small>g++ -E</small></button>
+    <button data-pp="2">Compilador<small>g++ -S</small></button>
+    <button data-pp="3">Ensamblador<small>g++ -c</small></button>
+    <button data-pp="4">Enlazador<small>g++ hola.o -o hola</small></button>
+  </div>
+  <div class="cols" style="margin-top:24px;grid-template-columns:330px 1fr" data-a aria-live="polite">
+    <div><p class="metric" id="pp-num"></p><p class="body" id="pp-unit" style="margin-top:8px"></p><p class="body sub" id="pp-why"></p></div>
+    <pre class="code" id="pp-code" data-raw style="font-size:18px;height:270px"></pre>
+  </div>
+</section>
+
+<section class="slide" data-title="Tres tipos de error">
+  <h2 class="mask"><span>Tres maneras de equivocarse</span></h2>
+  <p class="body sub" data-a>Toque cada tipo. Los tres programas se compilaron de verdad con g++.</p>
+  <div data-tabs="sint" style="margin-top:28px">
+    <div class="row" data-a>
+      <button data-tab="sint">De compilación</button><button data-tab="ejec">De ejecución</button><button data-tab="logi">De lógica</button>
+    </div>
+    <div class="cols" style="margin-top:22px" data-a>
+      <div data-panel="sint"><pre class="code nums" style="counter-reset:ln 3">int edad = 20
+cout &lt;&lt; edad &lt;&lt; endl;</pre><div class="term" style="margin-top:10px"><span class="e">e1.cpp:5:5: error: expected ',' or ';' before 'cout'</span></div></div>
+      <div data-panel="sint"><p class="lead" style="font-size:36px">El programa ni siquiera se crea.</p><p class="body sub">g++ señala la línea 5, pero el punto y coma falta en la 4: el compilador se da cuenta en la línea siguiente. Lea siempre la línea anterior.</p></div>
+      <div data-panel="ejec" hidden><pre class="code nums" style="counter-reset:ln 3">int total = 245, estudiantes = 0;
+cout &lt;&lt; total / estudiantes;</pre><div class="term" style="margin-top:10px"><span class="e">Floating point exception</span></div></div>
+      <div data-panel="ejec" hidden><p class="lead" style="font-size:36px">Compila sin quejas y se cae al correr.</p><p class="body sub">Dividir un entero entre cero detiene el programa. El compilador no podía saber que estudiantes valdría 0.</p></div>
+      <div data-panel="logi" hidden><pre class="code nums" style="counter-reset:ln 4">double promedio = n1 + n2 + n3 / 3;</pre><div class="term" style="margin-top:10px">198.333</div></div>
+      <div data-panel="logi" hidden><p class="lead" style="font-size:36px">Compila, corre y da un resultado equivocado.</p><p class="body sub">Faltan paréntesis: solo n3 se divide entre 3. Con 90, 85 y 70 el promedio debía ser 81.67. Es el error más peligroso, porque nadie avisa.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TEMA 6 -->
+<section class="slide chapter" data-title="Tema 6: Qué es un IDE" data-topic="6">
+  <h1 class="ch-title mask"><span>¿Qué es un IDE?</span></h1>
+  <p class="meta" data-a>Tema 6 de 9</p><div class="strip card"></div>
+</section>
+
+<section class="slide" data-title="Las partes de un IDE">
+  <h2 class="mask"><span>Un taller completo en una ventana</span></h2>
+  <p class="body sub" data-a>Un entorno integrado de desarrollo (IDE) junta programas que antes eran separados.</p>
+  <div class="cols gap" style="grid-template-columns:330px 1fr;gap:32px">
+    <div class="parts" data-a>
+      <button data-ide="files">Explorador de archivos</button>
+      <button data-ide="edit">Editor con colores y autocompletado</button>
+      <button data-ide="top">Compilar y depurar</button>
+      <button data-ide="out">Terminal y salida</button>
+      <p class="body sub" id="ide-why" aria-live="polite">Ejemplos: Visual Studio Code, Visual Studio, Code::Blocks, CLion y OnlineGDB en el navegador.</p>
+    </div>
+    <div class="ide" data-ui data-a aria-label="Ventana de ejemplo de un IDE">
+      <div class="top" data-p="top"><span>▶ Ejecutar</span><span>Depurar</span><span>Git: main</span></div>
+      <div class="files" data-p="files">hola.cpp<br>notas.cpp<br>.gitignore<br>README.md</div>
+      <div class="edit" data-p="edit"><span style="color:#7CC4FF">#include</span> &lt;iostream&gt;<br><span style="color:#7CC4FF">int</span> main() {<br>&nbsp;&nbsp;&nbsp;&nbsp;std::cout &lt;&lt; <span style="color:#FFC97A">"Hola mundo"</span>;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7CC4FF">return</span> <span style="color:#FFE08A">0</span>;<br>}</div>
+      <div class="out" data-p="out">$ g++ -Wall hola.cpp -o hola<br>$ ./hola<br>Hola mundo</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: el IDE">
+  <p class="q mask"><span>¿Un IDE lo hace mejor programador o solo más rápido?</span></p>
+  <p class="body gap" data-a style="max-width:900px">Piense en el autocompletado: ¿le enseña o le evita aprender? ¿Qué pasa el día del examen en papel?</p>
+  <div class="cols" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="ac" data-ui data-a aria-label="Ejemplo de autocompletado"><div class="ac-l">std::co<span class="cur"></span></div><div class="ac-m"><div class="on">cout</div><div>count</div><div>copy</div><div>cos</div></div></div></div>
+</section>
+
+<!-- TEMA 7 -->
+<section class="slide chapter" data-title="Tema 7: Qué es un algoritmo" data-topic="7">
+  <h1 class="ch-title mask"><span>¿Qué es un algoritmo?</span></h1>
+  <p class="meta" data-a>Tema 7 de 9</p><div class="strip card"></div>
+</section>
+
+<section class="slide" data-title="Ejecutar un algoritmo">
+  <h2 class="mask"><span>Pasos finitos, precisos y en orden</span></h2>
+  <p class="body sub" data-a>Un algoritmo recibe datos, sigue pasos sin ambigüedad y termina con un resultado. Ejecútelo como lo haría la computadora.</p>
+  <div class="cols gap" data-step="alg" style="grid-template-columns:560px 1fr;gap:36px">
+    <div data-a>
+      <pre class="code" data-raw style="font-size:20px;line-height:1.5"><span class="ln">Inicio</span><span class="ln">  Leer n1, n2, n3</span><span class="ln">  suma ← n1 + n2 + n3</span><span class="ln">  promedio ← suma / 3</span><span class="ln">  Si promedio ≥ 70 entonces</span><span class="ln">      Mostrar "Aprobado"</span><span class="ln">  Si no</span><span class="ln">      Mostrar "No aprobado"</span><span class="ln">Fin</span></pre>
+      <div class="row" style="margin-top:14px"><button class="go" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="small stepn"></span></div>
+    </div>
+    <div class="ws" data-a>
+      <div class="vars">
+        <div><small>n1, n2, n3</small><b data-id="ns">—</b></div><div><small>suma</small><b data-id="suma">—</b></div>
+        <div><small>promedio</small><b data-id="prom">—</b></div><div><small>salida</small><b data-id="sal">—</b></div>
+      </div>
+      <p class="msg" data-id="msg">Pulse «Siguiente paso». Los datos de ejemplo son 90, 85 y 70.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Cuatro formas de escribirlo">
+  <h2 class="mask"><span>Un algoritmo, cuatro formas de escribirlo</span></h2>
+  <div class="cols gap" style="grid-template-columns:1fr 480px">
+    <div data-a>
+      <table class="t">
+        <tr><th>Forma</th><th>Para quién</th></tr>
+        <tr><td>Lenguaje natural</td><td>Cualquier persona: «suma las tres notas y divide entre tres»</td></tr>
+        <tr><td>Pseudocódigo</td><td>Programadores, antes de escoger lenguaje</td></tr>
+        <tr><td>Diagrama de flujo</td><td>Ver las decisiones de un vistazo</td></tr>
+        <tr><td>Código</td><td>La computadora</td></tr>
+      </table>
+    </div>
+    <div class="flow" data-a>
+      <svg viewBox="0 0 480 430" width="480" height="430" role="img" aria-label="Diagrama de flujo del algoritmo del promedio">
+        <rect x="170" y="4" width="140" height="44" rx="22" fill="#0E2A47"/><text x="240" y="32" fill="#fff" font-size="18" font-weight="700" text-anchor="middle">Inicio</text>
+        <path d="M240 48 v26" stroke="#0E2A47" stroke-width="3" marker-end="url(#fa)"/>
+        <polygon points="140,78 360,78 340,124 120,124" fill="#D2DDE8"/><text x="240" y="107" fill="#0E2A47" font-size="17" text-anchor="middle">Leer n1, n2, n3</text>
+        <path d="M240 124 v24" stroke="#0E2A47" stroke-width="3" marker-end="url(#fa)"/>
+        <rect x="120" y="152" width="240" height="46" fill="#fff"/><text x="240" y="181" fill="#0E2A47" font-size="17" text-anchor="middle">promedio ← suma / 3</text>
+        <path d="M240 198 v22" stroke="#0E2A47" stroke-width="3" marker-end="url(#fa)"/>
+        <polygon points="240,224 330,268 240,312 150,268" fill="#FFC425"/><text x="240" y="274" fill="#0E2A47" font-size="17" font-weight="700" text-anchor="middle">≥ 70</text>
+        <path d="M150 268 H70 v70" stroke="#0E2A47" stroke-width="3" fill="none" marker-end="url(#fa)"/><text x="104" y="258" fill="#0E2A47" font-size="16">Sí</text>
+        <path d="M330 268 H410 v70" stroke="#0E2A47" stroke-width="3" fill="none" marker-end="url(#fa)"/><text x="360" y="258" fill="#0E2A47" font-size="16">No</text>
+        <rect x="6" y="342" width="128" height="44" fill="#fff"/><text x="70" y="370" fill="#0E2A47" font-size="16" text-anchor="middle">Aprobado</text>
+        <rect x="346" y="342" width="128" height="44" fill="#fff"/><text x="410" y="370" fill="#0E2A47" font-size="16" text-anchor="middle">No aprobado</text>
+        <defs><marker id="fa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#0E2A47"/></marker></defs>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- TEMA 8 -->
+<section class="slide chapter" data-title="Tema 8: Modelos de computación" data-topic="8">
+  <h1 class="ch-title mask"><span>Modelos de computación</span></h1>
+  <p class="meta" data-a>Tema 8 de 9</p><div class="strip card"></div>
+</section>
+
+<section class="slide" data-title="La máquina de Turing">
+  <h2 class="mask"><span>Una cinta, un cabezal y una tabla de reglas</span></h2>
+  <div class="cols" style="grid-template-columns:1fr 440px;gap:40px;margin-top:18px">
+    <div data-a>
+      <p class="body">En 1936, Alan Turing describió la computadora más simple posible. Esta máquina le suma 1 a un número binario. Ejecútela paso a paso.</p>
+      <div class="tape" id="tm-tape"></div>
+      <div class="row" style="margin-top:48px"><button class="go" id="tm-step">Siguiente paso</button><button id="tm-run">Ejecutar todo</button><button id="tm-reset">Reiniciar</button></div>
+      <p class="msg" id="tm-msg" style="margin-top:14px" aria-live="polite"></p>
+    </div>
+    <div data-a>
+      <table class="t rules" id="tm-rules">
+        <tr><th>Estado</th><th>Lee</th><th>Hace</th></tr>
+        <tr data-r="ir-1"><td>Ir al final</td><td>0 o 1</td><td>Mueve a la derecha</td></tr>
+        <tr data-r="ir-_"><td>Ir al final</td><td>vacío</td><td>Retrocede y pasa a Sumar</td></tr>
+        <tr data-r="su-1"><td>Sumar</td><td>1</td><td>Escribe 0, lleva 1 a la izquierda</td></tr>
+        <tr data-r="su-0"><td>Sumar</td><td>0</td><td>Escribe 1 y termina</td></tr>
+        <tr data-r="su-_"><td>Sumar</td><td>vacío</td><td>Escribe 1 y termina</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="La arquitectura de von Neumann">
+  <h2 class="mask"><span>Programa y datos en la misma memoria</span></h2>
+  <div class="cols gap" style="grid-template-columns:1fr 520px">
+    <div data-a>
+      <p class="lead">En 1945, John von Neumann describió la máquina que todavía usamos: el programa se guarda en memoria igual que los datos.</p>
+      <p class="body sub">La <b>tesis de Church-Turing</b> dice que todo lo que se puede calcular con un procedimiento, lo puede calcular una máquina de Turing. Por eso C++, Python y Java pueden resolver los mismos problemas: cambian la comodidad y la velocidad, no el poder.</p>
+    </div>
+    <div data-a>
+      <svg viewBox="0 0 520 400" width="520" height="400" role="img" aria-label="Diagrama de la arquitectura de von Neumann">
+        <rect x="20" y="20" width="300" height="200" fill="#0E2A47"/><text x="40" y="54" fill="#fff" font-size="22" font-weight="700">CPU</text>
+        <rect x="40" y="76" width="260" height="56" fill="#1B75BC"/><text x="170" y="111" fill="#fff" font-size="18" text-anchor="middle">Unidad de control</text>
+        <rect x="40" y="144" width="260" height="56" fill="#1B75BC"/><text x="170" y="179" fill="#fff" font-size="18" text-anchor="middle">Unidad aritmética y lógica</text>
+        <rect x="360" y="20" width="140" height="200" fill="#FFC425"/><text x="430" y="104" fill="#0E2A47" font-size="20" font-weight="700" text-anchor="middle">Memoria</text><text x="430" y="134" fill="#0E2A47" font-size="19" text-anchor="middle">programa</text><text x="430" y="158" fill="#0E2A47" font-size="19" text-anchor="middle">y datos</text>
+        <path d="M322 120 H356" stroke="#0E2A47" stroke-width="4" marker-end="url(#va)" marker-start="url(#va)"/>
+        <rect x="20" y="280" width="220" height="80" fill="#D2DDE8"/><text x="130" y="327" fill="#0E2A47" font-size="18" text-anchor="middle">Entrada: teclado</text>
+        <rect x="280" y="280" width="220" height="80" fill="#D2DDE8"/><text x="390" y="327" fill="#0E2A47" font-size="18" text-anchor="middle">Salida: pantalla</text>
+        <path d="M130 278 V226" stroke="#0E2A47" stroke-width="4" marker-end="url(#va)"/><path d="M250 224 L360 276" stroke="#0E2A47" stroke-width="4" marker-end="url(#va)"/>
+        <defs><marker id="va" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#0E2A47"/></marker></defs>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- TEMA 9 -->
+<section class="slide chapter" data-title="Tema 9: Git y GitHub" data-topic="9">
+  <h1 class="ch-title mask"><span>Git y GitHub</span></h1>
+  <p class="meta" data-a>Tema 9 de 9</p><div class="strip card"></div>
+</section>
+
+<section class="slide" data-title="Simulador de Git">
+  <h2 class="mask"><span>Cuatro lugares donde vive su código</span></h2>
+  <p class="body sub" data-a>Git guarda fotos completas de su proyecto, llamadas commits. Pruebe el flujo de trabajo en orden.</p>
+  <div class="row" style="margin-top:22px" data-a>
+    <button id="g-edit">Editar notas.cpp</button><button id="g-add" class="go">git add</button><button id="g-commit">git commit</button><button id="g-push">git push</button><button id="g-reset">Reiniciar</button>
+  </div>
+  <div class="areas" data-a>
+    <div><h3>Directorio de trabajo</h3><div id="g-wd"></div></div>
+    <div><h3>Área de preparación</h3><div id="g-st"></div></div>
+    <div><h3>Repositorio local</h3><div id="g-lo"></div></div>
+    <div><h3>GitHub</h3><div id="g-re"></div></div>
+  </div>
+  <div class="term" id="g-term" style="margin-top:12px;min-height:52px" aria-live="polite"><span class="p">$ </span></div>
+</section>
+
+<section class="slide" data-title="Comandos esenciales">
+  <h2 class="mask"><span>Los comandos que usará todo el semestre</span></h2>
+  <div class="cols gap" style="grid-template-columns:1fr 430px">
+    <table class="t" data-a style="font-size:20px">
+      <tr><th style="width:290px">Comando</th><th>Qué hace</th></tr>
+      <tr><td><code>git init</code></td><td>Convierte la carpeta en repositorio</td></tr>
+      <tr><td><code>git status</code></td><td>Muestra qué cambió y qué está preparado</td></tr>
+      <tr><td><code>git add notas.cpp</code></td><td>Prepara el archivo para la próxima foto</td></tr>
+      <tr><td><code>git commit -m "…"</code></td><td>Toma la foto con un mensaje</td></tr>
+      <tr><td><code>git log --oneline</code></td><td>Lista el historial</td></tr>
+      <tr><td><code>git push</code></td><td>Sube los commits a GitHub</td></tr>
+      <tr><td><code>git clone URL</code></td><td>Descarga un repositorio completo</td></tr>
+    </table>
+    <div data-a>
+      <h3>.gitignore</h3>
+      <pre class="code" data-hash style="margin-top:10px"># ejecutables y objetos
+*.exe
+*.o
+hola</pre>
+      <p class="body sub">Le dice a Git qué archivos no guardar. Se guarda el código fuente, no lo que el compilador produce.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: si se daña la laptop">
+  <p class="q mask"><span>Su laptop se daña hoy. ¿Qué parte de su trabajo sobrevive?</span></p>
+  <p class="body gap" data-a style="max-width:900px">Compare un proyecto guardado solo en el escritorio con uno que tiene diez commits en GitHub.</p>
+  <div class="cols" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b>Solo en el escritorio</b><span>Todo se pierde</span></div><div class="ok"><b>Diez commits en GitHub</b><span>git clone y sigue trabajando</span></div></div></div>
+</section>
+
+<section class="slide" data-title="Lo esencial de la unidad">
+  <h2 class="mask"><span>Lo que se lleva de esta unidad</span></h2>
+  <div class="two-list gap" data-a style="line-height:1.4;row-gap:16px">
+    <p style="font-size:25px"><b>Lenguaje:</b> léxico, sintaxis y semántica, sin ambigüedad.</p>
+    <p style="font-size:25px"><b>Historia:</b> la POO responde a la crisis del software.</p>
+    <p style="font-size:25px"><b>Clasificación:</b> nivel, paradigma, ejecución y tipado.</p>
+    <p style="font-size:25px"><b>Conceptos:</b> variables con tipo; cuidado con int y con los decimales.</p>
+    <p style="font-size:25px"><b>Compilador:</b> preprocesa, compila, ensambla y enlaza.</p>
+    <p style="font-size:25px"><b>IDE:</b> editor, compilador, depurador y terminal juntos.</p>
+    <p style="font-size:25px"><b>Algoritmo:</b> pasos finitos y precisos, antes que el código.</p>
+    <p style="font-size:25px"><b>Modelos:</b> Turing y von Neumann, la base de toda computadora.</p>
+    <p style="font-size:25px"><b>Git:</b> trabajo, preparación, repositorio y GitHub.</p>
+  </div>
+</section>
+
+<section class="slide" data-title="Ejercicio de cierre">
+  <h2 class="mask"><span>Ejercicio de cierre</span></h2>
+  <p class="body sub" data-a>Haga los cuatro pasos en orden. La fecha de entrega se anuncia en OrbundSIS.</p>
+  <ol class="gap ol-num" data-a style="font-size:28px;line-height:1.45;max-width:1100px">
+    <li style="margin-bottom:20px">Escriba en <b>pseudocódigo</b> el algoritmo del promedio de tres notas, con la decisión de aprobado.</li>
+    <li style="margin-bottom:20px">Tradúzcalo a <b>C++</b> y compílelo con <code>g++ -std=c++17 -Wall</code> sin advertencias.</li>
+    <li style="margin-bottom:20px">Provoque a propósito los <b>tres tipos de error</b> y copie el mensaje o resultado de cada uno.</li>
+    <li>Cree su <b>primer repositorio</b> en GitHub con un <code>.gitignore</code> y al menos tres commits con mensajes claros.</li>
+  </ol>
+</section>
+
+<section class="slide" data-title="Referencias">
+  <h2 class="mask"><span>Referencias</span></h2>
+  <div class="gap" data-a style="font-size:20px;line-height:1.5;max-width:1080px">
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Chacon, S., y Straub, B. (2014). <i>Pro Git</i> (2.ª ed.). Apress. https://git-scm.com/book/es/v2</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">cppreference.com. (s. f.). <i>C++ reference</i>. https://en.cppreference.com</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Kumar, A. (2024). <i>Hands-on object-oriented programming: Mastering OOP features for real-world software systems development</i>. Apress.</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Lutz, M. (2025). <i>Learning Python: Powerful object-oriented programming</i>. O’Reilly Media.</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Turing, A. M. (1936). On computable numbers, with an application to the Entscheidungsproblem. <i>Proceedings of the London Mathematical Society, 2</i>(42), 230-265.</p>
+  </div>
+  <p class="small gap" data-a style="font-size:18px">Los programas y mediciones se verificaron con g++ 13.3, Python 3 y Java en Linux. Tipografía: Schibsted Grotesk y JetBrains Mono (licencia SIL OFL).</p>
+</section>
+
+</div></div>
+
+<script src="assets/deck.js"></script>
+<script>
+(function(){
+'use strict';
+/* ---------- tarjeta perforada (código Hollerith, IBM 029) ---------- */
+var ROWS=['12','11','0','1','2','3','4','5','6','7','8','9'];
+function holler(ch){
+  if(ch>='0'&&ch<='9')return[ch];
+  var c=ch.charCodeAt(0);
+  if(ch>='A'&&ch<='I')return['12',String(c-64)];
+  if(ch>='J'&&ch<='R')return['11',String(c-73)];
+  if(ch>='S'&&ch<='Z')return['0',String(c-81)];
+  if(ch==='-')return['11'];
+  return[];
+}
+function card(text,cols,opt){
+  opt=opt||{};var cw=opt.cw||12,rh=opt.rh||22,top=opt.top===undefined?34:opt.top,left=14;
+  var w=left*2+cols*cw,h=top+12*rh+10,fill=opt.fill||'#F3F6F9',dig=opt.dig||'#9AAFC4';
+  var s='<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" role="img" aria-label="Tarjeta perforada'+(text.trim()?': '+text:'')+'">';
+  s+='<path d="M18 0 H'+w+' V'+h+' H0 V18 Z" fill="'+fill+'"/>';
+  for(var c=0;c<cols;c++){
+    var x=left+c*cw,ch=text[c]||' ',p=holler(ch);
+    if(top&&ch!==' ')s+='<text x="'+(x+cw/2)+'" y="'+(top-12)+'" font-size="'+(cw+3)+'" font-weight="700" text-anchor="middle" fill="#0E2A47" font-family="JetBrains Mono,monospace">'+ch+'</text>';
+    for(var r=0;r<12;r++){
+      var y=top+r*rh;
+      if(p.indexOf(ROWS[r])>=0)s+='<rect class="hole" style="--c:'+c+'" x="'+(x+cw*0.22)+'" y="'+(y+rh*0.12)+'" width="'+(cw*0.56)+'" height="'+(rh*0.76)+'"/>';
+      else if(r>=2&&!opt.nodig)s+='<text x="'+(x+cw/2)+'" y="'+(y+rh*0.72)+'" font-size="'+Math.max(8,cw*0.7)+'" text-anchor="middle" fill="'+dig+'" font-family="JetBrains Mono,monospace">'+ROWS[r]+'</text>';
+    }
+  }
+  return s+'</svg>';
+}
+document.getElementById('cover-card').innerHTML=card(' TESI 2105 PROGRAMACION ORIENTADA A OBJETOS - UNIDAD A INTRODUCCION',80,{cw:13.85,rh:15});
+/* tarjeta de progreso de la unidad: una columna por tema; cada tema visto queda perforado en su dígito */
+var TOPN=['Lenguaje','Historia','Clasificación','Conceptos','Compilador','IDE','Algoritmo','Modelos','Git'];
+function progress(t){
+  var cw=122,rh=24,top=44,left=18,w=left*2+9*cw,h=top+10*rh+14;
+  var s='<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" role="img" aria-label="Tarjeta de avance: tema '+t+' de 9">';
+  s+='<path d="M22 0 H'+w+' V'+h+' H0 V22 Z" fill="#F3F6F9"/>';
+  for(var c=0;c<9;c++){
+    var x=left+c*cw,cur=c+1===t,past=c+1<t;
+    s+='<text x="'+(x+cw/2)+'" y="30" font-size="'+(cur?19:16)+'" font-weight="'+(cur?800:600)+'" text-anchor="middle" fill="#0E2A47" opacity="'+(cur?1:past?.8:.5)+'" font-family="Schibsted Grotesk,sans-serif">'+TOPN[c]+'</text>';
+    for(var r=0;r<10;r++){
+      var y=top+r*rh;
+      if(r===c+1&&(cur||past))s+='<rect class="hole'+(cur?' now':'')+'" style="--c:'+(cur?8:c)+'" x="'+(x+cw/2-14)+'" y="'+(y+1)+'" width="28" height="'+(rh-2)+'"/>';
+      else s+='<text x="'+(x+cw/2)+'" y="'+(y+rh*0.74)+'" font-size="15" text-anchor="middle" fill="#7B91AA" font-family="JetBrains Mono,monospace">'+r+'</text>';
+    }
+  }
+  return s+'</svg>';
+}
+[].forEach.call(document.querySelectorAll('[data-topic]'),function(sl){sl.querySelector('.strip').innerHTML=progress(+sl.dataset.topic)});
+
+/* ---------- análisis léxico ---------- */
+var KW=['int','double','float','char','bool','void','return','if','else','for','while','do','const','true','false','using','namespace','class','public','private','auto','string'];
+function lex(src){
+  var out=[],re=/\s*(?:("(?:[^"\\]|\\.)*")|(\d+\.?\d*)|([A-Za-z_]\w*)|(<<|>>|<=|>=|==|!=|\+\+|--|&&|\|\||[+\-*\/%=<>!])|([;,(){}\[\]])|(\S))/g,m;
+  while((m=re.exec(src))&&m[0].length){
+    if(m[1])out.push(['str',m[1],'texto']);
+    else if(m[2])out.push(['num',m[2],'número']);
+    else if(m[3])out.push(KW.indexOf(m[3])>=0?['kw',m[3],'palabra reservada']:['id',m[3],'identificador']);
+    else if(m[4])out.push(['op',m[4],'operador']);
+    else if(m[5])out.push(['op',m[5],'puntuación']);
+    else if(m[6])out.push(['bad',m[6],'no válido en C++']);
+  }
+  return out;
+}
+var tin=document.getElementById('tk-in'),tout=document.getElementById('tk-out');
+function renderLex(){
+  var t=lex(tin.value);
+  tout.innerHTML=t.length?t.map(function(x){var e=document.createElement('div');e.className='tok '+x[0];e.innerHTML='<b></b><span></span>';e.firstChild.textContent=x[1];e.lastChild.textContent=x[2];return e.outerHTML}).join(''):'<p class="body">Escriba algo para ver sus piezas.</p>';
+}
+tin.addEventListener('input',renderLex);renderLex();
+
+/* ---------- línea de tiempo ---------- */
+var TL=[
+ ['1843','Ada Lovelace','Publica la Nota G: los pasos para que la Máquina Analítica de Babbage calcule los números de Bernoulli. Se considera el primer algoritmo escrito para una máquina.',null],
+ ['1957','Fortran · John Backus, IBM','El primer lenguaje de alto nivel de uso amplio. Demostró que un compilador podía producir código casi tan rápido como el escrito a mano. Versión moderna:','program hola\n    print *, \'Hola mundo\'\nend program hola'],
+ ['1959','COBOL · comité CODASYL, influido por Grace Hopper','Pensado para negocios y escrito casi como inglés. Todavía procesa transacciones en bancos y gobiernos.','       IDENTIFICATION DIVISION.\n       PROGRAM-ID. HOLA.\n       PROCEDURE DIVISION.\n           DISPLAY \'Hola mundo\'.\n           STOP RUN.'],
+ ['1967','Simula 67 · Dahl y Nygaard','Creado para simulaciones. Introduce clases, objetos y herencia: el origen de la programación orientada a objetos.','Begin\n    OutText("Hola mundo");\n    OutImage;\nEnd;'],
+ ['1972','C · Dennis Ritchie, Bell Labs','Rápido y cercano al hardware. Con él se reescribió el sistema Unix, y su sintaxis se ve en C++, Java, C# y JavaScript.','#include <stdio.h>\n\nint main(void) {\n    printf("Hola mundo\\n");\n    return 0;\n}'],
+ ['1985','C++ · Bjarne Stroustrup','Comenzó en 1979 como «C con clases». Une la velocidad de C con los objetos de Simula. Es el lenguaje de este curso.','#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hola mundo" << endl;\n    return 0;\n}'],
+ ['1991','Python · Guido van Rossum','Legible y breve. Hoy domina en ciencia de datos e inteligencia artificial.','print("Hola mundo")'],
+ ['1995','Java · James Gosling, Sun Microsystems','«Escribe una vez, corre donde sea»: compila a un código intermedio que ejecuta la máquina virtual de Java.','public class Hola {\n    public static void main(String[] args) {\n        System.out.println("Hola mundo");\n    }\n}'],
+ ['2005','Git · Linus Torvalds','No es un lenguaje: es el control de versiones que hoy usa casi todo proyecto de software. GitHub llegó en 2008.','git init\ngit add hola.cpp\ngit commit -m "Primer programa"']
+];
+var yb=document.getElementById('tl-years');
+TL.forEach(function(t,i){var b=document.createElement('button');b.textContent=t[0];b.onclick=function(){showTL(i)};yb.appendChild(b)});
+function showTL(i){
+  [].forEach.call(yb.children,function(b,j){b.setAttribute('aria-pressed',j===i)});
+  var t=TL[i];document.getElementById('tl-who').textContent=t[0]+' · '+t[1];document.getElementById('tl-why').textContent=t[2];
+  var c=document.getElementById('tl-code');
+  if(t[3]){var pre=document.createElement('pre');pre.className='code';pre.textContent=t[3];if(t[0]==='2005')pre.setAttribute('data-raw','');else Deck.hl(pre);c.innerHTML='';c.appendChild(pre);}
+  else c.innerHTML='<div class="tone" style="height:100%"><p class="lead">Un siglo antes de la primera computadora electrónica, ya existía un programa escrito.</p></div>';
+}
+showTL(5);
+
+/* ---------- clasificación ---------- */
+var CL={
+ 'C++':['Alto, con acceso a bajo nivel (memoria y punteros)','Multiparadigma: imperativo, orientado a objetos y genérico','Compilado a código de máquina','Estático: el tipo se fija al compilar'],
+ 'Python':['Alto','Multiparadigma: imperativo, orientado a objetos y funcional','Interpretado en su versión oficial (CPython)','Dinámico: el tipo se decide al correr'],
+ 'Java':['Alto','Orientado a objetos','Híbrido: código intermedio y máquina virtual con JIT','Estático'],
+ 'JavaScript':['Alto','Multiparadigma, basado en prototipos','Interpretado y compilado al vuelo (JIT) en el navegador','Dinámico'],
+ 'Ensamblador':['Bajo: una instrucción por operación del procesador','Imperativo','Ensamblado a código de máquina','Sin tipos: solo bytes y registros']
+};
+var cb=document.getElementById('cl-btns'),co=document.getElementById('cl-out'),Q=['Nivel','Paradigma','Ejecución','Tipado'];
+Object.keys(CL).forEach(function(n){var b=document.createElement('button');b.textContent=n;b.onclick=function(){showCL(n)};cb.appendChild(b)});
+function showCL(n){[].forEach.call(cb.children,function(b){b.setAttribute('aria-pressed',b.textContent===n)});co.innerHTML=Q.map(function(q,i){return '<dt>'+q+'</dt><dd>'+CL[n][i]+'</dd>'}).join('')}
+showCL('C++');
+
+/* ---------- trampas de división ---------- */
+[].forEach.call(document.querySelectorAll('[data-div]'),function(b){b.onclick=function(){
+  var three=b.dataset.div==='3';[].forEach.call(document.querySelectorAll('[data-div]'),function(x){x.setAttribute('aria-pressed',x===b)});
+  var pre=document.getElementById('div-code');pre.textContent='cout << (90 + 85 + 70) / '+(three?'3':'3.0')+';';Deck.hl(pre);
+  document.getElementById('div-out').textContent=three?'81':'81.6667';
+  document.getElementById('div-why').textContent=three?'Si los dos lados son enteros, C++ corta los decimales: 245 / 3 da 81.':'Con 3.0 uno de los lados es decimal, y la división conserva los decimales: 81.6667.';
+}});
+
+/* ---------- etapas del compilador ---------- */
+var PP=[
+ ['7','líneas de código','Lo que usted escribe en el editor.','#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hola mundo" << endl;\n    return 0;\n}',true],
+ ['36,521','líneas después de #include','El preprocesador pega el contenido de <iostream> donde estaba #include. Su programa queda al final de un archivo enorme.','# 1 "hola.cpp"\n# 1 "<built-in>"\n# 1 "/usr/include/c++/13/iostream" 1 3\n...\n(36,500 líneas de la biblioteca)\n...\nusing namespace std;\nint main() {\n    cout << "Hola mundo" << endl;\n    return 0;\n}',false],
+ ['67','líneas de ensamblador','El compilador traduce C++ a instrucciones del procesador, todavía en texto legible.','main:\n    endbr64\n    pushq   %rbp\n    movq    %rsp, %rbp\n    leaq    .LC0(%rip), %rax\n    movq    %rax, %rsi\n    leaq    _ZSt4cout(%rip), %rax\n    movq    %rax, %rdi\n    call    _ZStlsISt11char_traits...',false],
+ ['2,136','bytes de código objeto','El ensamblador convierte el texto en binario. Todavía no corre: faltan las piezas de la biblioteca.','hola.o\n\n7f 45 4c 46 02 01 01 00  .ELF....\n00 00 00 00 00 00 00 00  ........\n01 00 3e 00 01 00 00 00  ..>.....\n...',false],
+ ['16,496','bytes de ejecutable','El enlazador une su código con la biblioteca estándar. El resultado ya se puede ejecutar.','$ g++ hola.o -o hola\n$ ./hola\nHola mundo',false]
+];
+var pb=document.querySelectorAll('[data-pp]');
+function showPP(i){[].forEach.call(pb,function(b){b.setAttribute('aria-pressed',+b.dataset.pp===i)});var p=PP[i];
+  document.getElementById('pp-num').textContent=p[0];document.getElementById('pp-unit').textContent=p[1];document.getElementById('pp-why').textContent=p[2];
+  var pre=document.getElementById('pp-code');pre.textContent=p[3];if(p[4])Deck.hl(pre);}
+[].forEach.call(pb,function(b){b.onclick=function(){showPP(+b.dataset.pp)}});showPP(0);
+
+/* ---------- IDE ---------- */
+var IDE={files:'El explorador muestra los archivos del proyecto, incluido el .gitignore.',edit:'El editor colorea la sintaxis, marca errores mientras escribe y completa nombres.',top:'Un botón compila y ejecuta. El depurador detiene el programa en una línea para ver las variables.',out:'La terminal muestra la salida del programa y los mensajes del compilador.'};
+[].forEach.call(document.querySelectorAll('[data-ide]'),function(b){b.onclick=function(){
+  var p=b.dataset.ide;[].forEach.call(document.querySelectorAll('[data-ide]'),function(x){x.setAttribute('aria-pressed',x===b)});
+  [].forEach.call(document.querySelectorAll('.ide [data-p]'),function(d){d.classList.toggle('lit',d.dataset.p===p)});
+  document.getElementById('ide-why').textContent=IDE[p];}});
+
+/* ---------- algoritmo paso a paso ---------- */
+Deck.steps.alg=[
+ {l:0,msg:'Inicio: el algoritmo empieza siempre en el mismo punto.'},
+ {l:1,set:{ns:'90 85 70'},flash:['ns'],msg:'Lee los tres datos de entrada.'},
+ {l:2,set:{suma:'245'},flash:['suma'],msg:'90 + 85 + 70 = 245.'},
+ {l:3,set:{prom:'81.67'},flash:['prom'],msg:'245 / 3 = 81.67 (con decimales).'},
+ {l:4,msg:'Decisión: ¿81.67 ≥ 70? Sí.'},
+ {l:5,set:{sal:'Aprobado'},flash:['sal'],msg:'Muestra el resultado. La rama «Si no» se salta.'},
+ {l:8,msg:'Fin. El algoritmo terminó en un número finito de pasos.'}
+];
+
+/* ---------- máquina de Turing ---------- */
+var tape,pos,state,steps,done;
+var tt=document.getElementById('tm-tape'),tmsg=document.getElementById('tm-msg');
+function tmReset(){tape=['_','1','0','1','1','_','_'];pos=1;state='ir';steps=0;done=false;tmDraw('La cinta tiene 1011 (once en binario). El cabezal empieza en el primer dígito.',null)}
+function tmDraw(m,rule){
+  tt.innerHTML=tape.map(function(c,i){return '<div class="'+(i===pos?'head':'')+'">'+(c==='_'?'':c)+'</div>'}).join('');
+  tmsg.textContent=m;[].forEach.call(document.querySelectorAll('#tm-rules tr[data-r]'),function(r){r.classList.toggle('on',r.dataset.r===rule)});
+  document.getElementById('tm-step').disabled=done;document.getElementById('tm-run').disabled=done;
+}
+function tmStep(){
+  if(done)return;var c=tape[pos],rule,m;steps++;
+  if(state==='ir'){if(c!=='_'){rule='ir-1';pos++;m='Lee '+c+': sigue a la derecha.'}else{rule='ir-_';pos--;state='su';m='Encontró el final. Retrocede y empieza a sumar.'}}
+  else{if(c==='1'){rule='su-1';tape[pos]='0';pos--;m='Lee 1: escribe 0 y lleva 1 a la izquierda.'}
+       else{rule=c==='0'?'su-0':'su-_';tape[pos]='1';done=true;m='Escribe 1 y termina. Resultado: '+tape.join('').replace(/_/g,'')+' (doce en binario), en '+steps+' pasos.'}}
+  tmDraw(m,rule);
+}
+document.getElementById('tm-step').onclick=tmStep;
+document.getElementById('tm-run').onclick=function(){var b=this;(function loop(){if(!done){tmStep();setTimeout(loop,420)}})()};
+document.getElementById('tm-reset').onclick=tmReset;tmReset();
+
+/* ---------- simulador de Git ---------- */
+var G,HASH=['a1f3c2e','7d09b4e','c52e8a1','e93b6f0','4b7d2c9'];
+var gt=document.getElementById('g-term');
+function gReset(){G={wd:['notas.cpp'],mod:true,nuevo:true,st:false,lo:[],re:0,n:0};gDraw('$ git status\nUntracked files:\n        notas.cpp')}
+function gDraw(t){
+  document.getElementById('g-wd').innerHTML='<span class="f">notas.cpp'+(G.mod?(G.nuevo?' (nuevo)':' (modificado)'):'')+'</span>';
+  document.getElementById('g-st').innerHTML=G.st?'<span class="f">notas.cpp</span>':'';
+  document.getElementById('g-lo').innerHTML=G.lo.slice().reverse().map(function(c){return '<span class="cm">'+c+'</span>'}).join('');
+  document.getElementById('g-re').innerHTML=G.lo.slice(0,G.re).reverse().map(function(c){return '<span class="cm remote">'+c+'</span>'}).join('');
+  gt.textContent=t;
+  document.getElementById('g-add').disabled=!G.mod;document.getElementById('g-commit').disabled=!G.st;document.getElementById('g-push').disabled=G.re>=G.lo.length;document.getElementById('g-edit').disabled=G.mod||G.n>=HASH.length;
+}
+document.getElementById('g-edit').onclick=function(){G.mod=true;gDraw('Usted cambió notas.cpp en el editor.\n$ git status\nmodified:   notas.cpp')};
+document.getElementById('g-add').onclick=function(){G.st=true;G.mod=false;G.nuevo=false;gDraw('$ git add notas.cpp\nEl cambio queda preparado para la próxima foto.')};
+document.getElementById('g-commit').onclick=function(){var h=HASH[G.n],msgs=['Calcula el promedio','Valida notas fuera de rango','Muestra aprobado o no','Agrega comentarios','Corrige redondeo'];G.lo.push(h+' '+msgs[G.n]);G.n++;G.st=false;gDraw('$ git commit -m "'+msgs[G.n-1]+'"\n['+'main '+h+'] '+msgs[G.n-1])};
+document.getElementById('g-push').onclick=function(){var k=G.lo.length-G.re;G.re=G.lo.length;gDraw('$ git push\nSubidos '+k+' commit'+(k>1?'s':'')+' a GitHub. Su trabajo ya no depende de su laptop.')};
+document.getElementById('g-reset').onclick=gReset;gReset();
+
+Deck.start();
+})();
+</script>
+</body>
+</html>

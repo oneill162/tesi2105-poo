@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unidad D: Funciones · TESI 2105</title>
+<meta name="description" content="TESI 2105 Programación Orientada a Objetos. Unidad D: funciones void, con valor de retorno, de biblioteca y recursivas, contadas como llamadas a la central telefónica del recinto.">
+<link rel="preload" href="assets/fonts/schibsted-grotesk-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* Tema de la Unidad D: la central telefónica del recinto. Llamar a una función es hacer una llamada. */
+:root{--ground:#F5F1EE;--tone:#E9E1DB;--tone2:#DCCFC6;--ink:#2A1416;--soft:#5E4547;--accent:#B3261E;--field:#9E2219;--field-ink:#FFF8F4;--hi:#FFC425;--code-bg:#2A1416;--code-ink:#F4E9E4;--c-kw:#FFB4A2;--c-str:#FFD98A;--c-num:#FFE9A8;--c-cmt:#C7A9A5}
+pre.code .ln.cur{background:rgba(255,196,37,.24)}
+.term{background:#1C0D0F}
+#bar{background:var(--ink)}
+#map button.ch{box-shadow:inset 0 0 0 3px #E0685E;background:transparent}
+#map button.ch.seen{background:#E0685E}
+#map button.cur,#map button.ch.cur{background:var(--hi);box-shadow:none}
+/* pantalla del teléfono de escritorio */
+.lcd{background:#C9D3B2;color:#1F2A16;font:600 30px/1.45 var(--mono);padding:26px 30px;white-space:pre}
+.lcd .dim{opacity:.55}
+.phone{background:#2A1416;padding:22px;width:560px}
+.phone .keys3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.phone .keys3 span{display:flex;align-items:center;justify-content:center;height:52px;background:#4A2A2D;color:#F4E9E4;font:600 24px var(--sans)}
+@media (prefers-reduced-motion:no-preference){
+  .entering .lcd .t1{animation:type .5s steps(20) .5s both}
+  .entering .lcd .t2{animation:type .7s steps(26) 1.2s both}
+  .entering .lcd .t3{animation:type .5s steps(16) 2.2s both}
+}
+@keyframes type{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0)}}
+.lcd span{display:inline-block}
+.chapter .ext{display:flex;gap:34px;margin-top:auto;font-size:27px;font-weight:700}
+.chapter .ext span{opacity:.5}
+.chapter .ext span.on{opacity:1}
+.chapter .ext span.on::after{content:"";display:block;height:6px;background:var(--hi);margin-top:8px}
+.chwrap{display:grid;grid-template-columns:1fr 440px;gap:48px;height:100%}
+.chwrap .left{display:flex;flex-direction:column}
+.chapter h1{font-size:100px}
+.field-hi .q{font-size:60px;line-height:1.04;letter-spacing:-.03em;font-weight:800;max-width:1100px}
+/* bloques */
+.msg{background:var(--tone);padding:14px 18px;font-size:21px;min-height:58px}
+.vbox{background:#fff;padding:14px 20px;min-height:104px}
+.vbox small{display:block;font:600 21px var(--sans)}
+.vbox b{display:block;font:600 42px var(--mono);margin-top:4px}
+.frame{background:#fff;padding:16px 20px;margin-bottom:12px}
+.frame h4{margin:0 0 8px;font-size:22px}
+.frame.fn{background:#FCE3DD}
+.inp{display:flex;gap:16px;align-items:end;flex-wrap:wrap}
+.inp label{font-size:21px;font-weight:600;display:block;margin-bottom:6px}
+.inp input{font:600 30px var(--mono);width:150px;padding:8px 12px;border:0;background:#fff;color:var(--ink)}
+.discrow{position:absolute;left:72px;right:72px;bottom:32px}
+.prop2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.prop2>div{background:var(--ink);color:#fff;padding:20px 24px;min-height:170px}
+.prop2>div.ok{background:var(--accent)}
+.prop2 b{display:block;font:600 27px var(--mono)}
+.prop2 span{display:block;font-size:22px;margin-top:8px}
+.prop2 .pbtn{margin-top:12px;background:#fff;color:var(--ink);font-size:18px;padding:8px 12px}
+.prop2 span.reveal{display:none}.prop2 .shown span.reveal{display:block}
+/* anatomía */
+.anat .pa{transition:background .2s,color .2s;padding:2px 0}
+.anat .pa.lit{background:var(--hi);color:var(--ink)}
+.parts button{font-size:20px}
+/* máquina */
+.mach{display:grid;grid-template-columns:150px 1fr 150px;align-items:center;gap:0;margin-top:20px;height:170px}
+.mach .box{background:var(--accent);color:#fff;height:170px;display:flex;flex-direction:column;justify-content:center;align-items:center;font:600 26px var(--mono);text-align:center}
+.mach .box small{font:500 20px var(--sans);opacity:.85;margin-top:6px}
+.mach .slot{height:16px;background:var(--tone2);position:relative}
+.chip{position:absolute;top:50%;transform:translate(-50%,-50%);background:var(--hi);color:var(--ink);font:600 26px var(--mono);padding:8px 14px;white-space:nowrap;opacity:0}
+.mach .end{font:600 34px var(--mono);text-align:center}
+/* biblioteca */
+.lib{display:grid;grid-template-columns:360px 1fr;gap:36px;margin-top:22px}
+.lib .grp h3{font-size:22px;margin:0 0 8px}
+.lib .grp{margin-bottom:16px}
+.lib .grp .row button{font:600 19px var(--mono);padding:9px 12px}
+.card{background:#fff;padding:24px 28px}
+.card .inc{font:600 22px var(--mono);color:var(--accent)}
+.card .call{font:600 40px var(--mono);margin-top:18px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.card .call input{font:600 40px var(--mono);width:150px;border:0;background:var(--tone);padding:2px 10px;color:var(--ink)}
+.card .res{font:700 64px var(--mono);margin-top:12px;color:var(--accent)}
+/* pila de llamadas */
+.stack{display:flex;flex-direction:column-reverse;gap:8px;min-height:330px;justify-content:flex-start}
+.stack div{background:#fff;padding:12px 18px;font:600 22px var(--mono);display:flex;justify-content:space-between;transition:background .2s}
+.stack div.top{background:var(--hi)}
+.stack div.ret{background:#FCE3DD}
+.stack small{font:500 18px var(--sans)}
+/* repetido vs función */
+.cmp .chg{background:rgba(255,196,37,.32)}
+.counter{font-size:56px;font-weight:800;line-height:1}
+.ol-num{list-style:none;padding:0;counter-reset:n}
+.ol-num li{counter-increment:n;position:relative;padding-left:60px;margin-bottom:28px}
+.ol-num li::before{content:counter(n);position:absolute;left:0;font-weight:800;color:var(--accent)}
+.dir{display:grid;grid-template-columns:repeat(2,1fr);gap:26px 48px;margin-top:34px}
+.dir h3{font-size:30px}
+.dir p{font-size:25px;margin-top:6px}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage" data-name="Unidad D · Funciones" role="region" aria-roledescription="presentación" aria-label="Unidad D: Funciones">
+
+<!-- 1 PORTADA -->
+<section class="slide chapter" data-title="Portada">
+  <div class="chwrap">
+    <div class="left">
+      <h1 class="mask"><span>Funciones</span></h1>
+      <p class="lead" data-a style="margin-top:22px;max-width:600px">Llamar a una función es como llamar a una extensión del recinto: se marca, alguien hace el trabajo y, a veces, contesta con un valor.</p>
+      <div class="ext" data-a><span class="on">void</span><span class="on">Con retorno</span><span class="on">Biblioteca</span><span class="on">Recursivas</span></div>
+      <p class="body" data-a style="margin-top:18px;font-size:20px">TESI 2105, Unidad D · Prof. Eduardo O. De Jesús Arroyo · ITPR, Recinto de Manatí</p>
+    </div>
+    <div class="phone" data-a style="align-self:center;width:440px">
+      <div class="lcd" style="font-size:24px"><span class="t1">(787) 854-2250</span>
+<span class="t2">Llamando conIVU(4.00)</span>
+<span class="t3">Contesta: 4.46</span></div>
+      <div class="keys3" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 POR QUÉ -->
+<section class="slide" data-title="¿Para qué sirven las funciones?">
+  <h2 class="mask"><span>Escribirlo una vez, llamarlo muchas</span></h2>
+  <p class="body sub" data-a style="max-width:1060px">Tres clientes, el mismo recibo. Pulse «Cambiar el IVU» y vea cuántas líneas hay que corregir en cada versión.</p>
+  <div class="cols cmp" style="grid-template-columns:1fr 1fr;gap:28px;margin-top:20px">
+    <div data-a>
+      <h3 style="font-size:24px">Sin función</h3>
+      <pre class="code" id="cp-a" style="font-size:18px;margin-top:8px">cout &lt;&lt; "Cliente: Ana" &lt;&lt; endl;
+cout &lt;&lt; "Total: $" &lt;&lt; 4.00 * 1.115 &lt;&lt; endl;
+cout &lt;&lt; "Cliente: Luis" &lt;&lt; endl;
+cout &lt;&lt; "Total: $" &lt;&lt; 6.50 * 1.115 &lt;&lt; endl;
+cout &lt;&lt; "Cliente: Mia" &lt;&lt; endl;
+cout &lt;&lt; "Total: $" &lt;&lt; 2.75 * 1.115 &lt;&lt; endl;</pre>
+    </div>
+    <div data-a>
+      <h3 style="font-size:24px">Con función</h3>
+      <pre class="code" id="cp-b" style="font-size:18px;margin-top:8px">void recibo(string cliente, double precio) {
+    cout &lt;&lt; "Cliente: " &lt;&lt; cliente &lt;&lt; endl;
+    cout &lt;&lt; "Total: $" &lt;&lt; precio * 1.115 &lt;&lt; endl;
+}
+recibo("Ana", 4.00);
+recibo("Luis", 6.50);
+recibo("Mia", 2.75);</pre>
+    </div>
+  </div>
+  <div class="row" data-a style="margin-top:18px;gap:24px"><button class="go" id="cp-go">Cambiar el IVU</button><p class="body" id="cp-msg" aria-live="polite" style="font-size:22px"></p></div>
+</section>
+
+<!-- 3 ANATOMÍA -->
+<section class="slide" data-title="Las partes de una función">
+  <h2 class="mask"><span>Las partes de una función</span></h2>
+  <p class="body sub" data-a>Pulse cada parte para verla en el código.</p>
+  <pre class="code anat" data-raw data-a style="font-size:30px;margin-top:24px;padding:26px 0"><span class="ln"><span class="pa" data-p="t">double</span> <span class="pa" data-p="nm">conIVU</span>(<span class="pa" data-p="pr">double precio</span>) <span class="pa" data-p="cu">{</span></span><span class="ln"><span class="pa" data-p="cu">    <span class="pa" data-p="rt">return precio * 1.115;</span></span></span><span class="ln"><span class="pa" data-p="cu">}</span></span></pre>
+  <div class="row parts" data-a style="margin-top:20px"><button data-pt="t">Tipo de retorno</button><button data-pt="nm">Nombre</button><button data-pt="pr">Parámetro</button><button data-pt="cu">Cuerpo</button><button data-pt="rt">return</button></div>
+  <p class="lead" id="pt-msg" data-a style="margin-top:22px;max-width:1100px;min-height:84px" aria-live="polite"></p>
+</section>
+
+<!-- TEMA 1 -->
+<section class="slide chapter" data-title="Tema 1: Funciones void" data-topic="1">
+  <div class="chwrap">
+    <div class="left">
+      <h1 class="mask"><span>Funciones void</span></h1>
+      <p class="lead" data-a style="margin-top:22px;max-width:640px">Hacen un trabajo y cuelgan sin contestar con un valor.</p>
+      <div class="ext" data-a></div>
+    </div>
+    <div class="lcd" data-a style="align-self:center;font-size:26px">EXT. 1
+<span class="dim">void saludar(...)</span>
+Sin respuesta</div>
+  </div>
+</section>
+
+<section class="slide" data-title="El recorrido de una llamada">
+  <h2 class="mask"><span>Una llamada salta a la función y regresa</span></h2>
+  <div class="cols gap" data-step="sal" style="grid-template-columns:660px 1fr;gap:32px;margin-top:24px">
+    <div data-a>
+      <pre class="code" style="font-size:22px">void saludar(string nombre) {
+    cout &lt;&lt; "Bienvenido, " &lt;&lt; nombre &lt;&lt; endl;
+}
+int main() {
+    saludar("Ana");
+    saludar("Luis");
+}</pre>
+      <div class="row" style="margin-top:14px"><button class="go" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="small stepn"></span></div>
+    </div>
+    <div class="ws" data-a>
+      <div class="vbox"><small>string nombre</small><b data-id="nm">—</b></div>
+      <div class="term" data-id="out" style="margin-top:12px;min-height:110px"></div>
+      <p class="msg" data-id="msg" style="margin-top:12px;min-height:120px">El programa siempre empieza en main. Pulse «Siguiente paso».</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Paso por valor">
+  <h2 class="mask"><span>La función recibe una copia</span></h2>
+  <div class="cols" data-step="val" style="grid-template-columns:560px 1fr;gap:36px;margin-top:24px">
+    <div data-a>
+      <pre class="code" style="font-size:21px">void duplicar(int x) {
+    x = x * 2;
+    cout &lt;&lt; "dentro: " &lt;&lt; x &lt;&lt; endl;
+}
+int main() {
+    int n = 5;
+    duplicar(n);
+    cout &lt;&lt; "fuera: " &lt;&lt; n &lt;&lt; endl;
+}</pre>
+      <div class="row" style="margin-top:14px"><button class="go" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="small stepn"></span></div>
+    </div>
+    <div class="ws" data-a>
+      <div class="cols" style="gap:12px">
+        <div class="frame" data-id="fm" hidden><h4>main</h4><div class="vbox" style="padding:8px 0;min-height:0"><small>int n</small><b data-id="n">5</b></div></div>
+        <div class="frame fn" data-id="fx" hidden><h4>duplicar</h4><div class="vbox" style="padding:8px 0;min-height:0;background:transparent"><small>int x (copia)</small><b data-id="x">5</b></div></div>
+      </div>
+      <div class="term" data-id="out" style="min-height:90px"></div>
+      <p class="msg" data-id="msg" style="margin-top:12px;min-height:110px">Pulse «Siguiente paso».</p>
+    </div>
+  </div>
+</section>
+
+<!-- TEMA 2 -->
+<section class="slide chapter" data-title="Tema 2: Funciones con valor de retorno" data-topic="2">
+  <div class="chwrap">
+    <div class="left">
+      <h1 class="mask"><span>Funciones con retorno</span></h1>
+      <p class="lead" data-a style="margin-top:22px;max-width:640px">Funciones con valor de retorno: hacen el trabajo y contestan con un valor que se puede guardar.</p>
+      <div class="ext" data-a></div>
+    </div>
+    <div class="lcd" data-a style="align-self:center;font-size:26px">EXT. 2
+<span class="dim">double conIVU(...)</span>
+Contesta: 4.46</div>
+  </div>
+</section>
+
+<section class="slide" data-title="return devuelve un valor">
+  <h2 class="mask"><span>return contesta la llamada</span></h2>
+  <div class="cols" style="grid-template-columns:520px 1fr;gap:40px;margin-top:22px">
+    <div data-a>
+      <pre class="code" id="iv-code" style="font-size:21px">double conIVU(double precio) {
+    return precio * 1.115;
+}
+double total = conIVU(4.00);</pre>
+      <div class="inp" style="margin-top:18px"><div><label for="iv-p">precio</label><input id="iv-p" value="4.00" inputmode="decimal"></div><button class="go" id="iv-go" style="margin-bottom:6px">Llamar</button></div>
+      <p class="msg" id="iv-msg" style="margin-top:14px" aria-live="polite">El IVU de Puerto Rico es 11.5 %: multiplicar por 1.115 suma el impuesto.</p>
+    </div>
+    <div data-a>
+      <div class="mach" id="iv-mach">
+        <div class="end" id="iv-in">4.00</div>
+        <div style="position:relative;height:170px;display:grid;grid-template-columns:1fr 200px 1fr;align-items:center">
+          <div class="slot"></div><div class="box">conIVU<small>× 1.115</small></div><div class="slot"></div>
+          <span class="chip" id="iv-chip">4.00</span>
+        </div>
+        <div class="end" id="iv-out">?</div>
+      </div>
+      <div class="term" id="iv-term" style="margin-top:22px;font-size:21px">$ ./recibo</div>
+      <p class="body sub" style="font-size:20px">El programa imprime con <code>fixed &lt;&lt; setprecision(2)</code>. Verificado con g++: 4.00 da 4.46 y 10.00 da 11.15.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Errores comunes con funciones">
+  <h2 class="mask"><span>Tres errores con funciones</span></h2>
+  <p class="body sub" data-a>Mensajes reales de g++ 13.3.</p>
+  <div data-tabs="f1" style="margin-top:20px">
+    <div class="row" data-a><button data-tab="f1">Usarla antes de declararla</button><button data-tab="f2">Olvidar el return</button><button data-tab="f3">Imprimir una void</button></div>
+    <div class="cols" style="margin-top:20px;gap:40px" data-a>
+      <div data-panel="f1"><pre class="code" style="font-size:21px">int main() {
+    cout &lt;&lt; cuadrado(4);
+}
+int cuadrado(int x) { return x * x; }</pre><div class="term" style="margin-top:10px;font-size:19px"><span class="e">error: 'cuadrado' was not declared in this scope</span></div></div>
+      <div data-panel="f1"><p class="lead">El compilador lee de arriba hacia abajo.</p><p class="body sub">Cuando llega a main todavía no conoce cuadrado. Solución: declarar el prototipo antes de main.</p><pre class="code" style="font-size:21px;margin-top:14px">int cuadrado(int x);   // prototipo</pre><p class="body sub" style="font-size:21px">Con el prototipo compila e imprime 16.</p></div>
+      <div data-panel="f2" hidden><pre class="code" style="font-size:21px">int doble(int x) {
+    int y = x * 2;
+}</pre><div class="term" style="margin-top:10px;font-size:19px"><span class="w">warning: no return statement in function returning non-void</span></div></div>
+      <div data-panel="f2" hidden><p class="lead">Compila, pero quien llama recibe un valor indefinido.</p><p class="body sub">Calcular y no contestar es colgar sin dar la respuesta. Falta <code>return y;</code>. g++ lo avisa con <code>-Wall</code>.</p></div>
+      <div data-panel="f3" hidden><pre class="code" style="font-size:21px">void saludar(string nombre) { ... }
+cout &lt;&lt; saludar("Ana");</pre><div class="term" style="margin-top:10px;font-size:19px"><span class="e">error: no match for 'operator&lt;&lt;' (operand types are 'std::ostream' and 'void')</span></div></div>
+      <div data-panel="f3" hidden><p class="lead">Una void no contesta nada que se pueda imprimir.</p><p class="body sub">Se llama sola: <code>saludar("Ana");</code>. Si hace falta el valor, la función debe tener un tipo de retorno.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: imprimir o devolver">
+  <p class="q mask"><span>¿Una función debe imprimir el promedio o devolverlo?</span></p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:27px">Piensen en qué pasa después: ¿y si hay que comparar el promedio, guardarlo o enviarlo por correo?</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b>void</b><span>imprime y el valor se pierde</span></div><div class="ok" data-rv-box><b>double</b><span>devuelve y quien llama decide</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">devolver: el valor se puede usar después</span></div></div></div>
+</section>
+
+<!-- TEMA 3 -->
+<section class="slide chapter" data-title="Tema 3: Funciones de biblioteca" data-topic="3">
+  <div class="chwrap">
+    <div class="left">
+      <h1 class="mask"><span>Funciones de biblioteca</span></h1>
+      <p class="lead" data-a style="margin-top:22px;max-width:640px">Ya vienen con C++. Solo hay que incluir su biblioteca y llamarlas.</p>
+      <div class="ext" data-a></div>
+    </div>
+    <div class="lcd" data-a style="align-self:center;font-size:26px">EXT. 3
+<span class="dim">#include &lt;cmath&gt;</span>
+sqrt(81) = 9</div>
+  </div>
+</section>
+
+<section class="slide" data-title="El directorio de la biblioteca">
+  <h2 class="mask"><span>El directorio de la biblioteca</span></h2>
+  <div class="lib">
+    <div data-a id="lib-list">
+      <div class="grp"><h3>&lt;cmath&gt;</h3><div class="row"><button data-f="sqrt">sqrt</button><button data-f="pow">pow</button><button data-f="round">round</button><button data-f="ceil">ceil</button><button data-f="floor">floor</button><button data-f="abs">abs</button></div></div>
+      <div class="grp"><h3>&lt;cctype&gt;</h3><div class="row"><button data-f="toupper">toupper</button><button data-f="isdigit">isdigit</button></div></div>
+      <div class="grp"><h3>&lt;string&gt;</h3><div class="row"><button data-f="length">length</button></div></div>
+    </div>
+    <div class="card" data-a>
+      <div class="inc" id="lb-inc"></div>
+      <div class="call" id="lb-call"></div>
+      <div class="res" id="lb-res" aria-live="polite"></div>
+      <p class="body" id="lb-why" style="margin-top:10px;font-size:22px"></p>
+    </div>
+  </div>
+</section>
+
+<!-- TEMA 4 -->
+<section class="slide chapter" data-title="Tema 4: Funciones recursivas" data-topic="4">
+  <div class="chwrap">
+    <div class="left">
+      <h1 class="mask"><span>Funciones recursivas</span></h1>
+      <p class="lead" data-a style="margin-top:22px;max-width:640px">Una función que se llama a sí misma, con un problema cada vez más pequeño.</p>
+      <div class="ext" data-a></div>
+    </div>
+    <div class="lcd" data-a style="align-self:center;font-size:26px">EXT. 4
+<span class="dim">factorial(4)</span>
+En espera: 3</div>
+  </div>
+</section>
+
+<section class="slide" data-title="Factorial y la pila de llamadas">
+  <h2 class="mask"><span>Llamadas en espera: la pila</span></h2>
+  <div class="cols" style="grid-template-columns:560px 1fr;gap:36px;margin-top:22px">
+    <div data-a>
+      <pre class="code" id="fc-code" style="font-size:20px">long long factorial(int n) {
+    if (n &lt;= 1)
+        return 1;           // caso base
+    return n * factorial(n - 1);
+}</pre>
+      <div class="inp" style="margin-top:16px"><div><label for="fc-n">n</label><input id="fc-n" type="number" min="1" max="6" value="4"></div>
+        <div class="row" style="margin-bottom:6px"><button class="go" id="fc-step">Siguiente</button><button id="fc-reset">Reiniciar</button></div></div>
+      <p class="msg" id="fc-msg" style="margin-top:14px;min-height:88px" aria-live="polite"></p>
+    </div>
+    <div data-a>
+      <p class="body" style="font-weight:700;margin-bottom:10px">Pila de llamadas (la de arriba es la que está activa)</p>
+      <div class="stack" id="fc-stack"></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Sin caso base">
+  <h2 class="mask"><span>Sin caso base, la llamada nunca termina</span></h2>
+  <div class="cols gap" style="gap:44px">
+    <div data-a>
+      <pre class="code" style="font-size:22px">int sinBase(int n) {
+    return n + sinBase(n - 1);
+}</pre>
+      <div class="term" style="margin-top:12px;font-size:20px"><span class="w">warning: infinite recursion detected</span>
+<span class="p">$ ./rec</span>
+<span class="e">Segmentation fault</span></div>
+    </div>
+    <div data-a>
+      <p class="lead">Cada llamada ocupa espacio en la pila hasta que se acaba la memoria.</p>
+      <p class="body sub">Toda función recursiva necesita dos partes: un <b>caso base</b> que contesta sin llamar a nadie, y una llamada con un problema <b>más pequeño</b> que se acerca a ese caso.</p>
+      <p class="body sub">Dato verificado: 20! = 2432902008176640000 es el último factorial que cabe en <code>long long</code>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: recursión o ciclo">
+  <p class="q mask"><span>¿Factorial con recursión o con un for?</span></p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:27px">Los dos dan 120 para 5!. ¿Cuál se lee mejor? ¿Cuál gasta menos memoria?</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b>recursión</b><span>se parece a la definición: n! = n × (n − 1)!</span></div><div class="ok" data-rv-box><b>for</b><span>una sola llamada, sin pila que crece</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">memoria: el for; claridad: depende del problema</span></div></div></div>
+</section>
+
+<section class="slide" data-title="Todo junto: el reporte de notas">
+  <h2 class="mask"><span>Todo junto: el reporte de notas</span></h2>
+  <div class="cols" style="grid-template-columns:640px 1fr;gap:28px;margin-top:16px;align-items:start">
+    <pre class="code" id="nr-code" data-a style="font-size:18px;line-height:1.45">double promedio(double a, double b, double c) {
+    return (a + b + c) / 3;
+}
+char letra(double p) {
+    if (p &gt;= 90) return 'A';
+    if (p &gt;= 80) return 'B';
+    if (p &gt;= 70) return 'C';
+    if (p &gt;= 60) return 'D';
+    return 'F';
+}
+void reporte(string nombre, double p) {
+    cout &lt;&lt; nombre &lt;&lt; ": " &lt;&lt; fixed &lt;&lt; setprecision(1)
+         &lt;&lt; p &lt;&lt; " (" &lt;&lt; letra(round(p)) &lt;&lt; ")" &lt;&lt; endl;
+}
+int main() {
+    // cin &gt;&gt; nombre &gt;&gt; p1 &gt;&gt; p2 &gt;&gt; p3;
+    reporte(nombre, promedio(p1, p2, p3));
+}</pre>
+    <div data-a>
+      <p class="body" style="font-weight:700">Escoja un estudiante:</p>
+      <div class="row" style="margin-top:8px;gap:8px"><button data-st="0">Ana 85 92 78</button><button data-st="1">Luis 70 65 59</button><button data-st="2">Mia 89 90 90</button><button data-st="3">Leo 89 89 90</button></div>
+      <div class="term" id="nr-out" style="margin-top:14px;min-height:120px;font-size:21px" aria-live="polite">$ ./notas</div>
+      <p class="msg" id="nr-msg" style="margin-top:12px;min-height:118px">main llama a promedio, le pasa el resultado a reporte, y reporte llama a letra.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Lo esencial de la unidad">
+  <h2 class="mask"><span>Lo que se lleva de esta unidad</span></h2>
+  <div class="dir" data-a>
+    <div><h3><code>void</code></h3><p>Hace un trabajo y no contesta. Se llama sola, en su propia línea.</p></div>
+    <div><h3>Con retorno</h3><p><code>return</code> contesta con un valor del tipo declarado, que se puede guardar o usar.</p></div>
+    <div><h3>Biblioteca</h3><p>Incluir la cabecera correcta: <code>&lt;cmath&gt;</code>, <code>&lt;cctype&gt;</code>, <code>&lt;string&gt;</code>.</p></div>
+    <div><h3>Recursivas</h3><p>Caso base y un problema más pequeño en cada llamada. Sin caso base, la pila se desborda.</p></div>
+  </div>
+  <p class="body gap" data-a style="font-size:25px">Los parámetros reciben copias, y una función se declara antes de usarla.</p>
+</section>
+
+<section class="slide" data-title="Ejercicio de cierre">
+  <h2 class="mask"><span>Ejercicio de cierre</span></h2>
+  <p class="body sub" data-a>Haga los cuatro pasos en orden. La fecha de entrega se anuncia en OrbundSIS.</p>
+  <ol class="ol-num gap" data-a style="font-size:31px;line-height:1.35;max-width:1120px;margin-top:44px">
+    <li>Escriba <code>void menu()</code> que muestre tres productos de la cafetería con su precio.</li>
+    <li>Escriba <code>double conIVU(double precio)</code> que devuelva el precio con el 11.5 %.</li>
+    <li>Use <code>round</code> de <code>&lt;cmath&gt;</code> para mostrar el total redondeado al dólar.</li>
+    <li>Escriba <code>int sumaHasta(int n)</code> recursiva que sume de 1 a n. Compile con <code>-Wall -Wextra</code>.</li>
+  </ol>
+</section>
+
+<section class="slide" data-title="Referencias">
+  <h2 class="mask"><span>Referencias</span></h2>
+  <div class="gap" data-a style="font-size:21px;line-height:1.5;max-width:1080px">
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">cppreference.com. (s. f.). <i>Functions</i>. https://en.cppreference.com/w/cpp/language/functions</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">cppreference.com. (s. f.). <i>Common mathematical functions</i>. https://en.cppreference.com/w/cpp/numeric/math</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">cppreference.com. (s. f.). <i>Null-terminated byte strings: character classification</i>. https://en.cppreference.com/w/cpp/string/byte</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Kumar, A. (2024). <i>Hands-on object-oriented programming: Mastering OOP features for real-world software systems development</i>. Apress.</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Lutz, M. (2025). <i>Learning Python: Powerful object-oriented programming</i>. O’Reilly Media.</p>
+  </div>
+  <p class="body gap" data-a style="font-size:21px">Kumar (2024) y Lutz (2025) son los textos oficiales del prontuario. Los programas, salidas y mensajes se verificaron con g++ 13.3 en Linux.</p>
+</section>
+
+</div></div>
+
+<script src="assets/deck.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id)};
+var RED=matchMedia('(prefers-reduced-motion: reduce)');
+
+/* ---------- extensiones en los capítulos ---------- */
+var EX=['void','Con retorno','Biblioteca','Recursivas'];
+[].forEach.call(document.querySelectorAll('[data-topic]'),function(sl){var t=+sl.dataset.topic;
+  sl.querySelector('.ext').innerHTML=EX.map(function(w,i){return '<span class="'+(i+1===t?'on':'')+'">'+(i+1===t?'→ ':'')+w+'</span>'}).join('')});
+
+/* ---------- repetido vs función ---------- */
+var cpOn=false;
+$('cp-go').onclick=function(){cpOn=!cpOn;
+  [[ 'cp-a',[1,3,5]],['cp-b',[2]]].forEach(function(p){[].forEach.call($(p[0]).querySelectorAll('.ln'),function(l,j){l.classList.toggle('chg',cpOn&&p[1].indexOf(j)>=0)})});
+  this.textContent=cpOn?'Quitar el resaltado':'Cambiar el IVU';
+  $('cp-msg').textContent=cpOn?'Sin función hay que corregir 3 líneas; con función, 1. Y si hubiera 300 clientes, seguiría siendo 1.':'';
+};
+
+/* ---------- anatomía ---------- */
+var PT={t:'Tipo de retorno: qué clase de valor contesta la función. double, porque el precio tiene centavos.',nm:'Nombre: con él se llama a la función. Un verbo o una idea clara: conIVU, calcularTotal.',pr:'Parámetro: el valor que la función recibe al ser llamada. Aquí, el precio sin impuesto.',cu:'Cuerpo: las instrucciones entre llaves. Se ejecutan cada vez que alguien llama.',rt:'return: contesta la llamada con el resultado y termina la función.'};
+[].forEach.call(document.querySelectorAll('[data-pt]'),function(b){b.onclick=function(){var p=b.dataset.pt;
+  [].forEach.call(document.querySelectorAll('[data-pt]'),function(x){x.setAttribute('aria-pressed',x===b)});
+  [].forEach.call(document.querySelectorAll('.anat .pa'),function(e){e.classList.toggle('lit',e.dataset.p===p)});
+  $('pt-msg').textContent=PT[p]}});
+document.querySelector('[data-pt="t"]').click();
+
+/* ---------- pasos: saludar ---------- */
+Deck.steps.sal=[
+ {l:3,msg:'Empieza main.'},
+ {l:4,msg:'Se llama a saludar con el valor "Ana". El programa salta a la función.'},
+ {l:0,set:{nm:'"Ana"'},flash:['nm'],msg:'El parámetro nombre recibe "Ana".'},
+ {l:1,out:'Bienvenido, Ana',msg:'Se ejecuta el cuerpo.'},
+ {l:2,set:{nm:'—'},msg:'La función termina y el programa regresa a main, a la línea siguiente.'},
+ {l:5,msg:'Segunda llamada, con otro valor.'},
+ {l:0,set:{nm:'"Luis"'},flash:['nm'],msg:'El mismo código, ahora con nombre = "Luis".'},
+ {l:1,out:'Bienvenido, Luis',msg:'Dos llamadas, un solo lugar donde está escrito el saludo.'},
+ {l:6,set:{nm:'—'},msg:'main termina. Verificado con g++.'}
+];
+/* ---------- pasos: paso por valor ---------- */
+Deck.steps.val=[
+ {l:5,show:['fm'],flash:['n'],msg:'main crea n con el valor 5.'},
+ {l:6,msg:'Se llama a duplicar(n). Lo que viaja es el valor 5, no la variable n.'},
+ {l:0,show:['fx'],flash:['x'],msg:'duplicar recibe una copia en x. x y n son dos espacios distintos en memoria.'},
+ {l:1,set:{x:'10'},flash:['x'],msg:'x cambia a 10. n no se entera.'},
+ {l:2,out:'dentro: 10',msg:'Dentro de la función se imprime 10.'},
+ {l:3,hide:['fx'],msg:'La función termina y su copia x desaparece.'},
+ {l:7,out:'fuera: 5',flash:['n'],msg:'En main, n sigue valiendo 5. Verificado con g++: «dentro: 10», «fuera: 5».'}
+];
+
+/* ---------- conIVU ---------- */
+function fix2(x){ // igual que fixed << setprecision(2): usa el valor binario exacto y, en empate exacto, redondea al par
+  var neg=x<0;x=Math.abs(x);var t=x.toFixed(60),i=t.indexOf('.'),ip=t.slice(0,i),fp=t.slice(i+1),keep=fp.slice(0,2),rest=fp.slice(2),up=false;
+  if(rest[0]>'5')up=true;else if(rest[0]==='5')up=/[1-9]/.test(rest.slice(1))||(+keep[1]%2===1);
+  var n=BigInt(ip+keep)+(up?1n:0n),d=n.toString().padStart(3,'0');return (neg?'-':'')+d.slice(0,-2)+'.'+d.slice(-2)}
+function ivRun(){var v=parseFloat(($('iv-p').value||'').replace(',','.')),m=$('iv-msg');
+  if(isNaN(v)||v<0||v>999){m.textContent='Escriba un precio entre 0 y 999.';return}
+  var s=fix2(v),r=fix2(v*1.115),chip=$('iv-chip'),code=$('iv-code');
+  code.querySelectorAll('.ln')[3].innerHTML='<span class="k">double</span> total = conIVU('+s+');';
+  [].forEach.call(code.querySelectorAll('.ln'),function(l,j){l.classList.toggle('cur',j===3)});
+  $('iv-in').textContent=s;$('iv-out').textContent='?';chip.textContent=s;
+  if(RED.matches||!chip.animate){$('iv-out').textContent=r;done();return}
+  var a=chip.animate([{left:'0%',opacity:1},{left:'50%',opacity:1,offset:.45},{left:'50%',opacity:0,offset:.55},{left:'50%',opacity:0,offset:.6},{left:'100%',opacity:1}],{duration:1400,easing:'cubic-bezier(.22,1,.36,1)'});
+  setTimeout(function(){chip.textContent=r;[].forEach.call(code.querySelectorAll('.ln'),function(l,j){l.classList.toggle('cur',j===1)})},800);
+  a.onfinish=function(){$('iv-out').textContent=r;done()};
+  function done(){[].forEach.call(code.querySelectorAll('.ln'),function(l,j){l.classList.toggle('cur',j===3)});
+    $('iv-term').textContent='$ ./recibo\n'+r;m.textContent='conIVU('+s+') contesta '+r+' y ese valor se guarda en total.'}
+}
+$('iv-go').onclick=ivRun;$('iv-p').addEventListener('keydown',function(e){if(e.key==='Enter')ivRun()});
+
+/* ---------- biblioteca ---------- */
+function g6(x){ // como cout por omisión: 6 cifras significativas
+  if(isNaN(x))return '-nan';if(x===0)return '0';
+  var p=x.toPrecision(6);
+  if(p.indexOf('e')>=0){var q=p.split('e'),mn=q[0].replace(/\.?0+$/,''),ex=+q[1];return mn+'e'+(ex<0?'-':'+')+(Math.abs(ex)<10?'0':'')+Math.abs(ex)}
+  return p.indexOf('.')>=0?p.replace(/\.?0+$/,''):p}
+function cround(x){return x<0?-Math.round(-x):Math.round(x)}
+var LIB={
+ sqrt:{inc:'#include <cmath>',a:'81',f:function(v){return g6(Math.sqrt(v))},why:'Raíz cuadrada. Con un negativo devuelve nan: «no es un número».'},
+ pow:{inc:'#include <cmath>',a:'2',b:'10',f:function(v,w){return g6(Math.pow(v,w))},why:'Potencia: base elevada al exponente. Resultados grandes se muestran en notación científica, como 1e+15.'},
+ round:{inc:'#include <cmath>',a:'2.5',f:function(v){return g6(cround(v))},why:'Redondea al entero más cercano. En un empate (2.5) se aleja del cero: 3, y −2.5 da −3.'},
+ ceil:{inc:'#include <cmath>',a:'4.1',f:function(v){return g6(Math.ceil(v))},why:'Redondea hacia arriba: el techo.'},
+ floor:{inc:'#include <cmath>',a:'4.9',f:function(v){return g6(Math.floor(v))},why:'Redondea hacia abajo: el piso.'},
+ abs:{inc:'#include <cmath>',a:'-7',f:function(v){return g6(Math.abs(v))},why:'Valor absoluto: la distancia al cero, sin signo.'},
+ toupper:{inc:'#include <cctype>',ch:'m',f:function(c){return "'"+c.toUpperCase()+"'"},why:'Convierte una letra a mayúscula. Devuelve un int; se muestra como letra con (char).'},
+ isdigit:{inc:'#include <cctype>',ch:'7',f:function(c){return /[0-9]/.test(c)?'verdadero':'0 (falso)'},why:'¿Es un dígito? Devuelve 0 si no lo es y un valor distinto de 0 si lo es.'},
+ length:{inc:'#include <string>',str:'Manati',f:function(s){return String(s.length)},why:'Cuenta los caracteres de un string. Se llama con un punto: s.length().'}
+};
+var cur='sqrt';
+function libShow(k){cur=k;var L=LIB[k],c=$('lb-call');
+  [].forEach.call(document.querySelectorAll('[data-f]'),function(b){b.setAttribute('aria-pressed',b.dataset.f===k)});
+  $('lb-inc').textContent=L.inc;
+  if(L.ch)c.innerHTML=k+"('<input id=\"lb-a\" maxlength=\"1\" style=\"width:64px\" value=\""+L.ch+"\" aria-label=\"carácter\">')";
+  else if(L.str)c.innerHTML='string s = "<input id="lb-a" maxlength="12" style="width:250px" value="'+L.str+'" aria-label="texto">"; s.length()';
+  else if(L.b)c.innerHTML=k+'(<input id="lb-a" value="'+L.a+'" style="width:110px" aria-label="base">, <input id="lb-b" value="'+L.b+'" style="width:110px" aria-label="exponente">)';
+  else c.innerHTML=k+'(<input id="lb-a" value="'+L.a+'" aria-label="argumento">)';
+  [].forEach.call(c.querySelectorAll('input'),function(i){i.addEventListener('input',libCalc)});
+  $('lb-why').textContent=L.why;libCalc()}
+function libCalc(){var L=LIB[cur],a=$('lb-a').value,r;
+  if(L.ch){r=a?L.f(a):'?'}else if(L.str){r=L.f(a)}
+  else{var v=parseFloat(a),w=L.b?parseFloat($('lb-b').value):0;if(isNaN(v)||(L.b&&isNaN(w))){r='?'}else{if(L.b&&(Math.abs(w)>30||Math.abs(v)>100)){r='?';$('lb-why').textContent='Use base de −100 a 100 y exponente de −30 a 30.'}else r=L.f(v,w)}}
+  $('lb-res').textContent=r}
+[].forEach.call(document.querySelectorAll('[data-f]'),function(b){b.onclick=function(){libShow(b.dataset.f)}});
+libShow('sqrt');
+
+/* ---------- factorial y la pila ---------- */
+var FS,fi,fn;
+function fcPlan(n){var s=[];for(var k=n;k>=1;k--)s.push({t:'call',k:k});s.push({t:'base'});for(k=2;k<=n;k++)s.push({t:'ret',k:k});s.push({t:'end'});return s}
+function fcReset(){fn=Math.max(1,Math.min(6,parseInt($('fc-n').value,10)||4));FS=fcPlan(fn);fi=0;$('fc-stack').innerHTML='<div class="top" data-k="main"><span>main</span><small>llama a factorial('+fn+')</small></div>';$('fc-step').disabled=false;
+  hlc(-1);$('fc-msg').textContent='main va a llamar a factorial('+fn+'). Pulse «Siguiente».'}
+function hlc(i){[].forEach.call($('fc-code').querySelectorAll('.ln'),function(l,j){l.classList.toggle('cur',j===i)})}
+function fact(k){var r=1;for(var i=2;i<=k;i++)r*=i;return r}
+function fcStep(){var st=FS[fi++],S=$('fc-stack'),fr=S.children;if(!st)return;
+  [].forEach.call(fr,function(d){d.classList.remove('top')});
+  if(st.t==='call'){S.insertAdjacentHTML('beforeend','<div class="top" data-k="'+st.k+'"><span>factorial('+st.k+')</span><small>'+(st.k>1?'espera: '+st.k+' × factorial('+(st.k-1)+')':'')+'</small></div>');
+    hlc(st.k>1?3:1);$('fc-msg').textContent='Entra factorial('+st.k+'). '+(st.k>1?st.k+' no es ≤ 1, así que llama a factorial('+(st.k-1)+') y queda en espera.':'1 ≤ 1: llegó al caso base.')}
+  else if(st.t==='base'){var t=S.lastElementChild;t.classList.add('ret','top');t.querySelector('small').textContent='devuelve 1';hlc(2);$('fc-msg').textContent='Caso base: devuelve 1 sin llamar a nadie más. Ahora la pila empieza a vaciarse.'}
+  else if(st.t==='ret'){S.removeChild(S.lastElementChild);var t2=S.lastElementChild;t2.classList.add('ret','top');t2.querySelector('small').textContent=st.k+' × '+fact(st.k-1)+' = '+fact(st.k);hlc(3);
+    $('fc-msg').textContent='factorial('+(st.k-1)+') contestó '+fact(st.k-1)+'. factorial('+st.k+') calcula '+st.k+' × '+fact(st.k-1)+' y devuelve '+fact(st.k)+'.'}
+  else{S.removeChild(S.lastElementChild);var m0=S.lastElementChild;m0.className='top';m0.querySelector('small').textContent='recibe '+fact(fn);hlc(-1);$('fc-msg').textContent='Solo queda main, que recibe factorial('+fn+') = '+fact(fn)+'. Verificado con g++.';$('fc-step').disabled=true}
+}
+$('fc-step').onclick=fcStep;$('fc-reset').onclick=fcReset;$('fc-n').addEventListener('input',fcReset);fcReset();
+
+/* ---------- reporte de notas ---------- */
+var STU=[['Ana',85,92,78],['Luis',70,65,59],['Mia',89,90,90],['Leo',89,89,90]];
+function L(p){return p>=90?'A':p>=80?'B':p>=70?'C':p>=60?'D':'F'}
+var nrT=[];
+function hln(rng){[].forEach.call($('nr-code').querySelectorAll('.ln'),function(l,j){l.classList.toggle('cur',j>=rng[0]&&j<=rng[1])})}
+[].forEach.call(document.querySelectorAll('[data-st]'),function(b){b.onclick=function(){
+  nrT.forEach(clearTimeout);nrT=[];var s=STU[+b.dataset.st],p=(s[1]+s[2]+s[3])/3,r=Math.round(p),pf=p.toFixed(1),line=s[0]+': '+pf+' ('+L(r)+')';
+  [].forEach.call(document.querySelectorAll('[data-st]'),function(x){x.setAttribute('aria-pressed',x===b)});
+  var seq=[[[16,16],'main llama a promedio('+s[1]+', '+s[2]+', '+s[3]+').'],[[0,2],'promedio devuelve '+p.toFixed(4).replace(/0+$/,'')+'…'],[[10,12],'reporte recibe ese valor y llama a letra(round(p)) = letra('+r+').'],[[3,9],'letra('+r+') devuelve \''+L(r)+'\'.'+(L(r)!==L(p)?' Ojo: sin round daría \''+L(p)+'\'.':'')],[[10,12],'reporte imprime: '+line]];
+  var d=RED.matches?0:900;
+  seq.forEach(function(x,i){nrT.push(setTimeout(function(){hln(x[0]);$('nr-msg').textContent=x[1];if(i===seq.length-1)$('nr-out').innerHTML='<span class="p">$ ./notas\n'+s.slice(0,4).join(' ')+'</span>\n'+line},i*d))});
+}});
+
+Deck.start();
+})();
+</script>
+</body>
+</html>

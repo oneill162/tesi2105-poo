@@ -29,21 +29,21 @@ pre.code .ln.cur{background:rgba(255,196,37,.24)}
 }
 @keyframes type{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0)}}
 .lcd span{display:inline-block}
-.chapter .ext{display:flex;gap:34px;margin-top:auto;font-size:27px;font-weight:700}
+.chapter .ext{display:flex;gap:26px;margin-top:auto;font-size:25px;font-weight:700;white-space:nowrap}
 .chapter .ext span{opacity:.5}
 .chapter .ext span.on{opacity:1}
 .chapter .ext span.on::after{content:"";display:block;height:6px;background:var(--hi);margin-top:8px}
-.chwrap{display:grid;grid-template-columns:1fr 440px;gap:48px;height:100%}
+.chwrap{display:grid;grid-template-columns:1fr 500px;gap:48px;height:100%}
 .chwrap .left{display:flex;flex-direction:column}
-.chapter h1{font-size:100px}.chwrap>.lcd{align-self:end!important;font-size:30px!important;margin-bottom:0}
+.chapter h1{font-size:100px}.chwrap>.lcd{align-self:end!important;font-size:34px!important;padding:34px 36px;margin-bottom:0}
 .field-hi .q{font-size:60px;line-height:1.04;letter-spacing:-.03em;font-weight:800;max-width:1100px}
 /* bloques */
 .msg{background:var(--tone);padding:14px 18px;font-size:21px;min-height:58px}
 .vbox{background:#fff;padding:14px 20px;min-height:104px}
 .vbox small{display:block;font:600 21px var(--sans)}
 .vbox b{display:block;font:600 42px var(--mono);margin-top:4px}
-.frame{background:#fff;padding:16px 20px;margin-bottom:12px}
-.frame h4{margin:0 0 8px;font-size:22px}
+.frame{background:#fff;padding:10px 18px;margin-bottom:8px;display:flex;align-items:center;gap:20px}
+.frame[hidden]{display:none}.frame h4{margin:0;font-size:22px;min-width:110px}.frame .vbox{display:flex;align-items:baseline;gap:14px}.frame .vbox b{font-size:34px;margin:0}
 .frame.fn{background:#FCE3DD}
 .inp{display:flex;gap:16px;align-items:end;flex-wrap:wrap}
 .inp label{font-size:21px;font-weight:600;display:block;margin-bottom:6px}
@@ -52,7 +52,7 @@ pre.code .ln.cur{background:rgba(255,196,37,.24)}
 .prop2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .prop2>div{background:var(--ink);color:#fff;padding:20px 24px;min-height:170px}
 .prop2>div.ok{background:var(--accent)}
-.prop2 b{display:block;font:600 27px var(--mono)}
+.prop2 b{display:block;font:700 26px var(--sans)}.prop2 code{white-space:normal}
 .prop2 span{display:block;font-size:22px;margin-top:8px}
 .prop2 .pbtn{margin-top:12px;background:#fff;color:var(--ink);font-size:18px;padding:8px 12px}
 .prop2 span.reveal{display:none}.prop2 .shown span.reveal{display:block}
@@ -78,7 +78,7 @@ pre.code .ln.cur{background:rgba(255,196,37,.24)}
 .card .call input{font:600 36px var(--mono);width:150px;border:0;background:var(--tone);padding:2px 10px;color:var(--ink)}
 .card .res{font:700 64px var(--mono);margin-top:12px;color:var(--accent)}
 /* pila de llamadas */
-.stack{display:flex;flex-direction:column-reverse;gap:8px;min-height:330px;justify-content:flex-start}
+.stack{display:flex;flex-direction:column-reverse;gap:8px;min-height:390px;justify-content:flex-start;background:var(--tone);padding:8px}
 .stack div{background:#fff;padding:12px 18px;font:600 22px var(--mono);display:flex;justify-content:space-between;transition:background .2s}
 .stack div.top{background:var(--hi)}
 .stack div.ret{background:#FCE3DD}
@@ -208,7 +208,7 @@ int main() {
     </div>
     <div class="ws" data-a>
       <p class="body" style="font-weight:700;font-size:21px;margin-bottom:8px">Pila de llamadas: arriba, la activa</p>
-      <div style="min-height:220px;display:flex;flex-direction:column;justify-content:flex-end">
+      <div style="min-height:150px;display:flex;flex-direction:column;justify-content:flex-end;background:var(--tone);padding:8px;margin-bottom:12px">
         <div class="frame fn" data-id="fx" hidden><h4>duplicar</h4><div class="vbox" style="padding:4px 0;min-height:0;background:transparent"><small>int x (copia)</small><b data-id="x">5</b></div></div>
         <div class="frame" data-id="fm" hidden><h4>main</h4><div class="vbox" style="padding:4px 0;min-height:0"><small>int n</small><b data-id="n">5</b></div></div>
       </div>
@@ -241,7 +241,8 @@ Contesta: 4.46</div>
     return precio * 1.115;
 }
 double total = conIVU(4.00);
-cout &lt;&lt; fixed &lt;&lt; setprecision(2) &lt;&lt; total;</pre>
+cout &lt;&lt; fixed &lt;&lt; setprecision(2)
+     &lt;&lt; total &lt;&lt; endl;</pre>
       <div class="inp" style="margin-top:18px"><div><label for="iv-p">precio</label><input id="iv-p" value="4.00" inputmode="decimal"></div><button class="go" id="iv-go" style="margin-bottom:6px">Llamar</button></div>
       <p class="msg" id="iv-msg" style="margin-top:14px" aria-live="polite">El IVU de Puerto Rico es 11.5 %: multiplicar por 1.115 suma el impuesto.</p>
     </div>
@@ -286,7 +287,7 @@ cout &lt;&lt; saludar("Ana");</pre><div class="term" style="margin-top:10px;font
   <p class="q mask"><span>¿Una función debe imprimir el promedio o devolverlo?</span></p>
   <p class="body gap" data-a style="max-width:1000px;font-size:27px">Piensen en qué pasa después: ¿y si hay que comparar el promedio, guardarlo o enviarlo por correo?</p>
   <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
-  <div class="prop2" data-a><div><b>void reporte()</b><span>imprime el promedio</span></div><div class="ok" data-rv-box><b>double promedio()</b><span>devuelve el promedio</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">devolver: quien llama decide si lo imprime, lo compara o lo guarda</span></div></div></div>
+  <div class="prop2" data-a><div><b><code>void reporte()</code></b><span>imprime el promedio</span></div><div class="ok" data-rv-box><b><code>double promedio()</code></b><span>devuelve el promedio</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">devolver: quien llama decide si lo imprime, lo compara o lo guarda</span></div></div></div>
 </section>
 
 <!-- TEMA 3 -->
@@ -362,7 +363,8 @@ En espera: 3</div>
     return n + sinBase(n - 1);
 }</pre>
       <div class="term" style="margin-top:12px;font-size:20px"><span class="p">$ g++ -Wall rec.cpp -o rec</span>
-<span class="w">warning: infinite recursion detected [-Winfinite-recursion]</span>
+<span class="w">warning: infinite recursion detected
+[-Winfinite-recursion]</span>
 <span class="p">$ ./rec</span>
 <span class="e">Segmentation fault</span></div>
     </div>
@@ -378,13 +380,14 @@ En espera: 3</div>
   <p class="q mask"><span>¿Factorial con recursión o con un for?</span></p>
   <p class="body gap" data-a style="max-width:1000px;font-size:27px">Para 5!, los dos dan 120. ¿Cuál se lee mejor? ¿Cuál gasta menos memoria?</p>
   <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
-  <div class="prop2" data-a><div><b>recursión</b><span>factorial(n − 1)</span></div><div class="ok" data-rv-box><b>for</b><span>r = r * i</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">el for gasta menos memoria; la recursión se parece más a la definición n! = n × (n − 1)!</span></div></div></div>
+  <div class="prop2" data-a><div><b>recursión</b><span><code>factorial(n - 1)</code></span></div><div class="ok" data-rv-box><b>for</b><span><code>r = r * i;</code></span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">el for gasta menos memoria; la recursión se parece más a la definición n! = n × (n − 1)!</span></div></div></div>
 </section>
 
 <section class="slide" data-title="Todo junto: el reporte de notas">
   <h2 class="mask"><span>Todo junto: el reporte de notas</span></h2>
   <div class="cols" style="grid-template-columns:640px 1fr;gap:28px;margin-top:12px;align-items:start">
-    <pre class="code" id="nr-code" data-a style="font-size:18px;line-height:1.36;padding:12px 0">double promedio(double a, double b, double c) {
+    <pre class="code" id="nr-code" data-a style="font-size:18px;line-height:1.3;padding:12px 0">// #include &lt;iostream&gt;, &lt;iomanip&gt;, &lt;cmath&gt;, &lt;string&gt;
+double promedio(double a, double b, double c) {
     return (a + b + c) / 3;
 }
 char letra(double p) {
@@ -585,7 +588,7 @@ function hln(rng){[].forEach.call($('nr-code').querySelectorAll('.ln'),function(
 [].forEach.call(document.querySelectorAll('[data-st]'),function(b){b.onclick=function(){
   nrT.forEach(clearTimeout);nrT=[];var s=STU[+b.dataset.st],p=(s[1]+s[2]+s[3])/3,r=Math.round(p),pf=p.toFixed(1),line=s[0]+': '+pf+' ('+L(r)+')';
   [].forEach.call(document.querySelectorAll('[data-st]'),function(x){x.setAttribute('aria-pressed',x===b)});
-  var seq=[[[17,17],'main llama a promedio('+s[1]+', '+s[2]+', '+s[3]+').'],[[0,2],'promedio devuelve '+p.toFixed(4).replace(/0+$/,'')+'…'],[[10,12],'reporte recibe ese valor y llama a letra(round(p)) = letra('+r+').'],[[3,9],'letra('+r+') devuelve \''+L(r)+'\'.'+(L(r)!==L(p)?' Ojo: sin round daría \''+L(p)+'\'.':'')],[[10,12],'reporte imprime: '+line]];
+  var seq=[[[18,18],'main llama a promedio('+s[1]+', '+s[2]+', '+s[3]+').'],[[1,3],'promedio devuelve '+p.toFixed(4).replace(/0+$/,'')+'…'],[[11,13],'reporte recibe ese valor y llama a letra(round(p)) = letra('+r+').'],[[4,10],'letra('+r+') devuelve \''+L(r)+'\'.'+(L(r)!==L(p)?' Ojo: sin round daría \''+L(p)+'\'.':'')],[[11,13],'reporte imprime: '+line]];
   var d=RED.matches?0:900;
   seq.forEach(function(x,i){nrT.push(setTimeout(function(){hln(x[0]);$('nr-msg').textContent=x[1];if(i===seq.length-1)$('nr-out').innerHTML='<span class="p">$ ./notas\n'+s.slice(0,4).join(' ')+'</span>\n'+line},i*d))});
 }});

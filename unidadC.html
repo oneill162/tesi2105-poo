@@ -296,7 +296,7 @@ for (int i = 1; i &lt;= n; i++) {
       <div class="vbox" style="margin-top:12px"><small>vueltas con do-while</small><b id="wh-d">1</b></div>
     </div>
   </div>
-  <div class="cols" data-a style="gap:40px;margin-top:20px;align-items:end"><div class="inp"><div><label for="wh-n">n al empezar</label><input id="wh-n" type="number" min="0" max="9" value="0"></div></div><p class="msg" id="wh-why"></p></div>
+  <div class="cols" data-a style="gap:40px;margin-top:8px;align-items:end"><div class="inp"><div><label for="wh-n">n al empezar</label><input id="wh-n" type="number" min="0" max="9" value="0"></div></div><p class="msg" id="wh-why"></p></div>
 </section>
 
 <section class="slide" data-title="break y continue">
@@ -517,15 +517,15 @@ swCode();sw(1);
 /* ---------- for con traza ---------- */
 var fi,fs,fn,fdone;
 function frReset(){fn=Math.max(1,Math.min(8,parseInt($('fr-n').value,10)||5));fi=1;fs=0;fdone=false;
-  $('fr-tab').innerHTML='<tr><th>Vuelta</th><th>i</th><th>i &lt;= '+fn+'</th><th>suma</th></tr><tr><td>inicio</td><td>1</td><td>—</td><td>0</td></tr>';for(var q=1;q<=fn;q++)$('fr-tab').insertAdjacentHTML('beforeend','<tr class="ph"><td>'+q+'</td><td>'+q+'</td><td>?</td><td>?</td></tr>');$('fr-msg').textContent='suma empieza en 0 e i en 1. Pulse «Una vuelta».';$('fr-step').disabled=false;$('fr-all').disabled=false}
+  $('fr-tab').innerHTML='<tr><th>Vuelta</th><th>i</th><th>i &lt;= '+fn+'</th><th>suma</th></tr><tr><td>inicio</td><td>1</td><td>—</td><td>0</td></tr>';for(var q=1;q<=fn+1;q++)$('fr-tab').insertAdjacentHTML('beforeend','<tr class="ph"><td>'+(q>fn?'salida':q)+'</td><td>?</td><td>?</td><td>?</td></tr>');$('fr-msg').textContent='suma empieza en 0 e i en 1. Pulse «Una vuelta».';$('fr-step').disabled=false;$('fr-all').disabled=false}
 function frStep(){if(fdone)return;var tab=$('fr-tab');[].forEach.call(tab.querySelectorAll('tr.new'),function(r){r.classList.remove('new')});
   if(fi<=fn){fs+=fi;var ph=tab.querySelector('tr.ph');ph.className='new';ph.innerHTML='<td>'+fi+'</td><td>'+fi+'</td><td>true</td><td>'+fs+'</td>';$('fr-msg').textContent='i = '+fi+': la condición se cumple, suma += '+fi+' → '+fs+'. Luego i++.';fi++}
-  else{tab.insertAdjacentHTML('beforeend','<tr class="new"><td>—</td><td>'+fi+'</td><td>false</td><td>'+fs+'</td></tr>');$('fr-msg').textContent='i = '+fi+': '+fi+' <= '+fn+' es false. El ciclo termina con suma = '+fs+' en '+fn+' vueltas.';fdone=true;$('fr-step').disabled=true;$('fr-all').disabled=true}}
+  else{var ph2=tab.querySelector('tr.ph');ph2.className='new';ph2.innerHTML='<td>salida</td><td>'+fi+'</td><td>false</td><td>'+fs+'</td>';$('fr-msg').textContent='i = '+fi+': '+fi+' <= '+fn+' es false. El ciclo termina con suma = '+fs+' en '+fn+' vueltas.';fdone=true;$('fr-step').disabled=true;$('fr-all').disabled=true}}
 $('fr-step').onclick=frStep;$('fr-all').onclick=function(){while(!fdone)frStep()};$('fr-reset').onclick=frReset;$('fr-n').addEventListener('input',frReset);frReset();
 
 /* ---------- while y do-while ---------- */
 function wh(){var n=Math.max(0,Math.min(9,parseInt($('wh-n').value,10)||0));$('wh-w').textContent=n;$('wh-d').textContent=Math.max(1,n);
-  $('wh-why').textContent=n===0?'Con n = 0, while no entra nunca (0 vueltas) y do-while entra una vez antes de preguntar (1 vuelta). Verificado con g++.':'Con n = '+n+', los dos dan '+n+' vueltas: la diferencia solo aparece cuando la condición empieza en false.'}
+  $('wh-why').textContent=n===0?'Con n = 0, while no entra nunca (0 vueltas) y do‑while entra una vez antes de preguntar (1 vuelta). Verificado con g++.':'Con n = '+n+', los dos dan '+n+' vueltas: la diferencia solo aparece cuando la condición empieza en false.'}
 $('wh-n').addEventListener('input',wh);wh();
 
 /* ---------- break y continue ---------- */

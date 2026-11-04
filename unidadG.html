@@ -30,8 +30,8 @@ pre.code .ln.cur{background:rgba(255,196,37,.24)}
 .ficha .fr span{font:600 18px var(--mono);color:var(--soft)}
 .ficha .fr b{font:700 22px var(--mono)}
 .ficha .fr.lit{background:var(--hi)}
-.ficha .fr.sub{padding:2px 0 2px 24px;grid-template-columns:146px 1fr}
-.ficha .fr.sub span{font-size:17px}
+.ficha .fr.nest{padding:2px 0 2px 24px;grid-template-columns:146px 1fr}
+.ficha .fr.nest span{font-size:18px}
 .res{background:#fff;padding:16px 22px}
 .res small{display:block;font:600 19px var(--sans);color:var(--soft)}
 .res b{display:block;font:700 40px var(--mono);margin-top:4px;color:var(--accent)}
@@ -44,7 +44,7 @@ pre.code .ln.cur{background:rgba(255,196,37,.24)}
 .bytes .pad{background:repeating-linear-gradient(45deg,var(--tone2) 0 8px,var(--tone) 8px 16px);color:var(--soft)}
 .bytes .c{background:#B3261E}.bytes .i{background:#1B6E8A}.bytes .d{background:#5B3A1E}
 .bytes .u{background:var(--accent)}.bytes .uo{background:var(--tone2);color:var(--soft)}
-.bytes .ix{height:auto;color:var(--soft);font-size:15px;background:none}
+.bytes .ix{height:auto;color:var(--soft);font-size:17px;background:none}
 .lab{font:600 19px var(--sans);margin-top:16px}
 /* tabla de laptops */
 table.t.lp td,table.t.lp th{padding:9px 14px;font-size:20px}
@@ -70,7 +70,7 @@ a.dl{display:inline-block;background:var(--accent);color:#fff;font-weight:600;fo
 .todo code{font-size:18px;white-space:normal}
 .cases [data-tab]{font:600 18px var(--sans);padding:9px 14px}
 .cases [data-tab].pass::after{content:" ✓";color:#2E9E5B}
-.cases [data-panel] .term{font-size:18px;line-height:1.4;max-height:250px;overflow:auto;white-space:pre-wrap}
+.cases [data-panel] .term{font-size:17px;line-height:1.35;white-space:pre}
 .typein{font:600 19px var(--mono);background:var(--tone);padding:10px 14px;white-space:pre-wrap}
 textarea.paste{width:100%;height:150px;font:500 16px/1.4 var(--mono);padding:10px 12px;border:0;background:#fff;color:var(--ink);resize:none}
 .checks{list-style:none;margin:8px 0 0;padding:0;font-size:18px;line-height:1.5}
@@ -173,7 +173,7 @@ b.devolver = {10, 11, 2026};</pre>
   <div class="row" data-a style="margin-top:18px"><button id="pd-a" aria-pressed="true" style="font-family:var(--mono)">struct A { char c; int i; double d; }</button><button id="pd-b" style="font-family:var(--mono)">struct B { char c; double d; int i; }</button></div>
   <div data-a><div class="bytes" id="pd-m"></div></div>
   <div class="res" data-a style="margin-top:18px"><small id="pd-s">sizeof</small><b id="pd-r"></b></div>
-  <p class="small" data-a style="margin-top:12px;font-size:19px">Medido con g++ 13.3 en Linux de 64 bits: <code>sizeof(A)</code> = 16 y <code>sizeof(B)</code> = 24. Las rayas son relleno: memoria que nadie usa.</p>
+  <p class="body" data-a style="margin-top:12px;font-size:20px">Medido con g++ 13.3 en Linux de 64 bits: <code>sizeof(A)</code> = 16 y <code>sizeof(B)</code> = 24. Las rayas son relleno: memoria que nadie usa.</p>
 </section>
 
 <!-- TEMA 2 -->
@@ -227,7 +227,7 @@ p-&gt;prestada = false;   // cambia b</pre>
       <div data-panel="cp1"><pre class="code" style="font-size:21px">Laptop c = a;     // copia todos los miembros
 c.ram = 32;
 cout &lt;&lt; a.ram &lt;&lt; " " &lt;&lt; c.ram;</pre><div class="term" style="margin-top:10px;font-size:20px">8 32</div></div>
-      <div data-panel="cp1"><p class="lead">La asignación copia la ficha completa.</p><p class="body sub">c es otra ficha: cambiarla no toca a <code>a</code>. Así funciona el <code>swap(inv[0], inv[4])</code> del principio.</p></div>
+      <div data-panel="cp1"><p class="lead">La asignación copia la ficha completa.</p><p class="body sub">c es otra ficha: cambiarla no afecta a <code>a</code>. Así funciona el <code>swap(inv[0], inv[4])</code> del principio.</p></div>
       <div data-panel="cp2" hidden><pre class="code" style="font-size:20px">void posponer(Fecha f)     { f.dia += 7; }
 void posponerRef(Fecha&amp; f) { f.dia += 7; }
 Fecha d{3, 11, 2026};
@@ -327,10 +327,10 @@ int main() { ... }</pre><div class="term" style="margin-top:10px;font-size:19px"
       <div data-panel="r2" hidden><pre class="code" style="font-size:22px">union U { int n; string s; };
 U u;</pre><div class="term" style="margin-top:10px;font-size:18px"><span class="e">error: use of deleted function 'U::U()'
 error: union member 'U::s' with non-trivial 'std::basic_string…'</span></div></div>
-      <div data-panel="r2" hidden><p class="lead">Una unión no sabe cuál de sus miembros construir o destruir.</p><p class="body sub">Por eso la Identificación usa <code>char empleado[8]</code> y no <code>string</code>.</p></div>
+      <div data-panel="r2" hidden><p class="lead">Una unión no sabe cuál de sus miembros construir o destruir.</p><p class="body sub">Por eso <code>Identificacion</code> usa <code>char empleado[8]</code> y no <code>string</code>.</p></div>
       <div data-panel="r3" hidden><pre class="code" style="font-size:22px">x.real = 2.5;
 cout &lt;&lt; x.entero;   // ¿?</pre></div>
-      <div data-panel="r3" hidden><p class="lead">Compila, pero lo que imprime no significa nada.</p><p class="body sub">Solo es válido el último miembro que se escribió. Siempre lleve una etiqueta que lo diga.</p></div>
+      <div data-panel="r3" hidden><p class="lead">Compila, pero es comportamiento indefinido: el resultado no significa nada.</p><p class="body sub">Solo es válido el último miembro que se escribió. Siempre lleve una etiqueta que lo diga.</p></div>
       <div data-panel="r4" hidden><pre class="code" style="font-size:22px">Laptop* p = &amp;b;
 p.ram = 8;</pre><div class="term" style="margin-top:10px;font-size:18px"><span class="e">error: request for member 'ram' in 'p', which is of pointer type 'Laptop*' (maybe you meant to use '-&gt;' ?)</span></div></div>
       <div data-panel="r4" hidden><p class="lead">Con un puntero, la flecha.</p><p class="body sub"><code>p-&gt;ram = 8;</code> o <code>(*p).ram = 8;</code></p></div>
@@ -351,7 +351,7 @@ p.ram = 8;</pre><div class="term" style="margin-top:10px;font-size:18px"><span c
     <div><h3>struct</h3><p>Un tipo nuevo con miembros de distintos tipos. La llave de cierre lleva <code>;</code>.</p></div>
     <div><h3>Acceso</h3><p>Punto con una variable, flecha con un puntero. Se copian enteras; no se comparan con <code>==</code>.</p></div>
     <div><h3>union</h3><p>Todos los miembros en el mismo lugar: uno válido a la vez, y una etiqueta que diga cuál.</p></div>
-    <div><h3>Hacia las clases</h3><p>En C++, una <code>struct</code> es una clase con todo público. En la Unidad H se le añaden funciones.</p></div>
+    <div><h3>Hacia las clases</h3><p>En C++, una <code>struct</code> es una clase cuyos miembros son públicos por omisión. En la Unidad H se le añaden funciones.</p></div>
   </div>
 </section>
 
@@ -380,12 +380,12 @@ p.ram = 8;</pre><div class="term" style="margin-top:10px;font-size:18px"><span c
     <a class="dl" href="laboratorios/LabG_Prestamos.cpp" download>Descargar LabG_Prestamos.cpp</a>
   </div>
   <pre class="code" data-raw data-a style="font-size:19px;padding:10px 0;margin-top:10px"><span class="ln">g++ -std=c++17 -Wall -Wextra -o prestamos LabG_Prestamos.cpp</span></pre>
-  <p class="small" data-a style="margin-top:8px;font-size:19px">El código base compila desde el principio; los avisos <code>unused parameter</code> desaparecen al completar cada función.</p>
+  <p class="small" data-a style="margin-top:8px;font-size:19px">Ojo: en el laboratorio la fecha está dentro del préstamo, <code>l.prestamo.devolver.dia</code>. El código base compila desde el principio; los avisos <code>unused parameter</code> desaparecen al completar cada función.</p>
 </section>
 
 <section class="slide" data-title="Laboratorio G: las pruebas">
   <h2 class="mask"><span>Cuatro pruebas del programa</span></h2>
-  <div style="display:grid;grid-template-columns:620px 1fr;gap:30px;margin-top:18px">
+  <div style="display:grid;grid-template-columns:720px 1fr;gap:26px;margin-top:18px">
     <div class="cases" data-tabs="c1" data-a>
       <div class="row"><button data-tab="c1" id="tb-c1">Caso 1</button><button data-tab="c2" id="tb-c2">Caso 2</button><button data-tab="c3" id="tb-c3">Caso 3</button><button data-tab="c4" id="tb-c4">Caso 4</button></div>
       <div id="cases-panels" style="margin-top:12px"></div>
@@ -445,7 +445,7 @@ var B='===== PRESTAMO DE LAPTOPS - BIBLIOTECA =====';
 window.__CASES={
  c1:{input:'1\n2\n0',out:'BIB-01 Dell 8 GB - disponible\nBIB-02 HP 16 GB - prestada a Estudiante 84231 hasta 10/11/2026\nBIB-03 Lenovo 8 GB - disponible\nBIB-04 Acer 4 GB - prestada a Empleado E-0457 hasta 6/11/2026\nBIB-05 HP 16 GB - disponible\n…\nDisponibles: 3 de 5\nPromedio de RAM: 10.4 GB',
    chk:[B,'BIB-01 Dell 8 GB - disponible','BIB-02 HP 16 GB - prestada a Estudiante 84231 hasta 10/11/2026','BIB-03 Lenovo 8 GB - disponible','BIB-04 Acer 4 GB - prestada a Empleado E-0457 hasta 6/11/2026','BIB-05 HP 16 GB - disponible','Disponibles: 3 de 5','Promedio de RAM: 10.4 GB']},
- c2:{input:'3\nBIB-03\n1\n90112\n13 11 2026\n2\n0',out:'Prestada: BIB-03 Lenovo 8 GB - prestada a Estudiante 90112 hasta 13/11/2026\n…\nDisponibles: 2 de 5',
+ c2:{input:'3\nBIB-03\n1\n90112\n13 11 2026\n2\n0',out:'Prestada: BIB-03 Lenovo 8 GB - prestada a Estudiante 90112 hasta 13/11/2026\n…\nDisponibles: 2 de 5\nPromedio de RAM: 10.4 GB',
    chk:[B,'Prestada: BIB-03 Lenovo 8 GB - prestada a Estudiante 90112 hasta 13/11/2026','Disponibles: 2 de 5','Promedio de RAM: 10.4 GB']},
  c3:{input:'3\nBIB-05\n2\nE-1203\n20 11 2026\n4\nBIB-02\n1\n0',out:'Prestada: BIB-05 HP 16 GB - prestada a Empleado E-1203 hasta 20/11/2026\n…\nBIB-02 devuelta\n…\nBIB-02 HP 16 GB - disponible\n…\nBIB-05 HP 16 GB - prestada a Empleado E-1203 hasta 20/11/2026',
    chk:[B,'Prestada: BIB-05 HP 16 GB - prestada a Empleado E-1203 hasta 20/11/2026','BIB-02 devuelta','BIB-01 Dell 8 GB - disponible','BIB-02 HP 16 GB - disponible','BIB-03 Lenovo 8 GB - disponible','BIB-04 Acer 4 GB - prestada a Empleado E-0457 hasta 6/11/2026','BIB-05 HP 16 GB - prestada a Empleado E-1203 hasta 20/11/2026']},
@@ -473,7 +473,7 @@ var LP=[
  {etiqueta:'BIB-05',marca:'HP',ram:16,prestada:false}];
 function ficha(l,title){var r=function(k,v,cls){return '<div class="fr'+(cls?' '+cls:'')+'" data-k="'+k+'"><span>'+k+'</span><b>'+esc(v)+'</b></div>'};
   var d=l.dev||[0,0,0];
-  return '<div class="tt"><span>'+(title||'Laptop')+'</span><span>'+l.etiqueta+'</span></div>'+r('etiqueta','"'+l.etiqueta+'"')+r('marca','"'+l.marca+'"')+r('ram',l.ram)+r('prestada',l.prestada?'true':'false')+r('devolver','')+r('dia',d[0],'sub')+r('mes',d[1],'sub')+r('anio',d[2],'sub')}
+  return '<div class="tt"><span>'+(title||'Laptop')+'</span><span>'+l.etiqueta+'</span></div>'+r('etiqueta','"'+l.etiqueta+'"')+r('marca','"'+l.marca+'"')+r('ram',l.ram)+r('prestada',l.prestada?'true':'false')+r('devolver','')+r('dia',d[0],'nest')+r('mes',d[1],'nest')+r('anio',d[2],'nest')}
 function lit(el,keys){[].forEach.call(el.querySelectorAll('.fr'),function(f){f.classList.toggle('lit',keys.indexOf(f.dataset.k)>=0)})}
 
 /* capítulos */
@@ -484,7 +484,8 @@ var EX=['Declarar','Acceder','Uniones','Laboratorio'];
 /* portada */
 function ptShow(i){$('pt-f').innerHTML=ficha(LP[i],'struct Laptop');[].forEach.call(document.querySelectorAll('#pt-b button'),function(b){b.setAttribute('aria-pressed',+b.dataset.i===i)})}
 [].forEach.call(document.querySelectorAll('#pt-b button'),function(b){b.onclick=function(){ptShow(+b.dataset.i)}});ptShow(1);
-$('lab-f').innerHTML=ficha(LP[3],'Laptop');
+$('lab-f').innerHTML=(function(){var r=function(k,v,c){return '<div class="fr'+(c?' '+c:'')+'"><span>'+k+'</span><b>'+esc(v)+'</b></div>'};
+  return '<div class="tt"><span>Laptop (laboratorio)</span><span>BIB-04</span></div>'+r('etiqueta','"BIB-04"')+r('marca','"Acer"')+r('ram',4)+r('prestada','true')+r('prestamo','')+r('tipo','EMPLEADO','nest')+r('id','"E-0457"','nest')+r('devolver','6/11/2026','nest')})();
 
 /* paralelos vs struct */
 $('sw-go').onclick=function(){$('sw-msg').innerHTML='Paralelos: <b>3 llamadas</b>, una por arreglo; si se olvida una, los datos quedan mezclados. Estructura: <b>1 swap</b> mueve la ficha completa.'};

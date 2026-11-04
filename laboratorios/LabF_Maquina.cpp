@@ -8,7 +8,8 @@
 //  Nombre: ______________________   Fecha: ____________
 //
 //  Complete las 6 funciones marcadas con TODO. No modifique main
-//  ni las funciones marcadas YA HECHA. Compile con:
+//  ni las funciones marcadas YA HECHA (para el reto puede modificar main).
+//  Compile con:
 //      g++ -std=c++17 -Wall -Wextra -o maquina LabF_Maquina.cpp
 //  Mientras falten funciones, g++ avisa "unused parameter":
 //  el aviso desaparece cuando la funcion usa su parametro.
@@ -52,7 +53,8 @@ string dinero(int centavos) {
 
 // ---------- 1. Devuelve una copia de s con todas las letras en mayuscula ----------
 string aMayusculas(string s) {
-    // TODO 1: recorra s con un for y cambie cada caracter con toupper(s[i]).
+    // TODO 1: recorra s con un for (use i < (int)s.length() para que g++ no
+    //         avise) y cambie cada caracter con toupper(s[i]).
     return s;
 }
 

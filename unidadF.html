@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unidad F: Arreglos y cadenas · TESI 2105</title>
+<meta name="description" content="TESI 2105 Programación Orientada a Objetos. Unidad F: arreglos unidimensionales y multidimensionales y cadenas de caracteres, contados como la máquina expendedora del pasillo. Incluye el Laboratorio F.">
+<link rel="preload" href="assets/fonts/schibsted-grotesk-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* Tema de la Unidad F: la máquina expendedora. Cada espacio tiene un código (fila y columna) y una pantalla LED. */
+:root{--ground:#F1F4F2;--tone:#E1E8E5;--tone2:#CFDBD6;--ink:#122126;--soft:#45585C;--accent:#0D706C;--field:#0B5552;--field-ink:#F2FBF9;--hi:#FFC425;--code-bg:#122126;--code-ink:#E4EEEC;--c-kw:#8EE3D8;--c-str:#FFD98A;--c-num:#FFE9A8;--c-cmt:#9DB5B1;--led-bg:#0C1416;--led:#FFB347}
+pre.code .ln.cur{background:rgba(255,196,37,.24)}
+.term{background:#0A1517}
+#map button.ch{box-shadow:inset 0 0 0 3px #49B3A9;background:transparent}
+#map button.ch.seen{background:#49B3A9}
+#map button.cur,#map button.ch.cur{background:var(--hi);box-shadow:none}
+/* pantalla LED */
+.led{background:var(--led-bg);color:var(--led);font:600 26px/1.45 var(--mono);padding:18px 24px;white-space:pre;min-height:64px}
+.led .dim{opacity:.5}
+/* capítulos */
+.chwrap{display:grid;grid-template-columns:1fr 470px;gap:48px;height:100%}
+.chwrap .left{display:flex;flex-direction:column}
+.chapter h1{font-size:96px}
+.chapter .ext{display:flex;gap:26px;margin-top:auto;font-size:25px;font-weight:700;white-space:nowrap}
+.chapter .ext span{opacity:.5}
+.chapter .ext span.on{opacity:1}
+.chapter .ext span.on::after{content:"";display:block;height:6px;background:var(--hi);margin-top:8px}
+.field-hi .q{font-size:60px;line-height:1.04;letter-spacing:-.03em;font-weight:800;max-width:1100px}
+/* la máquina (portada y capítulos) */
+.machine{background:#1B2E33;padding:18px;width:470px;align-self:center}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mgrid button{height:58px;background:#2C4449;color:#E4EEEC;font:600 21px var(--mono);padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+.mgrid button small{font:500 13px var(--sans);opacity:.8;max-width:96px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.mgrid button.out{background:#3A2A2A;color:#FFB4A2}
+.mgrid button.lit,.mgrid button.lit:hover{background:var(--hi);color:var(--ink)}
+.machine .led{margin-top:14px;font-size:22px;padding:14px 18px}
+.machine .keys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.machine .keys button{background:var(--accent);color:#fff;font-size:17px;padding:10px 6px}
+.machine .keys button:hover{background:#fff;color:var(--ink)}
+/* celdas de arreglo */
+.arr{display:flex;gap:0;margin-top:10px}
+.cell{width:118px;text-align:center}
+.cell .v{height:96px;background:#fff;border:3px solid var(--ink);margin-left:-3px;display:flex;align-items:center;justify-content:center;font:700 44px var(--mono);transition:background .2s,color .2s;cursor:pointer}
+.cell:first-child .v{margin-left:0}
+.cell .ix{font:600 22px var(--mono);margin-top:8px}
+.cell .of{font:500 17px var(--sans);color:var(--soft);margin-top:2px}
+.cell.cur .v{background:var(--hi)}
+.cell.zero .v{color:#B3261E}
+.cell.bad .v{background:#3A1515;color:#FF8A80;border-style:dashed}
+.cell.chg .v{background:#BFE9E2}
+.arr.sm .cell{width:92px}.arr.sm .v{height:78px;font-size:36px}.arr.sm .ix{font-size:20px}
+.msg{background:var(--tone);padding:14px 18px;font-size:21px;min-height:58px}
+.ws .row2{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.vbox{background:#fff;padding:10px 16px}
+.vbox small{display:block;font:600 19px var(--sans)}
+.vbox b{display:block;font:600 36px var(--mono);margin-top:2px}
+.inp{display:flex;gap:16px;align-items:end;flex-wrap:wrap}
+.inp label{font-size:21px;font-weight:600;display:block;margin-bottom:6px}
+.inp input{font:600 30px var(--mono);width:130px;padding:8px 12px;border:0;background:#fff;color:var(--ink)}
+/* matriz */
+.mx{display:grid;grid-template-columns:54px repeat(4,1fr);gap:6px}
+.mx .h{font:700 22px var(--mono);display:flex;align-items:center;justify-content:center;color:var(--soft)}
+.mx button{background:#fff;padding:6px 6px;height:66px;display:flex;flex-direction:column;justify-content:center;align-items:center;font:500 16px var(--sans);line-height:1.15}
+.mx button b{font:700 26px var(--mono)}
+.mx button.zero b{color:#B3261E}
+.mx button.lit,.mx button.lit:hover{background:var(--hi);color:var(--ink)}
+.mx button.done{background:#BFE9E2}
+.strip{display:grid;grid-template-columns:repeat(16,1fr);gap:3px;margin-top:14px}
+.strip div{background:#fff;height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;font:600 18px var(--mono)}
+.strip div small{font:500 13px var(--sans);color:var(--soft)}
+.strip div.r0{border-top:6px solid #0D706C}.strip div.r1{border-top:6px solid #49B3A9}.strip div.r2{border-top:6px solid #0D706C}.strip div.r3{border-top:6px solid #49B3A9}
+.strip div.lit{background:var(--hi)}
+/* cadenas */
+.chars{display:flex;flex-wrap:wrap;gap:0;margin-top:16px;min-height:150px}
+.ch1{width:78px;text-align:center}
+.ch1 .v{height:78px;background:#fff;border:3px solid var(--ink);margin-left:-3px;display:flex;align-items:center;justify-content:center;font:700 34px var(--mono)}
+.ch1.mb .v{background:#FFF1CC;font-size:20px}
+.ch1.nul .v{background:var(--ink);color:var(--hi);font-size:28px}
+.ch1 .ix{font:600 18px var(--mono);margin-top:6px}
+.ch1 .code{font:500 15px var(--sans);color:var(--soft)}
+input.big{font:600 30px var(--mono);padding:10px 14px;border:0;background:#fff;color:var(--ink);width:420px}
+.ops{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.ops button{font:600 19px var(--mono);text-align:left;padding:11px 14px}
+/* discusiones */
+.discrow{position:absolute;left:72px;right:72px;bottom:32px}
+.prop2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.prop2>div{background:var(--ink);color:#fff;padding:20px 24px;min-height:170px}
+.prop2>div.ok{background:var(--accent)}
+.prop2 b{display:block;font:700 26px var(--sans)}.prop2 code{white-space:normal}
+.prop2 span{display:block;font-size:22px;margin-top:8px}
+.prop2 .pbtn{margin-top:12px;background:#fff;color:var(--ink);font-size:18px;padding:8px 12px}
+.prop2 span.reveal{display:none}.prop2 .shown span.reveal{display:block}
+/* esencial */
+.dir{display:grid;grid-template-columns:repeat(2,1fr);gap:26px 48px;margin-top:34px}
+.dir h3{font-size:30px}
+.dir p{font-size:25px;margin-top:6px}
+/* laboratorio */
+a.dl{display:inline-block;background:var(--accent);color:#fff;font-weight:600;font-size:20px;padding:12px 18px;text-decoration:none}a.dl:hover{background:var(--ink)}
+.todo{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px 28px}
+.todo li{background:#fff;padding:12px 16px;font-size:21px;line-height:1.35;display:grid;grid-template-columns:44px 1fr;align-items:start}
+.todo li b.nm{font:800 28px var(--sans);color:var(--accent)}
+.todo code{font-size:19px;white-space:normal}
+.cases [data-tab]{font:600 18px var(--sans);padding:10px 14px}
+.cases [data-tab].pass::after{content:" ✓";color:#5EE08A}
+.cases [data-panel] .term{font-size:17px;line-height:1.4;max-height:236px;overflow:auto}
+.typein{font:600 19px var(--mono);background:var(--tone);padding:10px 14px;white-space:pre-wrap}
+textarea.paste{width:100%;height:150px;font:500 16px/1.4 var(--mono);padding:10px 12px;border:0;background:#fff;color:var(--ink);resize:none}
+.checks{list-style:none;margin:8px 0 0;padding:0;font-size:18px;line-height:1.5}
+.checks li::before{content:"·  ";font-weight:800}
+.checks li.ok{color:#0B6B47}.checks li.ok::before{content:"✓  "}
+.checks li.no{color:#B3261E}.checks li.no::before{content:"✗  "}
+.score{font:800 40px var(--sans)}
+.rub td:last-child,.rub th:last-child{text-align:right;width:120px}
+.rub td{padding:8px 16px!important;font-size:21px}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage" data-name="Unidad F · Arreglos y cadenas" role="region" aria-roledescription="presentación" aria-label="Unidad F: Arreglos y cadenas de caracteres">
+
+<!-- 1 PORTADA -->
+<section class="slide chapter" data-title="Portada">
+  <div class="chwrap">
+    <div class="left">
+      <h1 class="mask"><span>Arreglos y cadenas</span></h1>
+      <p class="lead" data-a style="margin-top:22px;max-width:620px">Una máquina expendedora guarda muchos productos del mismo tipo, cada uno en un espacio con su código. Así guarda C++ un arreglo.</p>
+      <div class="ext" data-a><span class="on">Arreglos</span><span class="on">Matrices</span><span class="on">Cadenas</span><span class="on">Laboratorio</span></div>
+      <p class="body" data-a style="margin-top:18px;font-size:20px">TESI 2105, Unidad F<br>Prof. Eduardo O. De Jesús Arroyo · ITPR, Recinto de Manatí</p>
+    </div>
+    <div class="machine" data-a>
+      <div class="mgrid" id="pt-grid"></div>
+      <div class="led" id="pt-led">Toque un espacio</div>
+      <div class="keys" id="pt-keys"><button data-k="1">1 Arreglos</button><button data-k="2">2 Matrices</button><button data-k="3">3 Cadenas</button><button data-k="4">4 Lab</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 POR QUÉ -->
+<section class="slide" data-title="¿Para qué sirve un arreglo?">
+  <h2 class="mask"><span>Una variable por espacio no escala</span></h2>
+  <p class="body sub" data-a style="max-width:1060px">Mueva el control: ¿cuántos espacios tiene la máquina? Compare cuánto código hace falta para guardar la existencia de cada uno y sumarla.</p>
+  <div class="inp" data-a style="margin-top:18px"><div><label for="w-n">Espacios: <span id="w-nv">5</span></label><input type="range" id="w-n" min="3" max="200" value="5" style="width:520px;padding:0;background:transparent"></div></div>
+  <div class="cols" style="gap:28px;margin-top:18px">
+    <div data-a>
+      <h3 style="font-size:24px">Sin arreglo: <span id="w-la">6</span> líneas</h3>
+      <pre class="code" data-raw id="w-a" style="font-size:19px;margin-top:8px;height:268px"></pre>
+    </div>
+    <div data-a>
+      <h3 style="font-size:24px">Con arreglo: siempre 4 líneas</h3>
+      <pre class="code" id="w-b" style="font-size:19px;margin-top:8px;height:268px"></pre>
+    </div>
+  </div>
+</section>
+
+<!-- TEMA 1 -->
+<section class="slide chapter" data-title="Tema 1: Arreglos unidimensionales" data-topic="1">
+  <div class="chwrap">
+    <div class="left">
+      <h1 class="mask"><span>Arreglos unidimen&shy;sionales</span></h1>
+      <p class="lead" data-a style="margin-top:22px;max-width:640px">Una fila de la máquina: varios valores del mismo tipo, uno al lado del otro, con un solo nombre.</p>
+      <div class="ext" data-a></div>
+    </div>
+    <div class="led" data-a style="align-self:center;font-size:28px">FILA A
+<span class="dim">int stock[5];</span>
+5 espacios · 20 bytes</div>
+  </div>
+</section>
+
+<section class="slide" data-title="Declarar un arreglo">
+  <h2 class="mask"><span>Un nombre, cinco espacios, índices desde 0</span></h2>
+  <pre class="code" data-a style="font-size:26px;margin-top:16px;padding:12px 0">// tipo nombre[tamaño] = {valores};
+int stock[5] = {8, 3, 0, 5, 2};</pre>
+  <div data-a style="display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:start;margin-top:16px">
+    <div><div class="arr" id="d-arr"></div><p class="small" style="margin-top:10px">Toque un espacio.</p></div>
+    <div><div class="led" id="d-led" style="font-size:24px">stock[2]  →  0</div>
+      <p class="body" id="d-msg" style="margin-top:14px;font-size:22px" aria-live="polite"></p></div>
+  </div>
+  <div class="cols-3" data-a style="margin-top:12px;gap:14px">
+    <div class="tone" style="padding:16px 22px"><b style="font-size:21px">El tamaño es fijo</b><p style="font-size:20px;margin-top:4px"><code>sizeof(stock)</code> = 20 bytes: 5 × 4.</p></div>
+    <div class="tone" style="padding:16px 22px"><b style="font-size:21px">Lo que falta es 0</b><p style="font-size:20px;margin-top:4px"><code>int a[5] = {1, 2};</code> guarda 1 2 0 0 0.</p></div>
+    <div class="tone" style="padding:16px 22px"><b style="font-size:21px">El tamaño se deduce</b><p style="font-size:20px;margin-top:4px"><code>int b[] = {4, 4, 4};</code> tiene 3.</p></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Fuera de los límites">
+  <h2 class="mask"><span>El índice 5 no existe, y C++ no lo impide</span></h2>
+  <p class="body sub" data-a style="max-width:1100px">Los índices válidos de <code>stock[5]</code> van del 0 al 4. Escriba otro, como 5 o −1.</p>
+  <div style="display:grid;grid-template-columns:auto 1fr;gap:40px;margin-top:20px;align-items:start">
+    <div data-a>
+      <div class="inp"><div><label for="ob-i">Índice</label><input id="ob-i" type="number" value="3"></div><div class="led" id="ob-led" style="min-width:330px;font-size:26px"></div></div>
+      <div class="arr" id="ob-arr" style="margin-top:22px"></div>
+    </div>
+    <div data-a><p class="lead" id="ob-msg" style="font-size:28px" aria-live="polite"></p></div>
+  </div>
+  <div class="term" id="ob-term" data-a style="margin-top:20px;font-size:18px;min-height:96px"></div>
+</section>
+
+<section class="slide" data-title="Recorrer un arreglo con for">
+  <h2 class="mask"><span>Un for visita cada espacio</span></h2>
+  <div data-step="rec" style="display:grid;grid-template-columns:630px 1fr;gap:30px;margin-top:22px">
+    <div data-a>
+      <pre class="code nums" style="font-size:20px">int stock[5] = {8, 3, 0, 5, 2};
+int total = 0, mayor = stock[0], pos = 0;
+for (int i = 0; i &lt; 5; i++) {
+    total += stock[i];
+    if (stock[i] &gt; mayor) {
+        mayor = stock[i];  pos = i;
+    }
+}
+cout &lt;&lt; "Total: " &lt;&lt; total &lt;&lt; endl;
+cout &lt;&lt; "Mayor: " &lt;&lt; mayor
+     &lt;&lt; " en " &lt;&lt; pos &lt;&lt; endl;</pre>
+      <div class="row" style="margin-top:14px"><button class="go" data-s="next">Siguiente</button><button data-s="reset">Reiniciar</button><span class="stepn"></span></div>
+    </div>
+    <div class="ws" data-a>
+      <div class="arr sm" style="margin-top:0"><div class="cell" data-id="c0"><div class="v">8</div><div class="ix">0</div></div><div class="cell" data-id="c1"><div class="v">3</div><div class="ix">1</div></div><div class="cell zero" data-id="c2"><div class="v">0</div><div class="ix">2</div></div><div class="cell" data-id="c3"><div class="v">5</div><div class="ix">3</div></div><div class="cell" data-id="c4"><div class="v">2</div><div class="ix">4</div></div></div>
+      <div class="row2"><div class="vbox"><small>i</small><b data-id="i">–</b></div><div class="vbox"><small>total</small><b data-id="total">–</b></div><div class="vbox"><small>mayor</small><b data-id="mayor">–</b></div><div class="vbox"><small>pos</small><b data-id="pos">–</b></div></div>
+      <div class="msg" data-id="msg" style="margin-top:12px" aria-live="polite">Pulse «Siguiente».</div>
+      <div class="term" data-id="out" style="margin-top:10px;min-height:82px"></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Arreglos como parámetros">
+  <h2 class="mask"><span>Una función recibe el arreglo original</span></h2>
+  <p class="body sub" data-a style="max-width:1100px">En la Unidad D, un <code>int</code> llegaba como copia. Un arreglo no: la función recibe la dirección de su primer espacio (Unidad E) y cambia el original.</p>
+  <div style="display:grid;grid-template-columns:640px 1fr;gap:32px;margin-top:20px">
+    <div data-a>
+      <pre class="code" id="rp-code" style="font-size:20px">void reponer(int a[], int n) {
+    for (int i = 0; i &lt; n; i++)
+        if (a[i] == 0) a[i] = 10;
+}
+int main() {
+    int stock[5] = {8, 3, 0, 5, 2};
+    reponer(stock, 5);      // se pasa el tamaño
+    cout &lt;&lt; stock[2];      // imprime 10
+}</pre>
+      <div class="row" style="margin-top:14px"><button class="go" id="rp-go">Llamar a reponer(stock, 5)</button><button id="rp-reset">Reiniciar</button></div>
+    </div>
+    <div data-a>
+      <p class="small" style="font-size:20px;color:var(--ink);font-weight:600">stock en main</p>
+      <div class="arr" id="rp-arr" style="margin-top:6px"></div>
+      <p class="body" id="rp-msg" style="margin-top:16px;font-size:22px;min-height:96px" aria-live="polite">El espacio 2 está en 0.</p>
+      <div class="term" style="font-size:16px;margin-top:6px"><span class="w">warning: 'sizeof' on array function parameter 'a' will return size of 'int*' [-Wsizeof-array-argument]</span></div>
+      <p class="small" style="margin-top:8px">Por eso el tamaño se pasa aparte: dentro de la función, <code>sizeof(a)</code> da 8, el tamaño de un puntero.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TEMA 1B -->
+<section class="slide chapter" data-title="Arreglos multidimensionales" data-topic="2">
+  <div class="chwrap">
+    <div class="left">
+      <h1 class="mask"><span>Arreglos multidimen&shy;sionales</span></h1>
+      <p class="lead" data-a style="margin-top:22px;max-width:640px">La máquina completa: filas de la A a la D y columnas del 0 al 3. Dos índices por espacio.</p>
+      <div class="ext" data-a></div>
+    </div>
+    <div class="led" data-a style="align-self:center;font-size:28px">C1
+<span class="dim">stock[2][1]</span>
+fila 2 · columna 1</div>
+  </div>
+</section>
+
+<section class="slide" data-title="La máquina es una matriz">
+  <h2 class="mask"><span>El código C1 es stock[2][1]</span></h2>
+  <div style="display:grid;grid-template-columns:620px 1fr;gap:34px;margin-top:20px">
+    <div data-a>
+      <div class="mx" id="mx"></div>
+    </div>
+    <div data-a>
+      <pre class="code" style="font-size:19px">int stock[4][4] = {
+    {5, 0, 7, 2},   // fila A
+    {3, 6, 1, 4},   // fila B
+    {8, 2, 0, 5},   // fila C
+    {1, 3, 9, 6}    // fila D
+};</pre>
+      <div class="led" id="mx-led" style="margin-top:12px;font-size:23px"></div>
+    </div>
+  </div>
+  <div data-a>
+    <p class="body" style="margin-top:16px;font-size:21px">Toque un espacio. En la memoria no hay filas: los 16 van seguidos, y <code>[f][c]</code> está en la posición <code>f × 4 + c</code>.</p>
+    <div class="strip" id="mx-strip"></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Ciclos anidados">
+  <h2 class="mask"><span>Dos for: filas y columnas</span></h2>
+  <div style="display:grid;grid-template-columns:600px 1fr;gap:34px;margin-top:22px">
+    <div data-a>
+      <pre class="code nums" id="na-code" style="font-size:20px">for (int f = 0; f &lt; 4; f++) {
+    int suma = 0;
+    for (int c = 0; c &lt; 4; c++)
+        suma += stock[f][c];
+    cout &lt;&lt; char('A' + f) &lt;&lt; ": "
+         &lt;&lt; suma &lt;&lt; endl;
+}</pre>
+      <div class="row" style="margin-top:14px"><button class="go" id="na-go">Recorrer</button><button id="na-reset">Reiniciar</button></div>
+      <p class="body" id="na-msg" style="margin-top:14px;font-size:22px;min-height:66px" aria-live="polite">El for de afuera escoge la fila; el de adentro recorre sus 4 columnas.</p>
+
+    </div>
+    <div data-a>
+      <div class="mx" id="na-mx"></div>
+      <div class="row2" hidden style="display:none"><div class="vbox"><small>f</small><b id="na-f">–</b></div><div class="vbox"><small>c</small><b id="na-c">–</b></div><div class="vbox"><small>suma</small><b id="na-s">–</b></div></div>
+      <div class="term" id="na-out" style="margin-top:12px;height:150px;font-size:20px"></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: ¿por qué desde 0?">
+  <p class="q mask"><span>¿Por qué el primer espacio es stock[0] y no stock[1]?</span></p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:27px">Piensen en la Unidad E: ¿qué guarda el nombre <code>stock</code> y qué significa el número entre corchetes?</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b>Costumbre</b><span>Así lo decidió quien inventó C</span></div><div class="ok" data-rv-box><b>Desplazamiento</b><span>El índice dice cuántos espacios hay que avanzar</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal"><code>stock[i]</code> es <code>*(stock + i)</code>: el primero está a 0 espacios del inicio</span></div></div></div>
+</section>
+
+<!-- TEMA 2 -->
+<section class="slide chapter" data-title="Tema 2: Cadenas de caracteres" data-topic="3">
+  <div class="chwrap">
+    <div class="left">
+      <h1 class="mask"><span>Cadenas de caracteres</span></h1>
+      <p class="lead" data-a style="margin-top:22px;max-width:640px">El texto de la pantalla LED también es un arreglo: uno de caracteres.</p>
+      <div class="ext" data-a></div>
+    </div>
+    <div class="led" data-a style="align-self:center;font-size:28px">"B2"
+<span class="dim">'B' '2' '\0'</span>
+3 bytes</div>
+  </div>
+</section>
+
+<section class="slide" data-title="Un arreglo de char">
+  <h2 class="mask"><span>Una cadena de C termina en '\0'</span></h2>
+  <div style="display:grid;grid-template-columns:1fr 400px;gap:34px;margin-top:20px;align-items:start">
+    <div data-a>
+      <pre class="code" id="cs-code" data-raw style="font-size:24px"></pre>
+      <div class="inp" style="margin-top:16px"><div><label for="cs-in">Escriba el texto</label><input class="big" id="cs-in" value="B2" maxlength="14"></div></div>
+    </div>
+    <div data-a>
+      <div class="led" id="cs-led" style="font-size:24px"></div>
+    </div>
+  </div>
+  <div class="chars" id="cs-cells" data-a></div>
+  <p class="body" id="cs-msg" data-a style="font-size:21px;margin-top:4px" aria-live="polite"></p>
+</section>
+
+<section class="slide" data-title="string y sus operaciones">
+  <h2 class="mask"><span>string hace el trabajo pesado</span></h2>
+  <p class="body sub" data-a style="max-width:1100px"><code>#include &lt;string&gt;</code>. Cambie el texto y pruebe cada operación: el resultado es el que imprimiría <code>cout</code>.</p>
+  <div style="display:grid;grid-template-columns:560px 1fr;gap:34px;margin-top:18px">
+    <div data-a>
+      <div class="inp"><div><label for="st-s">string s =</label><input class="big" id="st-s" value="Manati" maxlength="16" style="width:300px"></div><div><label for="st-q">buscar</label><input class="big" id="st-q" value="a" maxlength="6" style="width:120px"></div></div>
+      <div class="ops" id="st-ops" style="margin-top:16px">
+        <button data-op="len">s.length()</button><button data-op="idx">s[0]</button>
+        <button data-op="sub">s.substr(0, 3)</button><button data-op="find">s.find(buscar)</button>
+        <button data-op="cat">s + " PR"</button><button data-op="up">a mayúsculas</button>
+        <button data-op="eq">s == "Manati"</button><button data-op="at">s.at(9)</button>
+      </div>
+    </div>
+    <div data-a>
+      <pre class="code" id="st-code" style="font-size:20px;min-height:94px"></pre>
+      <div class="led" id="st-led" style="margin-top:10px;font-size:26px;white-space:pre-wrap;min-height:84px"></div>
+      <p class="body" id="st-why" style="margin-top:12px;font-size:21px" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Errores comunes con arreglos y cadenas">
+  <h2 class="mask"><span>Tres errores que se repiten</span></h2>
+  <div data-tabs="e1" data-a style="margin-top:22px">
+    <div class="row"><button data-tab="e1">Sin espacio para '\0'</button><button data-tab="e2">Comparar con ==</button><button data-tab="e3">cin y los espacios</button></div>
+    <div style="display:grid;grid-template-columns:640px 1fr;gap:32px;margin-top:22px">
+      <div data-panel="e1"><pre class="code" style="font-size:22px">char codigo[2] = "B2";</pre><div class="term" style="margin-top:10px;font-size:18px"><span class="e">error: initializer-string for 'char [2]' is too long [-fpermissive]</span></div></div>
+      <div data-panel="e1"><p class="lead">"B2" ocupa 3 bytes: 'B', '2' y '\0'.</p><p class="body sub">Use <code>char codigo[3]</code>, o mejor <code>char codigo[] = "B2";</code> para que el compilador cuente.</p></div>
+      <div data-panel="e2" hidden><pre class="code" style="font-size:22px">char a[] = "B2", b[] = "B2";
+cout &lt;&lt; (a == b);               // 0
+cout &lt;&lt; (strcmp(a, b) == 0);   // 1</pre><div class="term" style="margin-top:10px;font-size:18px"><span class="w">warning: comparison between two arrays [-Warray-compare]</span></div></div>
+      <div data-panel="e2" hidden><p class="lead">Con arreglos, == compara direcciones, no el texto.</p><p class="body sub">Use <code>strcmp</code> de <code>&lt;cstring&gt;</code>, o <code>string</code>, donde <code>==</code> sí compara el contenido.</p></div>
+      <div data-panel="e3" hidden><pre class="code" style="font-size:22px">string a, b;
+cin &gt;&gt; a;             // escribe: Agua fria
+cin.ignore(1000, '\n');
+getline(cin, b);      // escribe: Agua fria</pre><div class="term" style="margin-top:10px;font-size:19px">a = [Agua]
+b = [Agua fria]</div></div>
+      <div data-panel="e3" hidden><p class="lead"><code>cin &gt;&gt;</code> se detiene en el primer espacio.</p><p class="body sub">Para leer una línea completa, use <code>getline</code>. Si antes hubo un <code>cin &gt;&gt;</code>, <code>cin.ignore</code> descarta el Enter que quedó pendiente.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: char[] o string">
+  <p class="q mask"><span>Para el nombre de un producto, ¿char[] o string?</span></p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:27px">Piensen en un nombre que cambia de largo, en comparar dos nombres y en el error del '\0'.</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b><code>char nombre[20]</code></b><span>tamaño fijo, termina en '\0'</span></div><div class="ok" data-rv-box><b><code>string nombre</code></b><span>crece y sabe su largo</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">string: se compara con ==, crece sola y no se desborda; char[] se ve cuando una función de C lo pide</span></div></div></div>
+</section>
+
+<section class="slide" data-title="Lo esencial de la unidad">
+  <h2 class="mask"><span>Lo que se lleva de esta unidad</span></h2>
+  <div class="dir" data-a>
+    <div><h3>Arreglos</h3><p>Tamaño fijo, índices del 0 al n − 1. Nada impide salirse: el programa lo tiene que evitar.</p></div>
+    <div><h3>Con funciones</h3><p>El arreglo llega como dirección y la función cambia el original. El tamaño se pasa aparte.</p></div>
+    <div><h3>Matrices</h3><p><code>[fila][columna]</code>, guardadas fila tras fila. Se recorren con dos for anidados.</p></div>
+    <div><h3>Cadenas</h3><p><code>char[]</code> termina en '\0'. <code>string</code> sabe su largo y se compara con ==.</p></div>
+  </div>
+  <p class="body gap" data-a style="font-size:25px">Todo esto junto es el Laboratorio F: la máquina del A&#8209;201.</p>
+</section>
+
+<!-- LABORATORIO -->
+<section class="slide chapter" data-title="Laboratorio F: la máquina del A&#8209;201" data-topic="4">
+  <div class="chwrap">
+    <div class="left">
+      <h1 class="mask"><span>Laboratorio F</span></h1>
+      <p class="lead" data-a style="margin-top:22px;max-width:640px">La máquina expendedora del A&#8209;201: una matriz de productos, precios y existencias, con códigos de dos caracteres.</p>
+      <div class="ext" data-a></div>
+    </div>
+    <div class="led" data-a style="align-self:center;font-size:23px">Codigo: c1
+Barra granola cuesta $1.25
+Pague: 2.00
+Cambio: $0.75</div>
+  </div>
+</section>
+
+<section class="slide" data-title="Laboratorio F: la misión">
+  <h2 class="mask"><span>La misión: completar seis funciones</span></h2>
+  <p class="body sub" data-a style="max-width:1120px">El código base ya tiene los datos, el menú y <code>main</code>. Usted completa cada <code>TODO</code> y no cambia nada más.</p>
+  <ol class="todo" data-a style="margin-top:18px">
+    <li><b class="nm">1</b><span><code>aMayusculas(s)</code>: devuelve s en mayúsculas, con un for y <code>toupper</code>.</span></li>
+    <li><b class="nm">2</b><span><code>codigoValido(cod)</code>: 2 caracteres, letra de A a D y dígito de 0 a 3.</span></li>
+    <li><b class="nm">3</b><span><code>filaDe(cod)</code> y <code>colDe(cod)</code>: de "C1" salen 2 y 1, restando <code>'A'</code> y <code>'0'</code>.</span></li>
+    <li><b class="nm">4</b><span><code>totalUnidades(s)</code>: suma toda la matriz con dos for anidados.</span></li>
+    <li><b class="nm">5</b><span><code>valorInventario(s, p)</code>: suma existencia × precio, en centavos.</span></li>
+    <li><b class="nm">6</b><span><code>mostrarAgotados(s)</code>: imprime el código y el nombre de cada espacio en 0.</span></li>
+  </ol>
+  <div class="row" data-a style="margin-top:20px;gap:22px;align-items:center">
+    <a class="dl" href="laboratorios/LabF_Maquina.cpp" download>Descargar LabF_Maquina.cpp</a>
+    <pre class="code" data-raw style="font-size:18px;padding:12px 0;flex:1"><span class="ln">g++ -std=c++17 -Wall -Wextra -o maquina LabF_Maquina.cpp</span></pre>
+  </div>
+  <p class="small" data-a style="margin-top:10px">El código base compila desde el principio. Mientras falten funciones, g++ avisa <code>unused parameter</code>; el aviso desaparece cuando cada función usa su parámetro.</p>
+</section>
+
+<section class="slide" data-title="Laboratorio F: las pruebas">
+  <h2 class="mask"><span>Cuatro pruebas del programa</span></h2>
+  <div style="display:grid;grid-template-columns:600px 1fr;gap:30px;margin-top:18px">
+    <div class="cases" data-tabs="p1" data-a>
+      <div class="row"><button data-tab="p1" id="tb-p1">1 Reporte</button><button data-tab="p2" id="tb-p2">2 Compra</button><button data-tab="p3" id="tb-p3">3 Validación</button><button data-tab="p4" id="tb-p4">4 Agotar</button></div>
+      <div id="cases-panels" style="margin-top:12px"></div>
+    </div>
+    <div data-a>
+      <label for="vf-in" style="font-size:20px;font-weight:600;display:block;margin-bottom:6px">Pegue aquí lo que imprimió su programa con la prueba <span id="vf-name">1</span></label>
+      <textarea class="paste" id="vf-in" spellcheck="false" placeholder="Copie todo el texto de la terminal y péguelo aquí"></textarea>
+      <div class="row" style="margin-top:8px"><button class="go" id="vf-go">Comprobar</button><span class="score" id="vf-score" aria-live="polite"></span></div>
+      <ul class="checks" id="vf-checks"></ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Laboratorio F: rúbrica y entrega">
+  <h2 class="mask"><span>Rúbrica y entrega</span></h2>
+  <div style="display:grid;grid-template-columns:640px 1fr;gap:40px;margin-top:20px">
+    <table class="t rub" data-a>
+      <tr><th>Criterio</th><th>Puntos</th></tr>
+      <tr><td>1. aMayusculas</td><td>10</td></tr>
+      <tr><td>2. codigoValido</td><td>15</td></tr>
+      <tr><td>3. filaDe y colDe</td><td>10</td></tr>
+      <tr><td>4. totalUnidades</td><td>15</td></tr>
+      <tr><td>5. valorInventario</td><td>15</td></tr>
+      <tr><td>6. mostrarAgotados</td><td>15</td></tr>
+      <tr><td>Compila sin avisos con -Wall -Wextra</td><td>10</td></tr>
+      <tr><td>Nombre, fecha y sangría correcta</td><td>10</td></tr>
+      <tr><th>Total</th><th>100</th></tr>
+    </table>
+    <div data-a>
+      <h3 style="font-size:28px">Qué se entrega</h3>
+      <p class="body" style="margin-top:8px;font-size:22px">Por OrbundSIS, en un .zip llamado <code>Apellido_Nombre_TESI2105_LabF.zip</code>:</p>
+      <ul style="font-size:22px;line-height:1.45;margin:10px 0 0;padding-left:26px"><li>El archivo <code>LabF_Maquina.cpp</code> completo.</li><li>Una captura de la terminal con cada una de las 4 pruebas.</li></ul>
+      <p class="body" style="margin-top:12px;font-size:22px">La fecha de entrega se anuncia en OrbundSIS.</p>
+      <div class="tone" style="margin-top:18px;padding:18px 22px"><b style="font-size:23px">Reto (+10)</b><p style="font-size:20px;margin-top:6px">Añada <code>void reponer(int s[4][4], int cantidad)</code>, que ponga <code>cantidad</code> en cada espacio agotado, y la opción 4 del menú para llamarla.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Referencias">
+  <h2 class="mask"><span>Referencias</span></h2>
+  <div class="gap" data-a style="font-size:21px;line-height:1.5;max-width:1080px">
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">cppreference.com. (s. f.). <i>Array declaration</i>. https://en.cppreference.com/w/cpp/language/array</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">cppreference.com. (s. f.). <i>std::basic_string</i>. https://en.cppreference.com/w/cpp/string/basic_string</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">cppreference.com. (s. f.). <i>Null-terminated byte strings</i>. https://en.cppreference.com/w/cpp/string/byte</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Kumar, A. (2024). <i>Hands-on object-oriented programming: Mastering OOP features for real-world software systems development</i>. Apress.</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Lutz, M. (2025). <i>Learning Python: Powerful object-oriented programming</i>. O’Reilly Media.</p>
+  </div>
+  <p class="body gap" data-a style="font-size:21px">Kumar (2024) y Lutz (2025) son los textos oficiales del prontuario. Los programas, salidas y mensajes se verificaron con g++ 13.3 en Linux.</p>
+</section>
+
+</div></div>
+
+<script>
+/* Pasos del recorrido con for (se definen antes de iniciar el motor) */
+window.__recSteps = (function () {
+  var v = [8, 3, 0, 5, 2], s = [], total = 0, mayor = 8, pos = 0;
+  function cur(i) { return function (q) { for (var j = 0; j < 5; j++) q('c' + j).classList.toggle('cur', j === i); }; }
+  s.push({ l: 1, set: { total: 0, mayor: 8, pos: 0 }, run: cur(-1), msg: 'total empieza en 0. mayor empieza con el primer valor: stock[0] = 8.' });
+  for (var i = 0; i < 5; i++) {
+    total += v[i];
+    var gana = v[i] > mayor;
+    if (gana) { mayor = v[i]; pos = i; }
+    s.push({ l: gana ? 5 : 3, set: { i: i, total: total, mayor: mayor, pos: pos }, flash: ['total'], run: cur(i),
+      msg: 'i = ' + i + ': suma stock[' + i + '] = ' + v[i] + ' → total ' + total + '. ' + (i === 0 ? '8 no es mayor que 8: mayor se queda igual.' : (gana ? v[i] + ' es mayor: cambia.' : v[i] + ' no supera ' + mayor + '.')) });
+  }
+  s.push({ l: 8, set: { i: '5' }, run: cur(-1), out: 'Total: 18', msg: 'i llega a 5: 5 < 5 es falso y el for termina. Nunca se lee stock[5].' });
+  s.push({ l: 9, out: 'Mayor: 8 en 0', msg: 'Listo: 18 unidades en la fila, y la que más tiene es la posición 0.' });
+  return s;
+})();
+(function(){
+function esc(x){return x.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+/* ---------- laboratorio: pruebas ---------- */
+window.__CASES={
+ p1:{name:'1 Reporte',input:'3\n0',out:'Unidades: 62\nValor del inventario: $101.50\nAgotados:\n  A1 Jugo china\n  C2 Gomitas',
+   chk:['Unidades: 62','Valor del inventario: $101.50','Agotados:','=A1 Jugo china','=C2 Gomitas'],no:['Ninguno']},
+ p2:{name:'2 Compra',input:'2\nc1\n2.00\n3\n0',out:'Barra granola cuesta $1.25. Pague: 2.00\nDespachado: Barra granola. Cambio: $0.75\n…\nUnidades: 61\nValor del inventario: $100.25',
+   chk:['Barra granola cuesta $1.25','Despachado: Barra granola. Cambio: $0.75','Unidades: 61','Valor del inventario: $100.25']},
+ p3:{name:'3 Validación',input:'2\na1\n2\nE9\n2\nb\n2\nd0\n3.00\n0',out:'Jugo china esta agotado\n…\nCodigo invalido\n…\nCodigo invalido\n…\nSandwich cuesta $3.50. Pague: 3.00\nPago insuficiente. Faltan $0.50',
+   chk:['Jugo china esta agotado','Codigo invalido','Codigo invalido','Sandwich cuesta $3.50','Pago insuficiente. Faltan $0.50']},
+ p4:{name:'4 Agotar',input:'2\nb2\n1.75\n3\n0',out:'Platanutres cuesta $1.75. Pague: 1.75\nDespachado: Platanutres. Cambio: $0.00\n…\nUnidades: 61\nValor del inventario: $99.75\nAgotados:\n  A1 Jugo china\n  B2 Platanutres\n  C2 Gomitas',
+   chk:['Despachado: Platanutres. Cambio: $0.00','Unidades: 61','Valor del inventario: $99.75','=A1 Jugo china','=B2 Platanutres','=C2 Gomitas']}
+};
+var CASES=window.__CASES;
+var ph='';Object.keys(CASES).forEach(function(k){var C=CASES[k];
+  ph+='<div data-panel="'+k+'"'+(k==='p1'?'':' hidden')+'><p style="font-size:19px;font-weight:600">Ejecute <code>./maquina</code> y escriba, una por línea:</p><div class="typein">'+esc(C.input).replace(/\n/g,'  ⏎  ')+'</div><p style="font-size:19px;font-weight:600;margin-top:10px">Debe ver, entre los menús:</p><div class="term">'+esc(C.out)+'</div></div>'});
+document.getElementById('cases-panels').innerHTML=ph;
+})();
+</script>
+<script src="assets/deck.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id)};
+var RED=matchMedia('(prefers-reduced-motion: reduce)');
+Deck.steps.rec=window.__recSteps;
+
+/* datos de la máquina (los mismos del Laboratorio F) */
+var NOM=[['Agua','Jugo china','Malta','Refresco'],['Galletas','Papitas','Platanutres','Mani'],['Chocolate','Barra granola','Gomitas','Chicle'],['Sandwich','Empanadilla','Pastelillo','Quesito']];
+var PRE=[[100,150,175,125],[125,150,175,100],[150,125,100,50],[350,275,250,200]];
+var STK=[[5,0,7,2],[3,6,1,4],[8,2,0,5],[1,3,9,6]];
+function din(c){return '$'+Math.floor(c/100)+'.'+('0'+c%100).slice(-2)}
+var L='ABCD';
+
+/* ---------- capítulos ---------- */
+var EX=['Arreglos','Matrices','Cadenas','Laboratorio'];
+var slides=[].slice.call(document.querySelectorAll('.slide'));
+[].forEach.call(document.querySelectorAll('[data-topic]'),function(sl){var t=+sl.dataset.topic;var e=sl.querySelector('.ext');
+  if(e)e.innerHTML=EX.map(function(w,i){return '<span class="'+(i+1===t?'on':'')+'">'+(i+1===t?'→ ':'')+w+'</span>'}).join('')});
+var TOP={};[].forEach.call(document.querySelectorAll('[data-topic]'),function(sl){TOP[sl.dataset.topic]=slides.indexOf(sl)});
+
+/* ---------- portada ---------- */
+var g=$('pt-grid'),h='';
+for(var f=0;f<4;f++)for(var c=0;c<4;c++)h+='<button data-f="'+f+'" data-c="'+c+'" class="'+(STK[f][c]?'':'out')+'" aria-label="'+L[f]+c+' '+NOM[f][c]+'">'+L[f]+c+'<small>'+NOM[f][c]+'</small></button>';
+g.innerHTML=h;
+[].forEach.call(g.querySelectorAll('button'),function(b){b.onclick=function(){var f=+b.dataset.f,c=+b.dataset.c;
+  [].forEach.call(g.children,function(x){x.classList.toggle('lit',x===b)});
+  $('pt-led').textContent=L[f]+c+' → stock['+f+']['+c+'] = '+STK[f][c]+(STK[f][c]?'':'  AGOTADO')}});
+[].forEach.call(document.querySelectorAll('#pt-keys button'),function(b){b.onclick=function(){Deck.go(TOP[b.dataset.k])}});
+
+/* ---------- por qué ---------- */
+var VAL=[8,3,0,5,2];
+function wDraw(){var n=+$('w-n').value;$('w-nv').textContent=n;var a=[],show=Math.min(n,5);
+  for(var i=0;i<show;i++)a.push('int stock'+i+' = '+(i<5?VAL[i]:0)+';');
+  if(n>6)a.push('// … '+(n-6)+' líneas más …');
+  if(n>5)a.push('int stock'+(n-1)+' = 0;');
+  var sum=[];for(i=0;i<Math.min(n,3);i++)sum.push('stock'+i);
+  a.push('int total = '+sum.join(' + ')+(n>3?' + … + stock'+(n-1):'')+';');
+  var pre=$('w-a');pre.innerHTML=a.map(function(x){return x.replace(/&/g,'&amp;').replace(/</g,'&lt;')}).join('\n');Deck.hl(pre);
+  $('w-la').textContent=(n+1);
+  var b=$('w-b');b.innerHTML='int stock['+n+'] = {8, 3, 0, 5, 2};\nint total = 0;\nfor (int i = 0; i &lt; '+n+'; i++)\n    total += stock[i];';Deck.hl(b)}
+$('w-n').addEventListener('input',wDraw);wDraw();
+
+/* ---------- declarar ---------- */
+function cells(id,vals,extra){var e=$(id);e.innerHTML=vals.map(function(v,i){return '<div class="cell'+(v===0?' zero':'')+'" data-i="'+i+'"><div class="v" tabindex="0" role="button" aria-label="stock['+i+']">'+v+'</div><div class="ix">['+i+']</div>'+(extra?'<div class="of">+'+(i*4)+' bytes</div>':'')+'</div>'}).join('');return e}
+var dA=cells('d-arr',VAL,true);$('rp-arr').classList.add('sm');
+function dPick(i){[].forEach.call(dA.children,function(x,j){x.classList.toggle('cur',j===i)});
+  $('d-led').textContent='stock['+i+']  →  '+VAL[i]+'\n&stock['+i+'] = inicio + '+(i*4);
+  $('d-msg').textContent=i===0?'El primero es el índice 0: está justo al inicio del arreglo.':i===4?'El último es el índice 4, no el 5: con 5 espacios, los índices van de 0 a 4.':'Cada int ocupa 4 bytes, así que stock['+i+'] está '+(i*4)+' bytes después del inicio.'}
+[].forEach.call(dA.querySelectorAll('.v'),function(v,i){v.onclick=function(){dPick(i)};v.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();dPick(i)}}});
+dPick(2);
+
+/* ---------- fuera de límites ---------- */
+var obA=$('ob-arr');
+function obDraw(){var raw=$('ob-i').value.trim(),i=parseInt(raw,10),ok=!isNaN(i)&&i>=0&&i<=4,h='';
+  var lo=Math.min(0,isNaN(i)?0:Math.max(i,-2)),hi=Math.max(4,isNaN(i)?4:Math.min(i,6));
+  for(var j=lo;j<=hi;j++){var inn=j>=0&&j<=4;h+='<div class="cell'+(inn?(VAL[j]===0?' zero':''):' bad')+(j===i?' cur':'')+'"><div class="v" style="width:96px;height:80px;font-size:36px">'+(inn?VAL[j]:'?')+'</div><div class="ix">['+j+']</div></div>'}
+  obA.innerHTML=h;
+  if(isNaN(i)){$('ob-led').textContent='stock[?]';$('ob-msg').textContent='Escriba un número entero.';$('ob-term').innerHTML='';return}
+  $('ob-led').textContent='stock['+i+']  →  '+(ok?VAL[i]:'???');
+  if(ok){$('ob-msg').textContent='Índice válido: está entre 0 y 4.';$('ob-term').innerHTML='<span class="p">$ g++ -std=c++17 -Wall -Wextra -o f f.cpp && ./f</span>\n'+VAL[i]}
+  else{$('ob-msg').textContent='Compila sin aviso y lee lo que haya en esa memoria: un valor basura, o el programa se cae. Es comportamiento indefinido.';
+    $('ob-term').innerHTML='<span class="p">$ g++ -std=c++17 -Wall -Wextra -o f f.cpp      (sin avisos)\n$ g++ -g -fsanitize=address -o f f.cpp && ./f</span>\n<span class="e">ERROR: AddressSanitizer: stack-buffer-overflow … in main</span>'}}
+$('ob-i').addEventListener('input',obDraw);obDraw();
+
+/* ---------- reponer ---------- */
+var rpT=[];
+function rpReset(){rpT.forEach(clearTimeout);rpT=[];cells('rp-arr',VAL,false);$('rp-msg').textContent='El espacio 2 está en 0.';$('rp-go').disabled=false;hlRp(-1)}
+function hlRp(i){[].forEach.call($('rp-code').querySelectorAll('.ln'),function(l,j){l.classList.toggle('cur',j===i)})}
+$('rp-go').onclick=function(){$('rp-go').disabled=true;var d=RED.matches?0:700,seq=[[6,'main pasa stock: la función recibe la dirección del primer espacio, no una copia.'],[1,'reponer recorre los 5 espacios del arreglo original…'],[2,'a[2] es 0, así que a[2] = 10. Ese a[2] es el mismo stock[2] de main.'],[7,'De vuelta en main, stock[2] vale 10.']];
+  seq.forEach(function(x,k){rpT.push(setTimeout(function(){hlRp(x[0]);$('rp-msg').textContent=x[1];if(k===2){var c=$('rp-arr').children[2];c.classList.remove('zero');c.classList.add('chg');c.querySelector('.v').textContent='10'}},k*d))})};
+$('rp-reset').onclick=rpReset;rpReset();
+
+/* ---------- matriz ---------- */
+function mxBuild(id,click){var e=$(id),h='<div></div>';for(var c=0;c<4;c++)h+='<div class="h">'+c+'</div>';
+  for(var f=0;f<4;f++){h+='<div class="h">'+L[f]+'</div>';for(c=0;c<4;c++)h+='<button data-f="'+f+'" data-c="'+c+'" class="'+(STK[f][c]?'':'zero')+'"'+(click?'':' tabindex="-1"')+'><b>'+STK[f][c]+'</b>'+NOM[f][c]+'</button>'}
+  e.innerHTML=h;return e}
+var MX=mxBuild('mx',true),sh='';
+for(var k=0;k<16;k++){var ff=Math.floor(k/4),cc=k%4;sh+='<div class="r'+ff+'" data-k="'+k+'">'+STK[ff][cc]+'<small>'+k+'</small></div>'}
+$('mx-strip').innerHTML=sh;
+function mxPick(f,c){[].forEach.call(MX.querySelectorAll('button'),function(b){b.classList.toggle('lit',+b.dataset.f===f&&+b.dataset.c===c)});
+  [].forEach.call($('mx-strip').children,function(d,k){d.classList.toggle('lit',k===f*4+c)});
+  $('mx-led').textContent=L[f]+c+' → stock['+f+']['+c+'] = '+STK[f][c]+'\nposición '+f+' × 4 + '+c+' = '+(f*4+c)}
+[].forEach.call(MX.querySelectorAll('button'),function(b){b.onclick=function(){mxPick(+b.dataset.f,+b.dataset.c)}});
+mxPick(2,1);
+
+/* ---------- ciclos anidados ---------- */
+var NA=mxBuild('na-mx',false),naT=[];
+function naLn(i){[].forEach.call($('na-code').querySelectorAll('.ln'),function(l,j){l.classList.toggle('cur',j===i)})}
+function naReset(){naT.forEach(clearTimeout);naT=[];[].forEach.call(NA.querySelectorAll('button'),function(b){b.classList.remove('lit','done')});
+  $('na-f').textContent=$('na-c').textContent=$('na-s').textContent='–';$('na-out').textContent='';$('na-go').disabled=false;naLn(-1);
+  $('na-msg').textContent='El for de afuera escoge la fila; el de adentro recorre sus 4 columnas.'}
+$('na-go').onclick=function(){naReset();$('na-go').disabled=true;var d=RED.matches?0:340,t=0,ev=[];
+  for(var f=0;f<4;f++){(function(f){var s=0;ev.push(function(){naLn(1);$('na-f').textContent=f;$('na-c').textContent='–';$('na-s').textContent=0;$('na-msg').textContent='Fila '+L[f]+' (f = '+f+'): suma empieza en 0.'});
+    for(var c=0;c<4;c++){(function(c){s+=STK[f][c];var sv=s;ev.push(function(){naLn(3);[].forEach.call(NA.querySelectorAll('button'),function(b){if(b.classList.contains('lit'))b.classList.replace('lit','done')});
+      NA.querySelector('[data-f="'+f+'"][data-c="'+c+'"]').classList.add('lit');$('na-c').textContent=c;$('na-s').textContent=sv;$('na-msg').textContent='stock['+f+']['+c+'] = '+STK[f][c]+' → suma '+sv+'.'})})(c)}
+    var tot=s;ev.push(function(){naLn(4);$('na-out').textContent+=L[f]+': '+tot+'\n';$('na-msg').textContent='Termina la fila '+L[f]+': imprime '+tot+'.'})})(f)}
+  ev.push(function(){naLn(-1);[].forEach.call(NA.querySelectorAll('.lit'),function(b){b.classList.replace('lit','done')});$('na-msg').textContent='16 visitas: 4 filas × 4 columnas. El for de adentro corrió completo 4 veces.';$('na-go').disabled=false});
+  ev.forEach(function(fn,i){naT.push(setTimeout(fn,i*d))})};
+$('na-reset').onclick=naReset;document.addEventListener('deck:slide',function(){if(naT.length)naReset()});naReset();
+
+/* ---------- arreglo de char ---------- */
+var ENC=new TextEncoder();
+function esc(x){return x.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function csDraw(){var s=$('cs-in').value,cp=Array.from(s),h='',ix=0,bytes=ENC.encode(s).length,mb=false;
+  cp.forEach(function(ch){var b=ENC.encode(ch);if(b.length===1){h+='<div class="ch1"><div class="v">'+(ch===' '?'␣':esc(ch))+'</div><div class="ix">['+ix+']</div><div class="code">'+b[0]+'</div></div>';ix++}
+    else{mb=true;for(var j=0;j<b.length;j++){h+='<div class="ch1 mb"><div class="v">'+(j===0?esc(ch)+'<br>':'')+'\\x'+b[j].toString(16).toUpperCase()+'</div><div class="ix">['+ix+']</div><div class="code">'+(b[j]>127?b[j]-256:b[j])+'</div></div>';ix++}}});
+  h+='<div class="ch1 nul"><div class="v">\\0</div><div class="ix">['+ix+']</div><div class="code">0</div></div>';
+  $('cs-cells').innerHTML=h;
+  var pre=$('cs-code');pre.innerHTML='char codigo[] = "'+esc(s)+'";\ncout &lt;&lt; sizeof(codigo);   // '+(bytes+1)+'\ncout &lt;&lt; strlen(codigo);   // '+bytes;Deck.hl(pre);
+  $('cs-led').textContent='sizeof: '+(bytes+1)+' bytes\nstrlen: '+bytes+' caracteres\nfin: \'\\0\' en ['+bytes+']';
+  $('cs-msg').textContent=mb?'La letra con tilde ocupa 2 bytes en UTF-8: por eso strlen cuenta más de lo que se ve.':'El número de abajo es el código ASCII de cada carácter. \'\\0\' vale 0 y marca dónde termina el texto.'}
+$('cs-in').addEventListener('input',csDraw);csDraw();
+
+/* ---------- string ---------- */
+var DEC=new TextDecoder('utf-8');
+var stOp='len';
+function stRun(){var s=$('st-s').value,q=$('st-q').value,B=ENC.encode(s),n=B.length,code,out,why,err=false;
+  var lit='string s = "'+esc(s)+'";\n';
+  if(stOp==='len'){code='cout &lt;&lt; s.length();';out=String(n);why=/[^\x00-\x7f]/.test(s)?'length() cuenta bytes: cada letra con tilde cuenta 2.':'Cuántos caracteres tiene. No incluye ningún \'\\0\'.'}
+  else if(stOp==='idx'){code='cout &lt;&lt; s[0];';if(!n){out='(nada)';why='s está vacía: s[0] es el carácter nulo.'}else if(B[0]<128){out=String.fromCharCode(B[0]);why='Igual que en un arreglo: el primer carácter es el índice 0.'}else{out='\\x'+B[0].toString(16).toUpperCase();why='El primer byte de una letra con tilde, solo, no es un carácter que se pueda ver.'}}
+  else if(stOp==='sub'){code='cout &lt;&lt; s.substr(0, 3);';out=DEC.decode(B.slice(0,3));why='substr(inicio, cuántos): copia 3 caracteres desde la posición 0.'}
+  else if(stOp==='find'){code='cout &lt;&lt; s.find("'+esc(q)+'");';var Q=ENC.encode(q),pos=-1;for(var i=0;i+Q.length<=n&&pos<0;i++){var m=true;for(var j=0;j<Q.length;j++)if(B[i+j]!==Q[j]){m=false;break}if(m)pos=i}
+    if(pos>=0){out=String(pos);why='Posición de la primera vez que aparece "'+q+'", contando desde 0.'}else{out='18446744073709551615';why='No está: find devuelve string::npos, el número más grande posible. Se compara con if (s.find(x) == string::npos).'}}
+  else if(stOp==='cat'){code='cout &lt;&lt; s + " PR";';out=s+' PR';why='+ une dos string en una nueva, de '+(n+3)+' caracteres.'}
+  else if(stOp==='up'){code='for (int i = 0; i &lt; (int)s.length(); i++)\n    s[i] = toupper(s[i]);\ncout &lt;&lt; s;';var U=B.map(function(b){return b>=97&&b<=122?b-32:b});out=DEC.decode(U);why='Se cambia carácter por carácter, como en un arreglo. toupper no toca los bytes de las tildes.'}
+  else if(stOp==='eq'){code='cout &lt;&lt; (s == "Manati");';out=s==='Manati'?'1':'0';why='Con string, == sí compara el texto letra por letra. Distingue mayúsculas: "manati" da 0.'}
+  else{code='cout &lt;&lt; s.at(9);';if(n>9){out=B[9]<128?String.fromCharCode(B[9]):'\\x'+B[9].toString(16).toUpperCase();why='at(9) es como s[9], pero revisa el límite antes de leer.'}else{err=true;out="terminate called after throwing an instance of 'std::out_of_range'\n  what():  basic_string::at: __n (which is 9) >= this-&gt;size() (which is "+n+")";why='at revisa el límite y detiene el programa con un error claro. s[9] leería basura sin avisar.'}}
+  var pre=$('st-code');pre.innerHTML=lit+code;Deck.hl(pre);
+  var led=$('st-led');led.innerHTML=err?'<span style="color:#FF8A80;font-size:17px">'+out+'</span>':esc(out);
+  $('st-why').textContent=why;
+  [].forEach.call(document.querySelectorAll('#st-ops button'),function(b){b.setAttribute('aria-pressed',b.dataset.op===stOp)})}
+[].forEach.call(document.querySelectorAll('#st-ops button'),function(b){b.onclick=function(){stOp=b.dataset.op;stRun()}});
+$('st-s').addEventListener('input',stRun);$('st-q').addEventListener('input',stRun);stRun();
+
+var CASES=window.__CASES;var PASS={};try{PASS=JSON.parse(localStorage.getItem('tesi2105-labF')||'{}')||{}}catch(e){PASS={}}
+var curCase='p1';
+function markTabs(){Object.keys(CASES).forEach(function(k){$('tb-'+k).classList.toggle('pass',!!PASS[k])})}
+Object.keys(CASES).forEach(function(k){$('tb-'+k).addEventListener('click',function(){curCase=k;$('vf-name').textContent=CASES[k].name;$('vf-checks').innerHTML='';$('vf-score').textContent='';$('vf-in').value=''})});
+function norm(x){return x.replace(/\r/g,'').replace(/[ \t]+/g,' ').toLowerCase()}
+$('vf-go').onclick=function(){var C=CASES[curCase],raw=$('vf-in').value,ln=0,col=0,ok=0,h='';
+  var lines=norm(raw).split('\n').map(function(x){return x.trim()});
+  if(!raw.trim()){$('vf-score').textContent='';$('vf-checks').innerHTML='<li class="no">Pegue primero la salida de su programa.</li>';return}
+  C.chk.forEach(function(c){var whole=c[0]==='=',t=norm(whole?c.slice(1):c),shown=whole?c.slice(1):c,hit=false;
+    for(var i=ln;i<lines.length&&!hit;i++){
+      if(whole){if(lines[i]===t){hit=true;ln=i+1;col=0}}
+      else{var p=lines[i].indexOf(t,i===ln?col:0);if(p>=0){hit=true;ln=i;col=p+t.length}}}
+    if(hit){ok++;h+='<li class="ok">'+esc(shown)+'</li>'}else h+='<li class="no">Falta, o sale en otro orden: '+esc(shown)+'</li>'});
+  var bad=(C.no||[]).filter(function(c){return norm(raw).indexOf(norm(c))>=0});
+  bad.forEach(function(c){h+='<li class="no">No debería aparecer: '+esc(c)+'</li>'});
+  var all=ok===C.chk.length&&!bad.length;
+  $('vf-checks').innerHTML=h;$('vf-score').textContent=all?'Prueba superada':ok+' de '+C.chk.length;
+  if(all){PASS[curCase]=1;try{localStorage.setItem('tesi2105-labF',JSON.stringify(PASS))}catch(e){}}
+  markTabs()};
+markTabs();
+
+Deck.start();
+})();
+</script>
+</body>
+</html>

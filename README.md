@@ -14,7 +14,7 @@ Página del curso: https://oneill162.github.io/tesi2105-poo/
 | `unidadB.html` | Unidad B: Elementos básicos de un programa (presentación interactiva) |
 | `unidadC.html` | Unidad C: Estructuras de control (presentación interactiva) |
 | `unidadD.html` | Unidad D: Funciones (presentación interactiva) |
-| `unidadE.html` | Unidad E: Punteros (presentación interactiva) |
+| `unidadE.html` | Unidad E: Punteros (presentación interactiva con el Laboratorio E integrado; la versión del 21 de octubre queda en `presentaciones/unidadE_version_21oct.html`) |
 | `unidadF.html` | Unidad F: Arreglos y cadenas de caracteres (presentación interactiva con el Laboratorio F integrado) |
 | `ejemplos/` | Programas completos de los ejemplos de las presentaciones, verificados con g++ |
 | `assets/deck.css`, `assets/deck.js` | Motor común de las presentaciones: escala, transiciones, barra de navegación, índice, temporizador, paso a paso |

@@ -4,415 +4,328 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Unidad E: Punteros · TESI 2105</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="description" content="TESI 2105 Programación Orientada a Objetos. Unidad E: punteros, contados como los apartados del correo: un puntero guarda el número del apartado, no lo que hay dentro. Incluye el Laboratorio E.">
+<link rel="preload" href="assets/fonts/schibsted-grotesk-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/deck.css">
 <style>
-:root{
-  --ink:#0E2A47; --paper:#F4F8FC; --grid:#E3ECF5; --line:#C9D8E8;
-  --addr:#1B75BC; --puma:#2A5CAA; --gold:#FFC425; --goldtxt:#8A6200;
-  --ptr:#E07A10; --ptrtxt:#A85F0B; --text:#1D2B3D; --muted:#55657A;
-  --panel:#12223A; --code:#DCE6F2; --cmt:#86A7C8; --ok:#5EE08A; --err:#FF7A7A; --kw:#7CC4FF; --num:#FFD36B; --str:#F6B38A;
-  --sans:'IBM Plex Sans',Calibri,'Segoe UI',Arial,sans-serif;
-  --mono:'IBM Plex Mono','Courier New',monospace;
-}
-*{box-sizing:border-box}
-html,body{margin:0;height:100%;background:#0A1626;overflow:hidden}
-body{font-family:var(--sans);color:var(--text)}
-#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
-#stage{position:relative;width:1280px;height:720px;flex:none;transform-origin:center center;background:var(--paper);
-  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
-  background-size:100% 48px,48px 100%;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.5)}
-/* hexdump gutter */
-#gutter{position:absolute;left:0;top:0;bottom:44px;width:92px;background:#E9F0F7;border-right:1px solid var(--line);
-  font:500 13px/48px var(--mono);color:#7F95AE;text-align:right;padding-right:12px;padding-top:24px}
-#gutter b{color:var(--addr);font-weight:600}
-.slide{position:absolute;left:92px;right:0;top:0;bottom:44px;padding:44px 56px 24px 48px;display:none}
-.slide.on{display:block}
-.slide.dark{background:var(--ink);color:#E8EEF6}
-.slide.dark ~ #gutter{}
-h1,h2{margin:0;font-weight:600;letter-spacing:-.01em}
-h2.t{font-size:38px;line-height:1.15;color:var(--ink)}
-.sub{font-size:20px;color:var(--muted);margin:6px 0 0}
-.lead{font-size:22px;line-height:1.45;margin:0}
-.mono{font-family:var(--mono)}
-.a{font-family:var(--mono);color:var(--addr);font-weight:600}
-.v{font-family:var(--mono);color:var(--goldtxt);font-weight:600}
-.pt{font-family:var(--mono);color:var(--ptrtxt);font-weight:600}
-.row{display:flex;gap:24px}
-.mt{margin-top:28px}
-.panel{background:#fff;border:1px solid var(--line);border-radius:8px;padding:18px 22px}
-.panel h3{margin:0 0 8px;font-size:22px;color:var(--ink)}
-.panel p{margin:0;font-size:20px;line-height:1.45}
-/* memory cells */
-.mem{display:flex;gap:14px;align-items:flex-start}
-.cell{position:relative;text-align:center}
-.cell .nm{font:600 17px var(--mono);color:var(--ptrtxt);height:24px}
-.cell .bx{width:132px;height:62px;border:2px solid var(--puma);background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:center;
-  font:600 24px var(--mono);color:var(--ink);transition:background .25s,border-color .25s}
-.cell .ad{font:500 14px var(--mono);color:#6E84A0;margin-top:6px}
-.cell.var .bx{background:#FFF6DE;border-color:var(--ptr)}
-.cell.ptr .bx{background:#E8F6FC;border-color:var(--addr);color:var(--addr)}
-.cell.ghost .bx{opacity:.35;border-style:dashed}
-.cell.hit .bx{background:var(--gold);border-color:var(--ptr)}
-.flash .bx{animation:flash .9s ease}
-@keyframes flash{0%{background:var(--gold);transform:scale(1.08)}100%{transform:scale(1)}}
-svg.arrows{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
-svg.arrows path{fill:none;stroke:var(--ptr);stroke-width:3.5}
-.draw{stroke-dasharray:1200;stroke-dashoffset:1200;animation:draw 1s ease forwards}
-@keyframes draw{to{stroke-dashoffset:0}}
-.off{visibility:hidden}
-/* code */
-.code{background:var(--panel);color:var(--code);border-radius:8px;font:400 20px/1.55 var(--mono);padding:14px 0;margin:0;white-space:pre;overflow:hidden}
-.code .ln{display:block;padding:0 22px}
-.code .ln.cur{background:rgba(255,196,37,.18);box-shadow:inset 4px 0 0 var(--gold)}
-.k{color:var(--kw)} .c{color:var(--cmt);font-style:italic} .n{color:var(--num)} .s{color:var(--str)}
-.term{background:#0F1B2D;border-radius:8px;padding:12px 18px;font:500 18px/1.5 var(--mono);color:var(--ok);min-height:60px;white-space:pre-wrap}
-.term .h{display:block;color:#9FB3C8;font:600 13px var(--sans);margin-bottom:4px}
-.term .e{color:var(--err)} .term .w{color:#FFB547}
-.msg{font-size:20px;line-height:1.4;color:var(--ink);min-height:54px;padding:10px 14px;background:#FFF6DE;border-radius:6px}
-/* buttons */
-.ctl{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-button{font:600 17px var(--sans);cursor:pointer;border-radius:6px;border:2px solid var(--addr);background:#fff;color:var(--addr);padding:8px 14px}
-button.pri{background:var(--addr);color:#fff}
-button:hover{background:var(--puma);border-color:var(--puma);color:#fff}
-button[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
-button:disabled{opacity:.4;cursor:default;background:#fff;color:var(--addr);border-color:var(--addr)}
-button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-.stepn{font:500 15px var(--mono);color:var(--muted)}
-/* dark slides */
-.dark h1{font-size:76px;line-height:1;color:#fff}
-.dark .kick{font:500 20px var(--mono);color:var(--gold)}
-.dark p{color:#C7D6E8}
-.tmem{display:flex;gap:10px;margin-top:56px}
-.tmem div{width:120px;text-align:center}
-.tmem span{display:flex;height:56px;align-items:center;justify-content:center;border:2px solid #3B5A80;border-radius:4px;font:600 22px var(--mono);color:#7F9BBB}
-.tmem small{display:block;font:500 13px var(--mono);color:#6F8AA9;margin-top:6px}
-.tmem .cur span{background:var(--gold);border-color:var(--gold);color:var(--ink)}
-.tptr{font:600 18px var(--mono);color:var(--gold);margin-top:10px;transition:margin-left .6s}
-/* lists */
-ul.clean{list-style:none;margin:0;padding:0}
-ul.clean li{font-size:21px;line-height:1.4;margin-bottom:14px;padding-left:28px;position:relative}
-ul.clean li::before{content:"";position:absolute;left:4px;top:11px;width:10px;height:10px;border:2px solid var(--addr);border-radius:2px}
-table.t{border-collapse:collapse;font-size:21px;width:100%;background:#fff}
-table.t th{background:var(--puma);color:#fff;text-align:left;padding:9px 14px;font-weight:600}
-table.t td{border-bottom:1px solid var(--line);padding:11px 14px}
-table.t td.mono{color:var(--ink)}
-.reveal{display:none}
-.shown .reveal{display:block}
-/* status bar = memory map nav */
-#bar{position:absolute;left:0;right:0;bottom:0;height:44px;background:var(--ink);display:flex;align-items:center;gap:14px;padding:0 14px;color:#C7D6E8;font:500 14px var(--mono)}
-#bar .file{color:#fff;white-space:nowrap}
-#map{display:flex;gap:3px;flex:1;justify-content:center}
-#map button{width:18px;height:20px;padding:0;border:1px solid #3B5A80;background:transparent;border-radius:2px}
-#map button.sec{border-color:#6F8AA9}
-#map button.done{background:#2A5CAA;border-color:#2A5CAA}
-#map button.cur{background:var(--gold);border-color:var(--gold)}
-#bar .ix{color:var(--gold);min-width:150px;text-align:right;white-space:nowrap}
-#bar .bt{white-space:nowrap;font:600 13px var(--sans);padding:5px 10px;border:1px solid #6F8AA9;background:transparent;color:#fff}
-#bar .bt:hover{background:var(--puma)}
-#bar a.bt{text-decoration:none;border-radius:6px}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.draw{stroke-dashoffset:0}}
+/* Tema de la Unidad E: los apartados del correo. Cada casilla tiene un número (la dirección); un puntero guarda ese número. */
+:root{--ground:#F3F3F7;--tone:#E4E5EF;--tone2:#D2D4E4;--ink:#161A33;--soft:#4A4F6E;--accent:#3346B0;--field:#232F7A;--field-ink:#F4F5FF;--hi:#FFC425;--code-bg:#161A33;--code-ink:#E7E8F3;--c-kw:#A9B6FF;--c-str:#FFD98A;--c-num:#FFE9A8;--c-cmt:#A3A7C2}
+pre.code .ln.cur{background:rgba(255,196,37,.24)}
+.term{background:#0E1124}
+#map button.ch{box-shadow:inset 0 0 0 3px #8C9BF0;background:transparent}
+#map button.ch.seen{background:#8C9BF0}
+#map button.cur,#map button.ch.cur{background:var(--hi);box-shadow:none}
+/* capítulos */
+.chwrap{display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:48px;height:100%}
+.chwrap .left{display:flex;flex-direction:column}
+.chapter h1{font-size:96px}
+.chapter .ext{display:flex;gap:22px;margin-top:auto;font-size:26px;font-weight:700;white-space:nowrap}
+.chapter .ext span{opacity:.5}
+.chapter .ext span.on{opacity:1}
+.chapter .ext span.on::after{content:"";display:block;height:6px;background:var(--hi);margin-top:8px}
+.field-hi .q{font-size:60px;line-height:1.04;letter-spacing:-.03em;font-weight:800;max-width:1100px}
+/* apartados (casillas de memoria) */
+.boxes{display:flex;gap:10px;flex-wrap:wrap}
+.bx{width:150px;background:#fff;border:3px solid var(--ink);transition:background .25s,border-color .25s}
+.bx .ad{font:600 18px var(--mono);background:var(--ink);color:var(--field-ink);padding:4px 10px}
+.bx .vl{height:70px;display:flex;align-items:center;justify-content:center;font:700 34px var(--mono)}
+.bx .vl.ptr{font-size:25px;color:var(--accent)}
+.bx .nm{font:600 18px var(--mono);text-align:center;padding:0 6px 8px;min-height:30px;color:var(--soft)}
+.bx.empty .vl{color:var(--tone2)}
+.bx.lit{background:var(--hi);border-color:var(--ink)}
+.bx.src{background:#DCE1FF}
+.bx.flash{animation:flash .9s var(--ease-out)}
+.chapter .bx{border-color:#0E1440}
+.chapter .bx .vl{color:var(--ink)}
+.slip{display:inline-block;background:var(--hi);color:var(--ink);font:700 22px var(--mono);padding:8px 14px}
+.res{background:#fff;padding:18px 24px}
+.res small{display:block;font:600 19px var(--sans);color:var(--soft)}
+.res b{display:block;font:700 46px var(--mono);margin-top:4px;color:var(--accent)}
+.msg{background:var(--tone);padding:14px 18px;font-size:21px;min-height:58px}
+.ws .bx{width:170px}
+/* comparaciones */
+.prop2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.prop2>div{background:var(--ink);color:#fff;padding:20px 24px;min-height:170px}
+.prop2>div.ok{background:var(--accent)}
+.prop2 b{display:block;font:700 26px var(--sans)}.prop2 code{white-space:normal}
+.prop2 span{display:block;font-size:22px;margin-top:8px}
+.prop2 .pbtn{margin-top:12px;background:#fff;color:var(--ink);font-size:18px;padding:8px 12px}
+.prop2 span.reveal{display:none}.prop2 .shown span.reveal{display:block}
+.discrow{position:absolute;left:72px;right:72px;bottom:32px}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.vs>div{background:#fff;padding:18px 22px}
+.vs h3{font-size:24px;margin-bottom:8px}
+.vs table{width:100%;border-collapse:collapse;font-size:20px}
+.vs td{padding:7px 0;border-bottom:2px solid var(--tone);vertical-align:top}
+.vs td:first-child{font:600 19px var(--mono);width:44%}
+.dir{display:grid;grid-template-columns:repeat(2,1fr);gap:22px 48px;margin-top:28px}
+.dir h3{font-size:28px}
+.dir p{font-size:23px;margin-top:6px}
+/* laboratorio */
+a.dl{display:inline-block;background:var(--accent);color:#fff;font-weight:600;font-size:20px;padding:12px 18px;text-decoration:none}a.dl:hover{background:var(--ink)}
+a.dl.alt{background:var(--tone2);color:var(--ink)}
+.parts{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px 28px}
+.parts li{background:#fff;padding:12px 16px;font-size:20px;line-height:1.35;display:grid;grid-template-columns:44px 1fr}
+.parts li b.nm{font:800 28px var(--sans);color:var(--accent)}
+.parts code{font-size:18px;white-space:normal}
+.cases [data-tab]{font:600 17px var(--sans);padding:9px 12px}
+.cases [data-tab].pass::after{content:" ✓";color:#2E9E5B}
+.cases [data-panel] .term{font-size:18px;line-height:1.4;max-height:250px;overflow:auto}
+.typein{font:600 19px var(--mono);background:var(--tone);padding:10px 14px;white-space:pre-wrap}
+textarea.paste{width:100%;height:150px;font:500 16px/1.4 var(--mono);padding:10px 12px;border:0;background:#fff;color:var(--ink);resize:none}
+.checks{list-style:none;margin:8px 0 0;padding:0;font-size:18px;line-height:1.5}
+.checks li.ok{color:#0B6B47}.checks li.ok::before{content:"✓  "}
+.checks li.no{color:#B3261E}.checks li.no::before{content:"✗  "}
+.score{font:800 40px var(--sans)}
+.rub td:last-child,.rub th:last-child{text-align:right;width:120px}
+.rub td{padding:9px 16px!important;font-size:21px}
 </style>
 </head>
 <body>
-<div id="viewport"><div id="stage" role="region" aria-roledescription="presentación" aria-label="Unidad E: Punteros">
+<div id="viewport"><div id="stage" data-name="Unidad E · Punteros" role="region" aria-roledescription="presentación" aria-label="Unidad E: Punteros">
 
-<!-- 1 PORTADA -->
-<section class="slide dark" data-t="Portada">
-  <p class="kick">TESI 2105 · Programación Orientada a Objetos · Unidad E</p>
-  <h1 style="margin-top:22px;font-size:104px">Punteros</h1>
-  <p style="font-size:26px;margin:14px 0 0">Direcciones de memoria, arreglos y funciones</p>
-  <div style="position:relative;margin-top:62px;height:150px" id="hero">
-    <div class="mem" style="gap:22px">
-      <div class="cell var"><div class="nm">edad</div><div class="bx">20</div><div class="ad">0x1004</div></div>
-      <div class="cell ghost"><div class="nm"></div><div class="bx" style="border-color:#3B5A80;background:transparent"></div><div class="ad">0x1008</div></div>
-      <div class="cell ghost"><div class="nm"></div><div class="bx" style="border-color:#3B5A80;background:transparent"></div><div class="ad">0x100C</div></div>
-      <div class="cell ptr"><div class="nm">p</div><div class="bx">0x1004</div><div class="ad">0x1010</div></div>
+<!-- PORTADA -->
+<section class="slide chapter" data-title="Portada">
+  <div class="chwrap">
+    <div class="left">
+      <h1 class="mask"><span>Punteros</span></h1>
+      <p class="lead" data-a style="margin-top:22px;max-width:640px">En el correo, cada apartado tiene un número. Un puntero no guarda la carta: guarda el número del apartado donde está.</p>
+      <div class="ext" data-a><span class="on">7 temas</span><span class="on">Laboratorio E</span></div>
+      <p class="body" data-a style="margin-top:18px;font-size:20px">TESI 2105, Unidad E<br>Prof. Eduardo O. De Jesús Arroyo · ITPR, Recinto de Manatí</p>
     </div>
-    <svg class="arrows" width="700" height="150"><path class="draw" d="M488,24 L488,6 L106,6 L106,22" marker-end="url(#ah)"/></svg>
-  </div>
-  <p style="position:absolute;bottom:28px;font-size:16px">Prof. Eduardo O. De Jesús Arroyo · Instituto Tecnológico de Puerto Rico, Recinto de Manatí</p>
-</section>
-
-<!-- 2 OBJETIVOS -->
-<section class="slide" data-t="Objetivos">
-  <h2 class="t">Objetivos de la unidad</h2>
-  <p class="sub">Al finalizar, el estudiante podrá:</p>
-  <div class="mt" style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
-    <div class="panel"><h3>Explicar qué es un puntero</h3><p>y usar los operadores <span class="a">&amp;</span> (dirección) y <span class="pt">*</span> (contenido).</p></div>
-    <div class="panel"><h3>Recorrer arreglos con punteros</h3><p>aplicando la aritmética de punteros: <span class="mono">p + 1</span>, <span class="mono">p++</span>, <span class="mono">p2 − p1</span>.</p></div>
-    <div class="panel"><h3>Pasar punteros a funciones</h3><p>para modificar variables y arreglos del programa principal.</p></div>
-    <div class="panel"><h3>Usar punteros a punteros</h3><p>y reconocer los errores más comunes con la memoria.</p></div>
-  </div>
-</section>
-
-<!-- 3 MAPA -->
-<section class="slide" data-t="Mapa de la unidad">
-  <h2 class="t">Mapa de la unidad</h2>
-  <p class="sub">Siete temas del prontuario, en orden. Cada uno ocupa una casilla de esta memoria.</p>
-  <table class="t mt" style="width:820px">
-    <tr><th style="width:110px">Tema</th><th>Contenido</th><th style="width:150px">Láminas</th></tr>
-    <tr><td class="a">1</td><td>Concepto de punteros</td><td>4 a 6</td></tr>
-    <tr><td class="a">2</td><td>Declaración de punteros</td><td>7 a 9</td></tr>
-    <tr><td class="a">3</td><td>Punteros y arreglos</td><td>10 y 11</td></tr>
-    <tr><td class="a">4</td><td>Aritmética de punteros</td><td>12 a 14</td></tr>
-    <tr><td class="a">5</td><td>Punteros como parámetros</td><td>15 a 17</td></tr>
-    <tr><td class="a">6</td><td>Paso de punteros a funciones</td><td>18 a 20</td></tr>
-    <tr><td class="a">7</td><td>Punteros a punteros</td><td>21 a 23</td></tr>
-  </table>
-  <p class="sub" style="margin-top:16px">Cerramos con errores comunes, repaso y el Laboratorio E.</p>
-</section>
-
-<!-- 4 DIV T1 -->
-<section class="slide dark" data-t="Tema 1" data-topic="1"><p class="kick">Tema 1 de 7</p><h1 style="margin-top:16px;font-size:64px">Concepto de punteros</h1><div class="tmem"></div></section>
-
-<!-- 5 MEMORIA -->
-<section class="slide" data-t="La memoria">
-  <h2 class="t">La memoria es una fila de casillas numeradas</h2>
-  <p class="sub">Cada variable vive en una dirección. Un puntero guarda esa dirección.</p>
-  <div style="position:relative;margin-top:44px;height:190px" data-w="intro">
-    <div class="mem">
-      <div class="cell"><div class="nm"></div><div class="bx">…</div><div class="ad">0x1000</div></div>
-      <div class="cell var"><div class="nm">edad</div><div class="bx">20</div><div class="ad">0x1004</div></div>
-      <div class="cell"><div class="nm"></div><div class="bx">…</div><div class="ad">0x1008</div></div>
-      <div class="cell"><div class="nm"></div><div class="bx">…</div><div class="ad">0x100C</div></div>
-      <div class="cell ptr"><div class="nm">p</div><div class="bx">0x1004</div><div class="ad">0x1010</div></div>
+    <div data-a style="align-self:center">
+      <div class="boxes" id="pt-boxes" style="width:470px;gap:8px"></div>
+      <div class="row" style="margin-top:14px"><button class="go" id="pt-go">Seguir a p</button><span class="body" id="pt-msg" style="color:var(--field-ink);font-size:20px"></span></div>
     </div>
-    <svg class="arrows" width="800" height="190"><path class="off" d="M610,24 L610,6 L252,6 L252,22" marker-end="url(#ah)"/></svg>
   </div>
-  <div class="ctl"><button class="pri" data-act="intro">Mostrar a dónde apunta p</button></div>
-  <p class="lead" style="margin-top:22px;max-width:960px">Un puntero es una variable cuyo valor es una <b>dirección de memoria</b>. No guarda el dato: guarda dónde está el dato. Las direcciones del dibujo son de ejemplo; las reales las asigna el sistema y cambian en cada ejecución.</p>
 </section>
 
-<!-- 6 OPERADORES -->
-<section class="slide" data-t="& y *">
-  <h2 class="t">Dos operadores para trabajar con direcciones</h2>
-  <p class="sub"><span class="a">&amp;</span> pregunta «¿dónde está?» y <span class="pt">*</span> pregunta «¿qué hay allí?». Evalúe cada expresión.</p>
-  <div class="row mt">
-    <div style="width:470px">
-      <div class="mem">
-        <div class="cell var"><div class="nm">edad</div><div class="bx">20</div><div class="ad">0x1004</div></div>
-        <div class="cell ptr"><div class="nm">p</div><div class="bx">0x1004</div><div class="ad">0x1010</div></div>
-      </div>
-      <pre class="code mt" data-hl>int edad = 20;
+<!-- TEMA 1 -->
+<section class="slide chapter" data-title="Tema 1: Concepto de punteros" data-topic="1">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask"><span>Concepto de punteros</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:640px">La memoria es una pared de apartados numerados. Cada variable vive en uno.</p>
+    <div class="ext" data-a></div></div>
+    <div data-a style="align-self:center"><span class="slip">p = 0x1004</span><p class="body" style="color:var(--field-ink);margin-top:14px">«Su carta está en el apartado 1004.»</p></div>
+  </div>
+</section>
+
+<section class="slide" data-title="La memoria es una fila de apartados">
+  <h2 class="mask"><span>Un puntero guarda una dirección</span></h2>
+  <p class="body sub" data-a style="max-width:1100px">Cada casilla tiene su número (la dirección, arriba) y lo que guarda (abajo). <code>p</code> no guarda 20: guarda dónde está el 20.</p>
+  <div class="boxes" id="m1" data-a style="margin-top:28px"></div>
+  <div class="row" data-a style="margin-top:22px;gap:22px"><button class="go" id="m1-go">¿A dónde apunta p?</button><p class="body" id="m1-msg" style="font-size:22px" aria-live="polite"></p></div>
+  <p class="small" data-a style="margin-top:26px;font-size:19px">Las direcciones del dibujo son de ejemplo. Las reales las asigna el sistema, cambian en cada ejecución y se ven como <code>0x7ffe49949ca0</code>.</p>
+</section>
+
+<section class="slide" data-title="Los operadores & y *">
+  <h2 class="mask"><span>&amp; pregunta dónde; * pregunta qué hay</span></h2>
+  <div style="display:grid;grid-template-columns:520px 1fr;gap:36px;margin-top:22px">
+    <div data-a>
+      <pre class="code" style="font-size:26px">int edad = 20;
 int* p = &amp;edad;</pre>
+      <div class="row" id="op-b" style="margin-top:18px"><button data-x="edad" style="font-family:var(--mono)">edad</button><button data-x="&amp;edad" style="font-family:var(--mono)">&amp;edad</button><button data-x="p" style="font-family:var(--mono)">p</button><button data-x="*p" style="font-family:var(--mono)">*p</button><button data-x="&amp;p" style="font-family:var(--mono)">&amp;p</button></div>
+      <div class="res" style="margin-top:18px"><small id="op-e">cout &lt;&lt; edad;</small><b id="op-r">20</b></div>
     </div>
-    <div style="flex:1" data-w="eval">
-      <div class="ctl" style="margin-bottom:16px">
-        <button data-ex="edad">edad</button><button data-ex="&amp;edad">&amp;edad</button><button data-ex="p">p</button><button data-ex="*p">*p</button><button data-ex="&amp;p">&amp;p</button>
-      </div>
-      <div class="term" aria-live="polite" style="font-size:28px;min-height:70px"><span class="h">Resultado</span><span class="res">Escoja una expresión</span></div>
-      <p class="msg" style="margin-top:14px"><span class="why">El resultado y su explicación aparecen aquí.</span></p>
+    <div data-a>
+      <div class="boxes" id="op-m"></div>
+      <p class="lead" id="op-w" style="margin-top:22px;font-size:27px" aria-live="polite"></p>
     </div>
   </div>
 </section>
 
-<!-- 7 DIV T2 -->
-<section class="slide dark" data-t="Tema 2" data-topic="2"><p class="kick">Tema 2 de 7</p><h1 style="margin-top:16px;font-size:64px">Declaración de punteros</h1><div class="tmem"></div></section>
+<!-- TEMA 2 -->
+<section class="slide chapter" data-title="Tema 2: Declaración de punteros" data-topic="2">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask"><span>Declaración de punteros</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:640px">El asterisco en la declaración dice: esta variable guarda direcciones de un tipo.</p>
+    <div class="ext" data-a></div></div>
+    <pre class="code" data-a style="align-self:center;font-size:28px">int* p = nullptr;</pre>
+  </div>
+</section>
 
-<!-- 8 DECLARACION -->
-<section class="slide" data-t="Declarar">
-  <h2 class="t">Cómo se declara un puntero</h2>
-  <p class="sub"><span class="mono">tipo* nombre;</span> El tipo dice a qué clase de dato apunta.</p>
-  <div class="row mt">
-    <table class="t" style="width:520px">
+<section class="slide" data-title="Cómo se declara un puntero">
+  <h2 class="mask"><span>tipo* nombre;</span></h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:24px">
+    <table class="t" data-a>
       <tr><th>Declaración</th><th>Se lee</th></tr>
-      <tr><td class="mono">int* p;</td><td>p apunta a un int</td></tr>
-      <tr><td class="mono">double* q;</td><td>q apunta a un double</td></tr>
-      <tr><td class="mono">char* c;</td><td>c apunta a un char</td></tr>
-      <tr><td class="mono">int* p = nullptr;</td><td>p no apunta a nada todavía</td></tr>
+      <tr><td><code>int* p;</code></td><td>p apunta a un int</td></tr>
+      <tr><td><code>double* q;</code></td><td>q apunta a un double</td></tr>
+      <tr><td><code>char* c;</code></td><td>c apunta a un char</td></tr>
+      <tr><td><code>int* p = nullptr;</code></td><td>p no apunta a nada todavía</td></tr>
     </table>
-    <div style="flex:1">
-      <div class="panel" style="background:#FFF6DE;border-color:#F2D68A"><p><b>Regla de oro:</b> inicialice siempre el puntero. Si todavía no tiene a dónde apuntar, use <span class="mono">nullptr</span>.</p></div>
-      <p style="font-size:19px;font-weight:600;margin:20px 0 8px">El tipo tiene que coincidir:</p>
-      <pre class="code" data-hl>double precio = 9.75;
+    <div data-a>
+      <p class="body" style="font-size:23px"><b>Inicialice siempre el puntero.</b> Si todavía no tiene a dónde apuntar, use <code>nullptr</code>.</p>
+      <p class="body" style="font-size:23px;margin-top:20px">El tipo tiene que coincidir con el de la variable:</p>
+      <pre class="code" style="font-size:22px;margin-top:10px">double precio = 9.75;
 int* p = &amp;precio;</pre>
-      <div class="term" style="margin-top:10px;font-size:15px"><span class="h">g++ dice</span><span class="e">error: cannot convert 'double*' to 'int*' in initialization</span></div>
+      <div class="term" style="margin-top:8px;font-size:18px"><span class="e">error: cannot convert 'double*' to 'int*'<br>in initialization</span></div>
+      <p class="small" style="margin-top:12px;font-size:19px">Todo puntero ocupa lo mismo, sin importar el tipo: <code>sizeof(p)</code> da 8 en una computadora de 64 bits.</p>
     </div>
   </div>
 </section>
 
-<!-- 9 PRIMER PROGRAMA (stepper) -->
-<section class="slide" data-t="Primer programa">
-  <h2 class="t">Primer programa con un puntero</h2>
-  <p class="sub">Ejecútelo paso a paso: cambiamos una variable sin usar su nombre.</p>
-  <div class="row mt" data-w="step" data-steps="s9">
-    <div style="width:620px">
-      <pre class="code" data-hl style="font-size:18px">int edad = 20;
-int* p = &amp;edad;      // p guarda la direccion
-
+<section class="slide" data-title="Primer programa con un puntero">
+  <h2 class="mask"><span>Cambiar una variable sin usar su nombre</span></h2>
+  <div data-step="p1" style="display:grid;grid-template-columns:640px 1fr;gap:32px;margin-top:22px">
+    <div data-a>
+      <pre class="code nums" style="font-size:21px">int edad = 20;
+int* p = &amp;edad;    // la direccion de edad
 cout &lt;&lt; "edad = " &lt;&lt; edad &lt;&lt; endl;
-cout &lt;&lt; "*p   = " &lt;&lt; *p &lt;&lt; endl;
-
-*p = 21;          // cambia edad a traves de p
+cout &lt;&lt; "*p = " &lt;&lt; *p &lt;&lt; endl;
+*p = 21;            // cambia edad
 cout &lt;&lt; "edad = " &lt;&lt; edad &lt;&lt; endl;</pre>
-      <div class="ctl" style="margin-top:14px"><button class="pri" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="stepn"></span></div>
+      <div class="row" style="margin-top:14px"><button class="go" data-s="next">Siguiente</button><button data-s="reset">Reiniciar</button><span class="stepn"></span></div>
     </div>
-    <div style="flex:1">
-      <div class="ws">
-        <div style="position:relative;height:150px">
-          <div class="mem">
-            <div class="cell var ghost" data-id="edad"><div class="nm">edad</div><div class="bx">?</div><div class="ad">0x1004</div></div>
-            <div class="cell ptr ghost" data-id="p" style="margin-left:60px"><div class="nm">p</div><div class="bx">?</div><div class="ad">0x1010</div></div>
-          </div>
-          <svg class="arrows" width="420" height="150"><path data-id="arr" class="off" d="M232,24 L232,6 L106,6 L106,22" marker-end="url(#ah)"/></svg>
-        </div>
-        <div class="term" data-id="out" style="min-height:118px"><span class="h">Salida</span></div>
-        <p class="msg" data-id="msg" style="margin-top:12px">Pulse «Siguiente paso» para ejecutar la primera línea.</p>
-      </div>
+    <div class="ws" data-a>
+      <div class="boxes"><div class="bx" data-id="b1"><div class="ad">0x1004</div><div class="vl" data-id="v1">?</div><div class="nm">edad</div></div><div class="bx" data-id="b2"><div class="ad">0x1010</div><div class="vl ptr" data-id="v2">?</div><div class="nm">p</div></div></div>
+      <div class="msg" data-id="msg" style="margin-top:14px" aria-live="polite">Pulse «Siguiente».</div>
+      <div class="term" data-id="out" style="margin-top:10px;min-height:110px"></div>
     </div>
   </div>
 </section>
 
-<!-- 10 DIV T3 -->
-<section class="slide dark" data-t="Tema 3" data-topic="3"><p class="kick">Tema 3 de 7</p><h1 style="margin-top:16px;font-size:64px">Punteros y arreglos</h1><div class="tmem"></div></section>
-
-<!-- 11 ARREGLO -->
-<section class="slide" data-t="Arreglo">
-  <h2 class="t">El nombre del arreglo es una dirección</h2>
-  <p class="sub"><span class="mono">notas</span> equivale a <span class="mono">&amp;notas[0]</span>. Mueva el puntero por el arreglo.</p>
-  <div data-w="arr" class="mt">
-    <div style="position:relative;height:200px">
-      <div class="mem">
-        <div class="cell" data-i="0"><div class="nm">notas[0]</div><div class="bx">90</div><div class="ad">0x1000</div></div>
-        <div class="cell" data-i="1"><div class="nm">notas[1]</div><div class="bx">85</div><div class="ad">0x1004</div></div>
-        <div class="cell" data-i="2"><div class="nm">notas[2]</div><div class="bx">78</div><div class="ad">0x1008</div></div>
-        <div class="cell" data-i="3"><div class="nm">notas[3]</div><div class="bx">92</div><div class="ad">0x100C</div></div>
-      </div>
-      <div class="ptrmark" style="position:absolute;top:118px;left:46px;transition:left .45s;text-align:center;font:600 18px var(--mono);color:var(--ptrtxt)">▲<br>p + <span class="pi">0</span></div>
-    </div>
-    <div class="row" style="align-items:flex-start">
-      <div class="ctl"><button aria-pressed="true" data-i="0">p + 0</button><button data-i="1">p + 1</button><button data-i="2">p + 2</button><button data-i="3">p + 3</button></div>
-      <div class="term" aria-live="polite" style="flex:1;font-size:21px"><span class="h">Las tres formas leen el mismo valor</span><span class="res">notas[0] = *(p + 0) = p[0] = 90</span></div>
-    </div>
-    <p class="msg" style="margin-top:16px">El puntero <span class="mono">p</span> se puede mover por el arreglo (<span class="mono">p++</span>). El nombre <span class="mono">notas</span> no: siempre señala al inicio.</p>
+<!-- TEMA 3 -->
+<section class="slide chapter" data-title="Tema 3: Punteros y arreglos" data-topic="3">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask"><span>Punteros y arreglos</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:640px">Un arreglo es una fila de apartados seguidos. Su nombre es el número del primero.</p>
+    <div class="ext" data-a></div></div>
+    <pre class="code" data-a style="align-self:center;font-size:26px">notas == &amp;notas[0]</pre>
   </div>
 </section>
 
-<!-- 12 DIV T4 -->
-<section class="slide dark" data-t="Tema 4" data-topic="4"><p class="kick">Tema 4 de 7</p><h1 style="margin-top:16px;font-size:64px">Aritmética de punteros</h1><div class="tmem"></div></section>
+<section class="slide" data-title="El nombre del arreglo es una dirección">
+  <h2 class="mask"><span>notas es la dirección de notas[0]</span></h2>
+  <pre class="code" data-a style="font-size:24px;margin-top:20px">int notas[4] = {90, 85, 78, 92};
+int* p = notas;        // lo mismo que &amp;notas[0]</pre>
+  <div class="boxes" id="ar-m" data-a style="margin-top:22px"></div>
+  <div class="row" data-a id="ar-b" style="margin-top:18px"><button data-k="0" style="font-family:var(--mono)">p + 0</button><button data-k="1" style="font-family:var(--mono)">p + 1</button><button data-k="2" style="font-family:var(--mono)">p + 2</button><button data-k="3" style="font-family:var(--mono)">p + 3</button></div>
+  <div class="res" data-a style="margin-top:14px"><small>Las tres formas leen el mismo apartado</small><b id="ar-r" style="font-size:36px"></b></div>
+</section>
 
-<!-- 13 P+1 -->
-<section class="slide" data-t="p + 1">
-  <h2 class="t">p + 1 avanza un elemento, no un byte</h2>
-  <p class="sub">El compilador multiplica por el tamaño del tipo (<span class="mono">sizeof</span>). Cambie el tipo y avance.</p>
-  <div data-w="arith" class="mt">
-    <div class="ctl"><span style="font-size:18px;font-weight:600">Tipo:</span><button aria-pressed="true" data-ty="int">int (4 bytes)</button><button data-ty="double">double (8 bytes)</button>
-      <span style="width:24px"></span><button aria-pressed="true" data-k="0">p</button><button data-k="1">p + 1</button><button data-k="2">p + 2</button><button data-k="3">p + 3</button></div>
-    <div style="position:relative;margin-top:26px;height:150px">
-      <div class="ruler" style="display:flex"></div>
-      <div class="elems" style="position:absolute;left:0;top:34px;height:56px;display:flex"></div>
-      <div class="am" style="position:absolute;top:96px;left:0;transition:left .45s;font:600 18px var(--mono);color:var(--ptrtxt)">▲ p</div>
-    </div>
-    <div class="term" aria-live="polite" style="font-size:19px"><span class="h">Cálculo</span><span class="res"></span></div>
-    <p class="sub" style="margin-top:14px">Comprobado en g++: <span class="mono">p+1</span> avanza 4 bytes en <span class="mono">int</span> y 8 en <span class="mono">double</span>; <span class="mono">fin - a</span> da 3 elementos.</p>
+<!-- TEMA 4 -->
+<section class="slide chapter" data-title="Tema 4: Aritmética de punteros" data-topic="4">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask"><span>Aritmética de punteros</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:640px">Sumarle 1 a un puntero es pasar al apartado siguiente, sea del tamaño que sea.</p>
+    <div class="ext" data-a></div></div>
+    <pre class="code" data-a style="align-self:center;font-size:26px">p + 1   // +4 bytes en int
+        // +8 en double</pre>
   </div>
 </section>
 
-<!-- 14 OPERACIONES -->
-<section class="slide" data-t="Operaciones válidas">
-  <h2 class="t">Qué operaciones se permiten</h2>
-  <p class="sub">Solo las que tienen sentido como «moverse por el arreglo».</p>
-  <div class="row mt">
-    <table class="t" style="flex:1">
-      <tr><th colspan="2">Válidas</th></tr>
-      <tr><td class="mono">p + n, p - n</td><td>Avanzar o retroceder n elementos</td></tr>
-      <tr><td class="mono">p++, p--</td><td>Mover el puntero uno a uno</td></tr>
-      <tr><td class="mono">p2 - p1</td><td>Distancia en elementos (mismo arreglo)</td></tr>
-      <tr><td class="mono">p &lt; a + n</td><td>Comparar para saber si llegó al final</td></tr>
-    </table>
-    <table class="t" style="flex:1">
-      <tr><th colspan="2" style="background:#A33A2E">No válidas o peligrosas</th></tr>
-      <tr><td class="mono">p1 + p2</td><td>Sumar dos direcciones no significa nada</td></tr>
-      <tr><td class="mono">p * 2, p / 2</td><td>Un puntero no se multiplica ni se divide</td></tr>
-      <tr><td class="mono">*(p + n) fuera</td><td>Pasarse del arreglo: comportamiento indefinido</td></tr>
-    </table>
+<section class="slide" data-title="p + 1 avanza un elemento">
+  <h2 class="mask"><span>p + 1 avanza un elemento, no un byte</span></h2>
+  <p class="body sub" data-a>El compilador multiplica por el tamaño del tipo. Cambie el tipo y avance.</p>
+  <div class="row" data-a style="margin-top:18px"><span class="body" style="font-weight:600;margin-right:6px">Tipo:</span><button id="ty-i" aria-pressed="true">int (4 bytes)</button><button id="ty-d">double (8 bytes)</button><span style="width:30px"></span><span class="body" style="font-weight:600;margin-right:6px">Avanzar:</span><button data-n="0" class="tn" style="font-family:var(--mono)">p</button><button data-n="1" class="tn" style="font-family:var(--mono)">p + 1</button><button data-n="2" class="tn" style="font-family:var(--mono)">p + 2</button><button data-n="3" class="tn" style="font-family:var(--mono)">p + 3</button></div>
+  <div class="boxes" id="ty-m" data-a style="margin-top:24px"></div>
+  <div class="res" data-a style="margin-top:20px"><small>Cálculo</small><b id="ty-r" style="font-size:34px"></b></div>
+  <p class="small" data-a style="margin-top:12px;font-size:19px">Comprobado con g++: p + 1 avanza 4 bytes en int y 8 en double. La resta de dos punteros del mismo arreglo da elementos: <code>(a + 2) - a</code> es 2.</p>
+</section>
+
+<section class="slide" data-title="Qué operaciones se permiten">
+  <h2 class="mask"><span>Solo lo que significa moverse por el arreglo</span></h2>
+  <div class="vs" data-a style="margin-top:24px">
+    <div><h3>Válidas</h3><table>
+      <tr><td>p + n,  p - n</td><td>avanzar o retroceder n elementos</td></tr>
+      <tr><td>p++,  p--</td><td>moverse uno a uno</td></tr>
+      <tr><td>p2 - p1</td><td>distancia en elementos (mismo arreglo)</td></tr>
+      <tr><td>p &lt; a + n</td><td>saber si se llegó al final</td></tr></table></div>
+    <div><h3>No compilan, o son peligrosas</h3><table>
+      <tr><td>p1 + p2</td><td>sumar dos direcciones no significa nada</td></tr>
+      <tr><td>p * 2</td><td>un puntero no se multiplica ni se divide</td></tr>
+      <tr><td>*(p + 4)</td><td>en un arreglo de 4: lee memoria ajena</td></tr></table></div>
+  </div>
+  <div class="term" data-a style="margin-top:20px;font-size:18px"><span class="e">error: invalid operands of types 'int*' and 'int*' to binary 'operator+'
+error: invalid operands of types 'int*' and 'int' to binary 'operator*'</span></div>
+</section>
+
+<!-- TEMA 5 -->
+<section class="slide chapter" data-title="Tema 5: Punteros como parámetros" data-topic="5">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask"><span>Punteros como parámetros</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:640px">Darle a una función el número del apartado le permite cambiar lo que hay dentro.</p>
+    <div class="ext" data-a></div></div>
+    <pre class="code" data-a style="align-self:center;font-size:26px">duplicar(&amp;n);</pre>
   </div>
 </section>
 
-<!-- 15 DIV T5 -->
-<section class="slide dark" data-t="Tema 5" data-topic="5"><p class="kick">Tema 5 de 7</p><h1 style="margin-top:16px;font-size:64px">Punteros como parámetros</h1><div class="tmem"></div></section>
-
-<!-- 16 VALOR VS PUNTERO (stepper) -->
-<section class="slide" data-t="Valor y puntero">
-  <h2 class="t">Por valor contra por puntero</h2>
-  <p class="sub">Solo el puntero deja que la función cambie la variable de <span class="mono">main()</span>.</p>
-  <div class="row mt" data-w="step" data-steps="s16">
-    <div style="width:600px">
-      <pre class="code" data-hl style="font-size:17px">void duplicarValor(int x)    { x = x * 2; }
+<section class="slide" data-title="Por valor contra por puntero">
+  <h2 class="mask"><span>Solo el puntero cambia la variable de main</span></h2>
+  <div data-step="dv" style="display:grid;grid-template-columns:640px 1fr;gap:32px;margin-top:22px">
+    <div data-a>
+      <pre class="code nums" style="font-size:20px">void duplicarValor(int x)    { x = x * 2; }
 void duplicarPuntero(int* x) { *x = *x * 2; }
-
 int n = 5;
-duplicarValor(n);       // recibe una copia
-duplicarPuntero(&amp;n);    // recibe la direccion</pre>
-      <div class="ctl" style="margin-top:14px"><button class="pri" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="stepn"></span></div>
+duplicarValor(n);     // recibe una copia
+cout &lt;&lt; n &lt;&lt; endl;    // 5
+duplicarPuntero(&amp;n);  // recibe la direccion
+cout &lt;&lt; n &lt;&lt; endl;    // 10</pre>
+      <div class="row" style="margin-top:14px"><button class="go" data-s="next">Siguiente</button><button data-s="reset">Reiniciar</button><span class="stepn"></span></div>
     </div>
-    <div style="flex:1">
-      <div class="ws">
-        <div style="position:relative;height:160px">
-          <div class="mem" style="gap:40px">
-            <div><div style="font:600 14px var(--sans);color:var(--muted);margin-bottom:4px">main()</div>
-              <div class="cell var ghost" data-id="n"><div class="nm">n</div><div class="bx">?</div><div class="ad">0x2000</div></div></div>
-            <div data-id="frame" class="off"><div style="font:600 14px var(--sans);color:var(--muted);margin-bottom:4px" data-id="fname">función</div>
-              <div class="cell" data-id="x"><div class="nm">x</div><div class="bx">?</div><div class="ad">0x3000</div></div></div>
-          </div>
-          <svg class="arrows" width="420" height="170"><path data-id="arr" class="off" d="M200,46 L200,34 L106,34 L106,44" marker-end="url(#ah)"/></svg>
-        </div>
-        <div class="term" data-id="out" style="min-height:90px"><span class="h">Salida</span></div>
-        <p class="msg" data-id="msg" style="margin-top:12px">Pulse «Siguiente paso».</p>
-      </div>
+    <div class="ws" data-a>
+      <p class="small" style="font-size:19px;color:var(--ink);font-weight:600">main</p>
+      <div class="boxes"><div class="bx" data-id="bn"><div class="ad">0x2000</div><div class="vl" data-id="vn">?</div><div class="nm">n</div></div></div>
+      <p class="small" style="font-size:19px;color:var(--ink);font-weight:600;margin-top:10px">la función</p>
+      <div class="boxes"><div class="bx" data-id="bx"><div class="ad">0x3000</div><div class="vl" data-id="vx">–</div><div class="nm">x</div></div></div>
+      <div class="msg" data-id="msg" style="margin-top:12px" aria-live="polite">Pulse «Siguiente».</div>
+      <div class="term" data-id="out" style="margin-top:8px;min-height:70px"></div>
     </div>
   </div>
 </section>
 
-<!-- 17 PUNTERO VS REFERENCIA -->
-<section class="slide" data-t="Puntero y referencia">
-  <h2 class="t">Puntero ( * ) y referencia ( &amp; ) de la Unidad D</h2>
-  <p class="sub">Los dos permiten modificar el original; se escriben distinto.</p>
-  <table class="t mt">
-    <tr><th></th><th>Referencia <span class="mono">int&amp; x</span></th><th>Puntero <span class="mono">int* x</span></th></tr>
-    <tr><td><b>Llamada</b></td><td class="mono">duplicar(n);</td><td class="mono">duplicar(&amp;n);</td></tr>
-    <tr><td><b>Dentro de la función</b></td><td class="mono">x = x * 2;</td><td class="mono">*x = *x * 2;</td></tr>
-    <tr><td><b>¿Puede ser nulo?</b></td><td>No</td><td>Sí (<span class="mono">nullptr</span>)</td></tr>
-    <tr><td><b>¿Puede cambiar a dónde apunta?</b></td><td>No</td><td>Sí</td></tr>
-    <tr><td><b>¿Recorre arreglos?</b></td><td>No</td><td>Sí, con aritmética</td></tr>
+<section class="slide" data-title="Puntero y referencia">
+  <h2 class="mask"><span>Puntero (*) y referencia (&amp;) de la Unidad D</span></h2>
+  <p class="body sub" data-a>Los dos permiten cambiar el original. Se escriben distinto y no pueden lo mismo.</p>
+  <table class="t" data-a style="margin-top:22px">
+    <tr><th></th><th>Referencia <code>int&amp; x</code></th><th>Puntero <code>int* x</code></th></tr>
+    <tr><td>Llamada</td><td><code>duplicar(n);</code></td><td><code>duplicar(&amp;n);</code></td></tr>
+    <tr><td>Dentro de la función</td><td><code>x = x * 2;</code></td><td><code>*x = *x * 2;</code></td></tr>
+    <tr><td>¿Puede no apuntar a nada?</td><td>No</td><td>Sí, <code>nullptr</code></td></tr>
+    <tr><td>¿Puede cambiar a dónde apunta?</td><td>No</td><td>Sí</td></tr>
+    <tr><td>¿Recorre un arreglo?</td><td>No</td><td>Sí, con aritmética</td></tr>
   </table>
-  <p class="sub" style="margin-top:16px">En C++ moderno se prefiere la referencia cuando basta; el puntero se usa cuando hace falta lo que solo él puede hacer.</p>
+  <p class="body" data-a style="margin-top:18px;font-size:22px">En C++ moderno se prefiere la referencia cuando basta. El puntero se usa cuando hace falta lo que solo él puede hacer.</p>
 </section>
 
-<!-- 18 DIV T6 -->
-<section class="slide dark" data-t="Tema 6" data-topic="6"><p class="kick">Tema 6 de 7</p><h1 style="margin-top:16px;font-size:64px">Paso de punteros a funciones</h1><div class="tmem"></div></section>
+<!-- TEMA 6 -->
+<section class="slide chapter" data-title="Tema 6: Paso de punteros a funciones" data-topic="6">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask"><span>Paso de punteros a funciones</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:640px">Un arreglo viaja a la función como el número de su primer apartado.</p>
+    <div class="ext" data-a></div></div>
+    <pre class="code" data-a style="align-self:center;font-size:24px">double promedio(
+    const int* a, int n);</pre>
+  </div>
+</section>
 
-<!-- 19 ARREGLO A FUNCION -->
-<section class="slide" data-t="Arreglo a función">
-  <h2 class="t">Un arreglo viaja a la función como un puntero</h2>
-  <p class="sub">La función recibe la dirección del primer elemento; por eso necesita también <span class="mono">n</span>.</p>
-  <div class="row mt">
-    <pre class="code" data-hl style="width:620px">double promedio(const int* a, int n) {
+<section class="slide" data-title="Un arreglo viaja como puntero">
+  <h2 class="mask"><span>La función recibe la dirección y el tamaño</span></h2>
+  <div style="display:grid;grid-template-columns:640px 1fr;gap:34px;margin-top:22px">
+    <div data-a><pre class="code" style="font-size:21px">double promedio(const int* a, int n) {
     int suma = 0;
     for (int i = 0; i &lt; n; i++)
         suma += *(a + i);
     return (double)suma / n;
 }
-
-promedio(notas, 4);    // 86.25</pre>
-    <div style="flex:1">
-      <div class="panel"><h3>const protege los datos</h3><p><span class="mono">const int* a</span>: la función puede leer el arreglo, pero no cambiarlo.</p></div>
-      <p style="font-size:19px;font-weight:600;margin:18px 0 8px">Si lo intenta, g++ lo detiene:</p>
-      <pre class="code" data-hl>a[0] = 0;</pre>
-      <div class="term" style="margin-top:10px;font-size:15px"><span class="h">g++ dice</span><span class="e">error: assignment of read-only location '* a'</span></div>
+int notas[4] = {90, 85, 78, 92};
+cout &lt;&lt; promedio(notas, 4);   // 86.25</pre></div>
+    <div data-a>
+      <h3 style="font-size:26px">const protege los datos</h3>
+      <p class="body" style="margin-top:8px;font-size:22px">Con <code>const int* a</code>, la función puede leer el arreglo pero no cambiarlo. Si lo intenta:</p>
+      <pre class="code" style="font-size:22px;margin-top:12px">a[0] = 0;</pre>
+      <div class="term" style="margin-top:8px;font-size:18px"><span class="e">error: assignment of read-only location '* a'</span></div>
+      <p class="body" style="margin-top:16px;font-size:22px">Y necesita <code>n</code>: solo con la dirección del primer apartado, no sabe dónde termina la fila.</p>
     </div>
   </div>
 </section>
 
-<!-- 20 BUSCAR MAYOR (stepper) -->
-<section class="slide" data-t="Devolver un puntero">
-  <h2 class="t">Una función también puede devolver un puntero</h2>
-  <p class="sub"><span class="mono">buscarMayor</span> devuelve dónde está el mayor, no solo cuánto vale. Siga el recorrido.</p>
-  <div class="row mt" data-w="step" data-steps="s20">
-    <div style="width:560px">
-      <pre class="code" data-hl style="font-size:17px">int* buscarMayor(int* a, int n) {
+<section class="slide" data-title="Una función que devuelve un puntero">
+  <h2 class="mask"><span>buscarMayor devuelve dónde está</span></h2>
+  <div data-step="bm" style="display:grid;grid-template-columns:640px 1fr;gap:30px;margin-top:22px">
+    <div data-a>
+      <pre class="code nums" style="font-size:20px">int* buscarMayor(int* a, int n) {
     int* mayor = a;
     for (int* p = a + 1; p &lt; a + n; p++)
         if (*p &gt; *mayor) mayor = p;
@@ -420,321 +333,309 @@ promedio(notas, 4);    // 86.25</pre>
 }
 int* m = buscarMayor(notas, 4);
 cout &lt;&lt; *m &lt;&lt; " en la posicion " &lt;&lt; m - notas;</pre>
-      <div class="ctl" style="margin-top:14px"><button class="pri" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="stepn"></span></div>
+      <div class="row" style="margin-top:14px"><button class="go" data-s="next">Siguiente</button><button data-s="reset">Reiniciar</button><span class="stepn"></span></div>
     </div>
-    <div style="flex:1">
-      <div class="ws">
-        <div class="mem" style="gap:8px">
-          <div class="cell" data-id="c0"><div class="nm">[0]</div><div class="bx" style="width:96px">90</div><div class="ad">0x1000</div><div class="pt" data-id="t0">&nbsp;</div></div>
-          <div class="cell" data-id="c1"><div class="nm">[1]</div><div class="bx" style="width:96px">85</div><div class="ad">0x1004</div><div class="pt" data-id="t1">&nbsp;</div></div>
-          <div class="cell" data-id="c2"><div class="nm">[2]</div><div class="bx" style="width:96px">78</div><div class="ad">0x1008</div><div class="pt" data-id="t2">&nbsp;</div></div>
-          <div class="cell" data-id="c3"><div class="nm">[3]</div><div class="bx" style="width:96px">92</div><div class="ad">0x100C</div><div class="pt" data-id="t3">&nbsp;</div></div>
-        </div>
-        <div class="term" data-id="out" style="min-height:80px;margin-top:16px"><span class="h">Salida</span></div>
-        <p class="msg" data-id="msg" style="margin-top:12px">Pulse «Siguiente paso».</p>
-      </div>
+    <div class="ws" data-a>
+      <div class="boxes" style="gap:6px"><div class="bx" data-id="n0" style="width:112px"><div class="ad">0x1000</div><div class="vl">90</div><div class="nm" data-id="t0"></div></div><div class="bx" data-id="n1" style="width:112px"><div class="ad">0x1004</div><div class="vl">85</div><div class="nm" data-id="t1"></div></div><div class="bx" data-id="n2" style="width:112px"><div class="ad">0x1008</div><div class="vl">78</div><div class="nm" data-id="t2"></div></div><div class="bx" data-id="n3" style="width:112px"><div class="ad">0x100C</div><div class="vl">92</div><div class="nm" data-id="t3"></div></div></div>
+      <div class="msg" data-id="msg" style="margin-top:14px;min-height:92px" aria-live="polite">Pulse «Siguiente».</div>
+      <div class="term" data-id="out" style="margin-top:10px;min-height:60px"></div>
     </div>
   </div>
 </section>
 
-<!-- 21 DIV T7 -->
-<section class="slide dark" data-t="Tema 7" data-topic="7"><p class="kick">Tema 7 de 7</p><h1 style="margin-top:16px;font-size:64px">Punteros a punteros</h1><div class="tmem"></div></section>
+<!-- TEMA 7 -->
+<section class="slide chapter" data-title="Tema 7: Punteros a punteros" data-topic="7">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask"><span>Punteros a punteros</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:640px">Un papel que dice en qué apartado está el papel que dice dónde está la carta.</p>
+    <div class="ext" data-a></div></div>
+    <pre class="code" data-a style="align-self:center;font-size:26px">int** pp = &amp;p;</pre>
+  </div>
+</section>
 
-<!-- 22 PP (stepper) -->
-<section class="slide" data-t="int**">
-  <h2 class="t">Un puntero que guarda la dirección de otro puntero</h2>
-  <p class="sub"><span class="mono">int** pp</span>: dos saltos para llegar al dato.</p>
-  <div class="row mt" data-w="step" data-steps="s22">
-    <div style="width:430px">
-      <pre class="code" data-hl>int x = 5;
+<section class="slide" data-title="Dos saltos para llegar al dato">
+  <h2 class="mask"><span>int** pp: dos saltos hasta el dato</span></h2>
+  <div data-step="pp" style="display:grid;grid-template-columns:560px 1fr;gap:34px;margin-top:22px">
+    <div data-a>
+      <pre class="code nums" style="font-size:22px">int x = 5;
 int* p = &amp;x;
 int** pp = &amp;p;
-**pp = 10;   // pp -&gt; p -&gt; x</pre>
-      <div class="ctl" style="margin-top:14px"><button class="pri" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="stepn"></span></div>
+**pp = 10;      // pp -&gt; p -&gt; x
+cout &lt;&lt; x;      // 10</pre>
+      <div class="row" style="margin-top:14px"><button class="go" data-s="next">Siguiente</button><button data-s="reset">Reiniciar</button><span class="stepn"></span></div>
     </div>
-    <div style="flex:1">
-      <div class="ws">
-        <div style="position:relative;height:150px">
-          <div class="mem" style="gap:48px">
-            <div class="cell ptr ghost" data-id="pp"><div class="nm">pp</div><div class="bx">?</div><div class="ad">0x3000</div></div>
-            <div class="cell ptr ghost" data-id="p"><div class="nm">p</div><div class="bx">?</div><div class="ad">0x2000</div></div>
-            <div class="cell var ghost" data-id="x"><div class="nm">x</div><div class="bx">?</div><div class="ad">0x1000</div></div>
-          </div>
-          <svg class="arrows" width="600" height="150"><path data-id="a1" class="off" d="M134,55 L176,55" marker-end="url(#ah)"/><path data-id="a2" class="off" d="M314,55 L356,55" marker-end="url(#ah)"/></svg>
-        </div>
-        <div class="term" data-id="out" style="min-height:64px"><span class="h">Salida</span></div>
-        <p class="msg" data-id="msg" style="margin-top:12px">Pulse «Siguiente paso».</p>
-      </div>
+    <div class="ws" data-a>
+      <div class="boxes"><div class="bx" data-id="bp2"><div class="ad">0x3000</div><div class="vl ptr" data-id="vpp">?</div><div class="nm">pp</div></div><div class="bx" data-id="bp1"><div class="ad">0x2000</div><div class="vl ptr" data-id="vp">?</div><div class="nm">p</div></div><div class="bx" data-id="bp0"><div class="ad">0x1000</div><div class="vl" data-id="vxx">?</div><div class="nm">x</div></div></div>
+      <div class="msg" data-id="msg" style="margin-top:14px;min-height:92px" aria-live="polite">Pulse «Siguiente».</div>
+      <div class="term" data-id="out" style="margin-top:10px;min-height:56px"></div>
     </div>
   </div>
 </section>
 
-<!-- 23 PARA QUE -->
-<section class="slide" data-t="¿Para qué int**?">
-  <h2 class="t">¿Para qué sirve un puntero a puntero?</h2>
-  <p class="sub">Para que una función cambie hacia dónde apunta un puntero de <span class="mono">main()</span>.</p>
-  <div class="row mt">
-    <pre class="code" data-hl style="width:700px;font-size:18px">void marcarDestacado(int** destacado, int* cant, int pos) {
+<section class="slide" data-title="¿Para qué sirve un puntero a puntero?">
+  <h2 class="mask"><span>Para cambiar a dónde apunta un puntero de main</span></h2>
+  <div style="display:grid;grid-template-columns:680px 1fr;gap:34px;margin-top:24px">
+    <pre class="code" data-a style="font-size:21px">void marcarDestacado(int** destacado,
+                     int* cant, int pos) {
     *destacado = cant + (pos - 1);
 }
-
 int* destacado = nullptr;
 marcarDestacado(&amp;destacado, cant, 2);
 // ahora destacado apunta a cant[1]</pre>
-    <div class="panel" style="flex:1"><p>Con <span class="mono">int*</span> la función solo cambia el dato. Con <span class="mono">int**</span> cambia el puntero mismo.</p><p style="margin-top:14px;color:var(--muted)">Es la parte D del Laboratorio E.</p></div>
-  </div>
-  <div class="panel mt" style="background:#FFF6DE;border-color:#F2D68A"><p><b>Lo verá otra vez</b> en <span class="mono">main(int argc, char** argv)</span> y en la memoria dinámica de la Unidad H.</p></div>
-</section>
-
-<!-- 24 ERRORES -->
-<section class="slide" data-t="Errores comunes">
-  <h2 class="t">Errores comunes con punteros</h2>
-  <p class="sub">El compilador no siempre los detecta. Abra cada caso para ver qué pasa.</p>
-  <div class="mt" style="display:grid;grid-template-columns:1fr 1fr;gap:16px" data-w="errs">
-    <div class="panel"><h3>Desreferenciar nullptr</h3><p><span class="mono">*p</span> cuando <span class="mono">p</span> es <span class="mono">nullptr</span>.</p>
-      <button style="margin-top:10px" data-rv>Ver qué pasa</button><div class="reveal"><div class="term" style="margin-top:10px;font-size:15px"><span class="e">Segmentation fault</span>  el programa se detiene</div></div></div>
-    <div class="panel"><h3>Puntero sin inicializar</h3><p><span class="mono">int* p; *p = 5;</span> apunta a cualquier lugar.</p>
-      <button style="margin-top:10px" data-rv>Ver qué pasa</button><div class="reveal"><div class="term" style="margin-top:10px;font-size:15px"><span class="w">warning: 'p' is used uninitialized</span></div></div></div>
-    <div class="panel"><h3>Salirse del arreglo</h3><p><span class="mono">*(p + 4)</span> en un arreglo de 4 elementos.</p>
-      <button style="margin-top:10px" data-rv>Ver qué pasa</button><div class="reveal"><div class="term" style="margin-top:10px;font-size:15px">Lee memoria ajena. Vea la próxima lámina.</div></div></div>
-    <div class="panel"><h3>Confundir * y &amp;</h3><p>Pasar <span class="mono">n</span> cuando la función espera <span class="mono">&amp;n</span>.</p>
-      <button style="margin-top:10px" data-rv>Ver qué pasa</button><div class="reveal"><div class="term" style="margin-top:10px;font-size:15px"><span class="e">error: invalid conversion from 'int' to 'int*'</span></div></div></div>
+    <div data-a>
+      <p class="body" style="font-size:23px">Con <code>int*</code> la función cambia el dato. Con <code>int**</code> cambia el puntero mismo.</p>
+      <p class="body" style="font-size:23px;margin-top:16px">Es la parte D del Laboratorio E.</p>
+      <p class="body" style="font-size:23px;margin-top:16px">Lo verá otra vez en <code>main(int argc, char** argv)</code> y con los objetos que se crean con <code>new</code> en la Unidad H.</p>
+    </div>
   </div>
 </section>
 
-<!-- 25 ASAN -->
-<section class="slide" data-t="AddressSanitizer">
-  <h2 class="t">Herramienta: AddressSanitizer</h2>
-  <p class="sub">Compile el mismo error de dos maneras y compare lo que le dice cada una.</p>
-  <div class="row mt" data-w="asan">
-    <div style="width:520px">
-      <pre class="code" data-hl>int notas[4] = {90, 85, 78, 92};
+<section class="slide" data-title="Errores comunes con punteros">
+  <h2 class="mask"><span>El compilador no siempre avisa</span></h2>
+  <div data-tabs="r1" data-a style="margin-top:22px">
+    <div class="row"><button data-tab="r1">nullptr</button><button data-tab="r2">Sin inicializar</button><button data-tab="r3">Confundir * y &amp;</button><button data-tab="r4">Salirse del arreglo</button></div>
+    <div style="display:grid;grid-template-columns:620px 1fr;gap:32px;margin-top:22px">
+      <div data-panel="r1"><pre class="code" style="font-size:22px">int* p = nullptr;
+cout &lt;&lt; *p;</pre><div class="term" style="margin-top:10px;font-size:19px"><span class="e">Segmentation fault</span></div></div>
+      <div data-panel="r1"><p class="lead">Compila sin avisos y el programa se cae.</p><p class="body sub">Antes de usar <code>*p</code>, compruebe <code>if (p != nullptr)</code>.</p></div>
+      <div data-panel="r2" hidden><pre class="code" style="font-size:22px">int* p;
+*p = 5;</pre><div class="term" style="margin-top:10px;font-size:18px"><span class="w">warning: 'p' is used uninitialized [-Wuninitialized]</span></div></div>
+      <div data-panel="r2" hidden><p class="lead">p apunta a cualquier lugar, y el 5 se escribe ahí.</p><p class="body sub">Por eso se inicializa siempre, aunque sea con <code>nullptr</code>.</p></div>
+      <div data-panel="r3" hidden><pre class="code" style="font-size:22px">void duplicar(int* x) { *x *= 2; }
+int n = 5;
+duplicar(n);</pre><div class="term" style="margin-top:10px;font-size:18px"><span class="e">error: invalid conversion from 'int' to 'int*' [-fpermissive]</span></div></div>
+      <div data-panel="r3" hidden><p class="lead">La función pide una dirección y recibió un valor.</p><p class="body sub">La llamada correcta es <code>duplicar(&amp;n);</code>. El * lee o escribe el dato; el &amp; da la dirección.</p></div>
+      <div data-panel="r4" hidden><pre class="code" style="font-size:22px">int notas[4] = {90, 85, 78, 92};
 int* p = notas;
-return *(p + 4);   // fuera del arreglo</pre>
-      <div class="ctl" style="margin-top:16px"><button data-c="wall">g++ -Wall</button><button data-c="asan">g++ -g -fsanitize=address</button></div>
-      <p class="sub" style="margin-top:14px;font-size:17px">AddressSanitizer está en g++ de Linux y macOS. En Windows, use OnlineGDB o WSL para esta prueba.</p>
-    </div>
-    <div style="flex:1">
-      <div class="term" aria-live="polite" style="min-height:150px;font-size:17px"><span class="h">Resultado</span><span class="res">Escoja cómo compilar.</span></div>
-      <p class="msg" style="margin-top:12px"><span class="why">&nbsp;</span></p>
+return *(p + 4);</pre><div class="term" style="margin-top:10px;font-size:17px"><span class="p">g++ -Wall:</span> <span class="w">warning: 'notas' is used uninitialized</span>
+<span class="p">g++ -fsanitize=address:</span> <span class="e">ERROR: AddressSanitizer: stack-buffer-overflow</span></div></div>
+      <div data-panel="r4" hidden><p class="lead">-Wall da un aviso confuso; AddressSanitizer dice qué pasó.</p><p class="body sub">Compile con <code>-g -fsanitize=address</code> cuando un programa con punteros falle sin explicación. Está en g++ de Linux y macOS; en Windows, use OnlineGDB o WSL.</p></div>
     </div>
   </div>
 </section>
 
-<!-- 26 POO -->
-<section class="slide" data-t="Conexión con POO">
-  <h2 class="t">Conexión con la programación orientada a objetos</h2>
-  <p class="sub">Los punteros son la base de lo que viene en las Unidades H e I.</p>
-  <div class="mt" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
-    <div class="panel"><h3 class="mono">this</h3><p>Dentro de una clase, <span class="mono">this</span> es un puntero al objeto que ejecuta el método.</p></div>
-    <div class="panel"><h3 class="mono">new y delete</h3><p>Los objetos creados mientras el programa corre se manejan con punteros.</p></div>
-    <div class="panel"><h3>Polimorfismo</h3><p>Un puntero a la clase base puede señalar a un objeto de una clase derivada.</p></div>
+<section class="slide field-hi" data-title="Discusión: referencia o puntero">
+  <p class="q mask"><span>Para intercambiar dos variables, ¿referencia o puntero?</span></p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:27px">Piensen en cómo se ve la llamada en main y en qué puede salir mal con cada una.</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b><code>void swap(int* a, int* b)</code></b><span>se llama con <code>swap(&amp;x, &amp;y)</code></span></div><div class="ok" data-rv-box><b><code>void swap(int&amp; a, int&amp; b)</code></b><span>se llama con <code>swap(x, y)</code></span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">la referencia: no puede ser nullptr y la llamada es más clara; el puntero, cuando hace falta moverse o «nada»</span></div></div></div>
+</section>
+
+<section class="slide" data-title="Lo esencial de la unidad">
+  <h2 class="mask"><span>Lo que se lleva de esta unidad</span></h2>
+  <div class="dir" data-a>
+    <div><h3>&amp; y *</h3><p><code>&amp;x</code> da la dirección; <code>*p</code> da lo que hay allí. Inicialice con <code>nullptr</code>.</p></div>
+    <div><h3>Aritmética</h3><p><code>p + 1</code> avanza un elemento. <code>p2 - p1</code> da la distancia en elementos.</p></div>
+    <div><h3>Funciones</h3><p>Con un puntero, la función cambia el original. Un arreglo llega como puntero y necesita su tamaño.</p></div>
+    <div><h3>Hacia la POO</h3><p><code>this</code>, <code>new</code>/<code>delete</code> y el polimorfismo de las Unidades H e I son punteros.</p></div>
   </div>
 </section>
 
-<!-- 27 REPASO -->
-<section class="slide" data-t="Repaso">
-  <h2 class="t">Repaso rápido</h2>
-  <p class="sub">Discuta la respuesta antes de revelarla.</p>
-  <div class="mt" data-w="quiz" style="display:grid;gap:12px">
-    <div class="panel"><p><b>1.</b> Si <span class="mono">int* p = &amp;n;</span> ¿qué diferencia hay entre <span class="mono">p</span> y <span class="mono">*p</span>? <button data-rv style="margin-left:10px;padding:4px 10px">Respuesta</button></p><p class="reveal" style="color:var(--puma);margin-top:6px"><span class="mono">p</span> es la dirección de n; <span class="mono">*p</span> es el valor guardado en n.</p></div>
-    <div class="panel"><p><b>2.</b> Un int ocupa 4 bytes. Si <span class="mono">p</span> vale 0x1000, ¿cuánto vale <span class="mono">p + 3</span>? <button data-rv style="margin-left:10px;padding:4px 10px">Respuesta</button></p><p class="reveal" style="color:var(--puma);margin-top:6px">0x100C: 0x1000 + 3 × 4 bytes = 0x1000 + 12.</p></div>
-    <div class="panel"><p><b>3.</b> ¿Por qué una función que recibe un arreglo necesita también su tamaño? <button data-rv style="margin-left:10px;padding:4px 10px">Respuesta</button></p><p class="reveal" style="color:var(--puma);margin-top:6px">Porque solo recibe la dirección del primer elemento; no sabe dónde termina.</p></div>
-    <div class="panel"><p><b>4.</b> ¿Qué necesita una función para cambiar a dónde apunta un puntero de main()? <button data-rv style="margin-left:10px;padding:4px 10px">Respuesta</button></p><p class="reveal" style="color:var(--puma);margin-top:6px">Recibir un puntero a puntero (<span class="mono">int**</span>) y que main() le pase <span class="mono">&amp;ptr</span>.</p></div>
+<!-- LABORATORIO -->
+<section class="slide chapter" data-title="Laboratorio E: inventario del A-201" data-topic="8">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask"><span>Laboratorio E</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:640px">El inventario del laboratorio A&#8209;201: un programa al que le faltan 20 piezas, y todas son punteros.</p>
+    <div class="ext" data-a></div></div>
+    <pre class="code" data-a style="align-self:center;font-size:22px">int* destacado = ____(17);</pre>
   </div>
 </section>
 
-<!-- 28 LAB -->
-<section class="slide dark" data-t="Laboratorio E">
-  <p class="kick">Laboratorio E</p>
-  <h1 style="margin-top:16px;font-size:58px">Inventario del Laboratorio A-201</h1>
-  <ul class="clean" style="margin-top:36px;color:#E8EEF6">
-    <li>Recorrer el inventario con aritmética de punteros</li>
-    <li>Sumar unidades y calcular el valor total</li>
-    <li>Buscar el equipo con más unidades (función que devuelve un puntero)</li>
-    <li>Recibir equipo e intercambiar posiciones (punteros como parámetros)</li>
-    <li>Marcar un equipo destacado (puntero a puntero)</li>
-  </ul>
-  <p style="margin-top:26px;font-size:20px">Guía y código base: <a href="laboratorios/LabE_Inventario_TESI2105.pdf" target="_blank" rel="noopener" style="color:var(--gold)">guía en PDF</a> · <a href="laboratorios/LabE_Inventario_Blancos.cpp" download style="color:var(--gold)">LabE_Inventario_Blancos.cpp</a></p>
-</section>
-
-<!-- 29 REFERENCIAS -->
-<section class="slide" data-t="Referencias">
-  <h2 class="t">Referencias</h2>
-  <div class="mt" style="font-size:19px;line-height:1.5;max-width:1000px">
-    <p style="margin:0 0 14px;padding-left:36px;text-indent:-36px">cppreference.com. (s. f.). <i>Pointer declaration</i>. https://en.cppreference.com/w/cpp/language/pointer</p>
-    <p style="margin:0 0 14px;padding-left:36px;text-indent:-36px">Kumar, A. (2024). <i>Hands-on object-oriented programming: Mastering OOP features for real-world software systems development</i>. Apress.</p>
-    <p style="margin:0 0 14px;padding-left:36px;text-indent:-36px">Lutz, M. (2025). <i>Learning Python: Powerful object-oriented programming</i>. O’Reilly Media.</p>
-    <p style="margin:0 0 14px;padding-left:36px;text-indent:-36px">Tsetsekas, H. (2023). <i>Object-oriented programming exercises with C++</i>. Publicación independiente.</p>
+<section class="slide" data-title="Laboratorio E: la misión">
+  <h2 class="mask"><span>La misión: completar 20 blancos</span></h2>
+  <p class="body sub" data-a style="max-width:1120px">Sustituya cada <code>____(#)</code> por la pieza correcta: un puntero, un <code>&amp;</code>, un <code>*</code> o una expresión de aritmética. No cambie nada más.</p>
+  <ol class="parts" data-a style="margin-top:18px">
+    <li><b class="nm">A</b><span>Blancos 1 a 8: recorrer el inventario con <code>*(p + i)</code>, <code>p++</code> y dos punteros a la par.</span></li>
+    <li><b class="nm">B</b><span>Blancos 9 a 11: <code>buscarMayor</code> devuelve la dirección del mayor.</span></li>
+    <li><b class="nm">C</b><span>Blancos 12 a 14: recibir equipo e intercambiar, con punteros como parámetros.</span></li>
+    <li><b class="nm">D</b><span>Blancos 15 y 16: <code>int**</code> para el destacado y las direcciones.</span></li>
+    <li><b class="nm">E</b><span>Blancos 17 a 20, en <code>main</code>: <code>nullptr</code>, resta de punteros y el operador <code>&amp;</code>.</span></li>
+    <li><b class="nm">✓</b><span>Compile después de cada parte. Mientras queden blancos no compila: es normal.</span></li>
+  </ol>
+  <div class="row" data-a style="margin-top:18px;gap:14px;align-items:center">
+    <a class="dl" href="laboratorios/LabE_Inventario_Blancos.cpp" download>Descargar el código base</a>
+    <a class="dl alt" href="laboratorios/LabE_Inventario_TESI2105.pdf" target="_blank" rel="noopener">Guía con las pistas (PDF)</a>
   </div>
-  <p class="sub" style="margin-top:20px">Todos los ejemplos se compilaron y ejecutaron con g++ -std=c++17 -Wall -Wextra.</p>
+  <pre class="code" data-raw data-a style="font-size:19px;padding:10px 0;margin-top:10px"><span class="ln">g++ -Wall -Wextra LabE_Apellido_Nombre.cpp -o inventario</span></pre>
 </section>
 
-<div id="gutter" aria-hidden="true"></div>
-<nav id="bar" aria-label="Navegación">
-  <span class="file">punteros.cpp</span>
-  <button class="bt" id="prev" aria-label="Lámina anterior">◀</button>
-  <div id="map"></div>
-  <button class="bt" id="next" aria-label="Lámina siguiente">▶</button>
-  <span class="ix" id="ix" aria-live="polite"></span>
-  <button class="bt" id="fs">Pantalla completa</button>
-  <a class="bt" href="presentaciones/TESI2105_UnidadE_Punteros.pdf" target="_blank" rel="noopener">PDF</a>
-</nav>
-<svg width="0" height="0" style="position:absolute"><defs><marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#E07A10"/></marker></defs></svg>
+<section class="slide" data-title="Laboratorio E: las pruebas">
+  <h2 class="mask"><span>Seis pruebas del programa</span></h2>
+  <div style="display:grid;grid-template-columns:620px 1fr;gap:30px;margin-top:18px">
+    <div class="cases" data-tabs="c1" data-a>
+      <div class="row" style="gap:6px"><button data-tab="c1" id="tb-c1">1 Totales</button><button data-tab="c2" id="tb-c2">2 Recibir</button><button data-tab="c3" id="tb-c3">3 Intercambiar</button><button data-tab="c4" id="tb-c4">4 Destacado</button><button data-tab="c5" id="tb-c5">5 Inválidos</button><button data-tab="c6" id="tb-c6">6 Direcciones</button></div>
+      <div id="cases-panels" style="margin-top:12px"></div>
+    </div>
+    <div data-a>
+      <label for="vf-in" style="font-size:20px;font-weight:600;display:block;margin-bottom:6px">Pegue aquí lo que imprimió su programa con la prueba <span id="vf-name">1</span></label>
+      <textarea class="paste" id="vf-in" spellcheck="false" placeholder="Copie todo el texto de la terminal y péguelo aquí"></textarea>
+      <div class="row" style="margin-top:8px"><button class="go" id="vf-go">Comprobar</button><span class="score" id="vf-score" aria-live="polite"></span></div>
+      <ul class="checks" id="vf-checks"></ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Laboratorio E: rúbrica y entrega">
+  <h2 class="mask"><span>Rúbrica y entrega</span></h2>
+  <div style="display:grid;grid-template-columns:640px 1fr;gap:40px;margin-top:22px">
+    <table class="t rub" data-a>
+      <tr><th>Criterio</th><th>Puntos</th></tr>
+      <tr><td>Compila sin errores ni avisos con -Wall -Wextra</td><td>15</td></tr>
+      <tr><td>Blancos completos y correctos (20 × 3)</td><td>60</td></tr>
+      <tr><td>Los seis casos de prueba dan lo esperado</td><td>15</td></tr>
+      <tr><td>Preguntas de reflexión</td><td>10</td></tr>
+      <tr><th>Total</th><th>100</th></tr>
+    </table>
+    <div data-a>
+      <h3 style="font-size:28px">Qué se entrega</h3>
+      <p class="body" style="margin-top:8px;font-size:22px">Por OrbundSIS, solo el archivo <code>LabE_Apellido_Nombre.cpp</code>, con los 20 blancos y las respuestas de reflexión en un comentario al final.</p>
+      <h3 style="font-size:24px;margin-top:20px">Reflexión</h3>
+      <ol style="font-size:21px;line-height:1.4;margin:8px 0 0;padding-left:26px">
+        <li>¿Por qué <code>buscarMayor</code> devuelve un <code>int*</code> y no un <code>int</code>?</li>
+        <li>En la prueba 4, el destacado pasó de 15 a 18 sin volver a marcarlo. ¿Por qué?</li>
+        <li>¿Qué pasaría si <code>intercambiarEnteros</code> recibiera <code>int a, int b</code>?</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Referencias">
+  <h2 class="mask"><span>Referencias</span></h2>
+  <div class="gap" data-a style="font-size:21px;line-height:1.5;max-width:1080px">
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">cppreference.com. (s. f.). <i>Pointer declaration</i>. https://en.cppreference.com/w/cpp/language/pointer</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">cppreference.com. (s. f.). <i>Pointer arithmetic</i>. https://en.cppreference.com/w/cpp/language/operator_arithmetic</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Kumar, A. (2024). <i>Hands-on object-oriented programming: Mastering OOP features for real-world software systems development</i>. Apress.</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Lutz, M. (2025). <i>Learning Python: Powerful object-oriented programming</i>. O’Reilly Media.</p>
+  </div>
+  <p class="body gap" data-a style="font-size:20px">Kumar (2024) y Lutz (2025) son los textos oficiales del prontuario. Los programas, salidas y mensajes se verificaron con g++ 13.3 en Linux.</p>
+</section>
+
 </div></div>
 
 <script>
+/* Paneles de las pruebas del laboratorio (antes del motor, que activa las pestañas) */
+(function(){
+function esc(x){return x.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+window.__CASES={
+ c1:{name:'1 Totales',input:'1\n2\n3\n4\n0',out:'1   Computadora HP ProDesk          12      650.00\n…\n5   Proyector                        2      489.00\nTotal de unidades: 74\nValor del inventario: $11411.60\nEquipo con mas unidades: Mouse optico (25 unidades, posicion 4)',
+   chk:['Computadora HP ProDesk 12 650.00','Monitor 24 pulgadas 15 139.99','Teclado USB 20 14.50','Mouse optico 25 9.75','Proyector 2 489.00','Total de unidades: 74','Valor del inventario: $11411.60','Equipo con mas unidades: Mouse optico (25 unidades, posicion 4)']},
+ c2:{name:'2 Recibir',input:'5\n5\n8\n4\n0',out:'Posicion del equipo (1-5): 5\nUnidades recibidas: 8\nProyector ahora tiene 10 unidades.\n…\nEquipo con mas unidades: Mouse optico (25 unidades, posicion 4)',
+   chk:['Proyector ahora tiene 10 unidades.','Equipo con mas unidades: Mouse optico (25 unidades, posicion 4)']},
+ c3:{name:'3 Intercambiar',input:'6\n1\n5\n1\n3\n0',out:'Equipos intercambiados.\n…\n1   Proyector                        2      489.00\n…\n5   Computadora HP ProDesk          12      650.00\nValor del inventario: $11411.60',
+   chk:['Equipos intercambiados.','1 Proyector 2 489.00','5 Computadora HP ProDesk 12 650.00','Valor del inventario: $11411.60']},
+ c4:{name:'4 Destacado',input:'7\n2\n5\n2\n3\n7\n2\n0',out:'Destacado: Monitor 24 pulgadas con 15 unidades.\n…\nMonitor 24 pulgadas ahora tiene 18 unidades.\n…\nDestacado: Monitor 24 pulgadas con 18 unidades.',
+   chk:['Destacado: Monitor 24 pulgadas con 15 unidades.','Monitor 24 pulgadas ahora tiene 18 unidades.','Destacado: Monitor 24 pulgadas con 18 unidades.']},
+ c5:{name:'5 Inválidos',input:'5\n9\n3\n7\n0\n9\n0',out:'Datos invalidos.\n…\nDatos invalidos.\n…\nOpcion invalida.',
+   chk:['Datos invalidos.','Datos invalidos.','Opcion invalida.']},
+ c6:{name:'6 Direcciones',input:'8\n0',out:'Cada int ocupa 4 bytes.\ncant + 0 -> direccion 0x7ffe49949ca0  valor 12\ncant + 1 -> direccion 0x7ffe49949ca4  valor 15\n…\ncant + 4 -> direccion 0x7ffe49949cb0  valor 2\n(las direcciones cambian en cada computadora)',
+   chk:['Cada int ocupa 4 bytes.'],addr:[12,15,20,25,2]}
+};
+var C=window.__CASES,ph='';
+Object.keys(C).forEach(function(k){ph+='<div data-panel="'+k+'"'+(k==='c1'?'':' hidden')+'><p style="font-size:19px;font-weight:600">Ejecute el programa y escriba, una por línea:</p><div class="typein">'+esc(C[k].input).replace(/\n/g,'  ⏎  ')+'</div><p style="font-size:19px;font-weight:600;margin-top:10px">Debe ver, entre los menús:</p><div class="term">'+esc(C[k].out)+'</div></div>'});
+document.getElementById('cases-panels').innerHTML=ph;
+})();
+</script>
+<script src="assets/deck.js"></script>
+<script>
 (function(){
 'use strict';
-var stage=document.getElementById('stage'), S=[].slice.call(document.querySelectorAll('.slide')), N=S.length, k=0;
-var hex=function(n,w){return '0x'+n.toString(16).toUpperCase().padStart(w||4,'0')};
+var $=function(id){return document.getElementById(id)};
+function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function hex(n){return '0x'+n.toString(16).toUpperCase()}
+function box(ad,vl,nm,ptr,id){return '<div class="bx'+(vl===''?' empty':'')+'"'+(id?' id="'+id+'"':'')+' data-ad="'+ad+'"><div class="ad">'+hex(ad)+'</div><div class="vl'+(ptr?' ptr':'')+'">'+(vl===''?'·':esc(vl))+'</div><div class="nm">'+esc(nm)+'</div></div>'}
+function lit(cont,ads,cls){[].forEach.call(cont.querySelectorAll('.bx'),function(b){b.classList.toggle(cls||'lit',ads.indexOf(+b.dataset.ad)>=0)})}
 
-/* ---------- syntax highlight ---------- */
-var KW=/(\/\/.*$)|("(?:[^"\\]|\\.)*")|\b(int|double|char|void|return|for|if|const|nullptr|cout|endl)\b|\b(\d+(?:\.\d+)?)\b/gm;
-document.querySelectorAll('pre[data-hl]').forEach(function(pre){
-  var lines=pre.innerHTML.split('\n');
-  pre.innerHTML=lines.map(function(l){
-    var h=l.replace(KW,function(m,c,s,k2,n){return c?'<span class="c">'+c+'</span>':s?'<span class="s">'+s+'</span>':k2?'<span class="k">'+k2+'</span>':'<span class="n">'+n+'</span>'});
-    return '<span class="ln">'+(h||' ')+'</span>';
-  }).join('');
-});
+/* ---------- capítulos ---------- */
+var EX=['1','2','3','4','5','6','7','Lab'];
+var slides=[].slice.call(document.querySelectorAll('.slide'));
+[].forEach.call(document.querySelectorAll('[data-topic]'),function(sl){var t=+sl.dataset.topic,e=sl.querySelector('.ext');
+  if(e)e.innerHTML=(t<8?'<span class="on" style="margin-right:10px">Tema '+t+' de 7</span>':'')+EX.map(function(w,i){return '<span class="'+(i+1===t?'on':'')+'">'+w+'</span>'}).join('')});
 
-/* ---------- topic dividers ---------- */
-document.querySelectorAll('[data-topic]').forEach(function(s){
-  var t=+s.dataset.topic, box=s.querySelector('.tmem'), h='';
-  for(var i=1;i<=7;i++) h+='<div class="'+(i===t?'cur':'')+'"><span>'+i+'</span><small>'+hex(0x1000+(i-1)*4)+'</small></div>';
-  box.innerHTML=h+'';
-  var p=document.createElement('div');p.className='tptr';p.style.marginLeft=((t-1)*130+38)+'px';p.textContent='▲ tema';
-  box.parentNode.insertBefore(p,box.nextSibling);
-});
+/* ---------- memoria básica (portada y lámina 3) ---------- */
+var MEM=[[0x1000,'',''],[0x1004,'20','edad'],[0x1008,'',''],[0x100C,'',''],[0x1010,'0x1004','p',1]];
+function mem(id){var e=$(id);e.innerHTML=MEM.map(function(m){return box(m[0],m[1],m[2],m[3])}).join('');return e}
+var PT=mem('pt-boxes');[].forEach.call(PT.querySelectorAll('.bx'),function(b){b.style.width='84px';b.querySelector('.vl').style.fontSize=b.querySelector('.vl.ptr')?'16px':'30px';b.querySelector('.ad').style.fontSize='15px'});
+$('pt-go').onclick=function(){lit(PT,[0x1010],'src');lit(PT,[0x1004]);$('pt-msg').textContent='p dice 0x1004: allí está edad.'};
+var M1=mem('m1');
+$('m1-go').onclick=function(){lit(M1,[0x1010],'src');lit(M1,[0x1004]);$('m1-msg').textContent='p vale 0x1004, la dirección de edad. Ir a esa dirección y leer da 20.'};
 
-/* ---------- navigation ---------- */
-var map=document.getElementById('map'), ix=document.getElementById('ix'), gut=document.getElementById('gutter');
-S.forEach(function(s,i){var b=document.createElement('button');b.setAttribute('aria-label','Ir a la lámina '+(i+1)+': '+s.dataset.t);b.title=(i+1)+'. '+s.dataset.t;
-  if(s.dataset.topic) b.className='sec'; b.onclick=function(){go(i)}; map.appendChild(b)});
-var mb=[].slice.call(map.children);
-function gutter(i){var base=0x1000+i*0x40,h='';for(var r=0;r<13;r++){var a=hex(base+r*4);h+=(r===0?'<b>'+a+'</b>':a)+'<br>'}gut.innerHTML=h}
-function go(i){
-  i=Math.max(0,Math.min(N-1,i));S[k].classList.remove('on');k=i;S[k].classList.add('on');
-  mb.forEach(function(b,j){b.classList.toggle('cur',j===k);b.classList.toggle('done',j<k)});
-  ix.textContent=(k+1)+' / '+N+'  '+hex(0x1000+k*0x40);gutter(k);
-  try{history.replaceState(null,'','#'+(k+1))}catch(e){}
-}
-document.getElementById('prev').onclick=function(){go(k-1)};
-document.getElementById('next').onclick=function(){go(k+1)};
-function fs(){var d=document,e=d.documentElement;if(d.fullscreenElement||d.webkitFullscreenElement){(d.exitFullscreen||d.webkitExitFullscreen).call(d)}else{var r=e.requestFullscreen||e.webkitRequestFullscreen;if(r)r.call(e)}}
-document.getElementById('fs').onclick=fs;
-document.addEventListener('keydown',function(e){
-  var tag=(e.target.tagName||'');var onBtn=tag==='BUTTON'||tag==='A';
-  if(e.key==='ArrowRight'||e.key==='PageDown'||(e.key===' '&&!onBtn)){e.preventDefault();go(k+1)}
-  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(k-1)}
-  else if(e.key==='Home')go(0);else if(e.key==='End')go(N-1);
-  else if(e.key==='f'||e.key==='F')fs();
-});
-var x0=null;stage.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
-stage.addEventListener('touchend',function(e){if(x0===null)return;var dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>50&&!e.target.closest('button'))go(k+(dx<0?1:-1));x0=null});
-function fit(){var s=Math.min(innerWidth/1280,innerHeight/720);stage.style.transform='scale('+s+')'}
-addEventListener('resize',fit);fit();
+/* ---------- & y * ---------- */
+var OM=$('op-m');OM.innerHTML=box(0x1004,'20','edad')+box(0x1010,'0x1004','p',1);
+var OP={'edad':['20',[0x1004],'El valor guardado en edad.'],'&edad':['0x1004',[0x1004],'& da el número del apartado donde vive edad.'],'p':['0x1004',[0x1010],'p guarda una dirección: la de edad.'],'*p':['20',[0x1010,0x1004],'* va a la dirección que guarda p y lee lo que hay: 20.'],'&p':['0x1010',[0x1010],'p también vive en un apartado: el 0x1010.']};
+function opShow(x){var o=OP[x];$('op-e').textContent='cout << '+x+';';$('op-r').textContent=o[0];$('op-w').textContent=o[2];lit(OM,o[1]);
+  [].forEach.call(document.querySelectorAll('#op-b button'),function(b){b.setAttribute('aria-pressed',b.dataset.x===x)})}
+[].forEach.call(document.querySelectorAll('#op-b button'),function(b){b.onclick=function(){opShow(b.dataset.x)}});opShow('edad');
 
-/* ---------- widget: intro arrow ---------- */
-document.querySelector('[data-act=intro]').onclick=function(){
-  var w=document.querySelector('[data-w=intro]'),p=w.querySelector('path'),c=w.querySelectorAll('.cell');
-  p.classList.remove('off','draw');void p.getBBox();p.classList.add('draw');c[1].classList.add('flash');setTimeout(function(){c[1].classList.remove('flash')},900);
-  this.textContent='Volver a mostrar';
-};
+/* ---------- arreglo ---------- */
+var NOT=[90,85,78,92],AR=$('ar-m');AR.innerHTML=NOT.map(function(v,i){return box(0x1000+4*i,String(v),'notas['+i+']')}).join('');
+function arShow(k){lit(AR,[0x1000+4*k]);$('ar-r').textContent='notas['+k+']  =  *(p + '+k+')  =  p['+k+']  =  '+NOT[k];
+  [].forEach.call(document.querySelectorAll('#ar-b button'),function(b){b.setAttribute('aria-pressed',+b.dataset.k===k)})}
+[].forEach.call(document.querySelectorAll('#ar-b button'),function(b){b.onclick=function(){arShow(+b.dataset.k)}});arShow(0);
 
-/* ---------- widget: & * evaluator ---------- */
-(function(){var w=document.querySelector('[data-w=eval]'),r=w.querySelector('.res'),y=w.querySelector('.why');
-var E={'edad':['20','El valor guardado en la variable edad.'],'&edad':['0x1004','La dirección donde está edad.'],
-  'p':['0x1004','p guarda una dirección: la de edad.'],'*p':['20','Va a la dirección guardada en p (0x1004) y lee lo que hay allí.'],
-  '&p':['0x1010','p también es una variable y tiene su propia dirección.']};
-w.querySelectorAll('button').forEach(function(b){b.onclick=function(){w.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed','false')});
-  b.setAttribute('aria-pressed','true');var v=E[b.dataset.ex];r.textContent=b.dataset.ex+'  →  '+v[0];y.textContent=v[1]}});})();
+/* ---------- aritmética ---------- */
+var tySz=4,tyN=0;
+function tyDraw(){var e=$('ty-m'),h='';for(var i=0;i<4;i++)h+=box(0x1000+tySz*i,tySz===4?['90','85','78','92'][i]:['1.5','2.5','3.5','4.5'][i],'p + '+i);e.innerHTML=h;
+  [].forEach.call(e.querySelectorAll('.bx'),function(b){b.style.width=(tySz===4?150:230)+'px'});
+  lit(e,[0x1000+tySz*tyN]);$('ty-r').textContent='p + '+tyN+'  =  0x1000 + '+tyN+' × '+tySz+'  =  '+hex(0x1000+tySz*tyN);
+  $('ty-i').setAttribute('aria-pressed',tySz===4);$('ty-d').setAttribute('aria-pressed',tySz===8);
+  [].forEach.call(document.querySelectorAll('.tn'),function(b){b.setAttribute('aria-pressed',+b.dataset.n===tyN)})}
+$('ty-i').onclick=function(){tySz=4;tyDraw()};$('ty-d').onclick=function(){tySz=8;tyDraw()};
+[].forEach.call(document.querySelectorAll('.tn'),function(b){b.onclick=function(){tyN=+b.dataset.n;tyDraw()}});tyDraw();
 
-/* ---------- widget: array pointer ---------- */
-(function(){var w=document.querySelector('[data-w=arr]'),m=w.querySelector('.ptrmark'),pi=w.querySelector('.pi'),r=w.querySelector('.res'),V=[90,85,78,92];
-w.querySelectorAll('.ctl button').forEach(function(b){b.onclick=function(){var i=+b.dataset.i;
-  w.querySelectorAll('.ctl button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});
-  m.style.left=(46+i*146)+'px';pi.textContent=i;
-  w.querySelectorAll('.mem .cell').forEach(function(c){c.classList.toggle('hit',+c.dataset.i===i)});
-  r.textContent='notas['+i+'] = *(p + '+i+') = p['+i+'] = '+V[i]}});
-w.querySelector('.mem .cell').classList.add('hit');})();
+/* ---------- pasos ---------- */
+Deck.steps.p1=[
+ {l:0,set:{v1:'20'},flash:['b1'],msg:'Se crea edad con 20, en el apartado 0x1004.'},
+ {l:1,set:{v2:'0x1004'},add:[['b1','lit']],flash:['b2'],msg:'&edad es 0x1004. p guarda ese número: apunta a edad.'},
+ {l:2,out:'edad = 20',msg:'Se imprime edad por su nombre.'},
+ {l:3,out:'*p = 20',msg:'*p va al apartado 0x1004 y lee lo mismo: 20.'},
+ {l:4,set:{v1:'21'},flash:['b1'],msg:'*p = 21 escribe en el apartado 0x1004. El nombre edad no aparece en esta línea.'},
+ {l:5,out:'edad = 21',msg:'edad cambió a 21 a través del puntero.'}];
+Deck.steps.dv=[
+ {l:2,set:{vn:'5'},msg:'n vale 5 en main.'},
+ {l:3,set:{vx:'5'},flash:['bx'],msg:'duplicarValor recibe una copia: x es otra casilla, con 5.'},
+ {l:0,set:{vx:'10'},flash:['bx'],msg:'x = x * 2 cambia la copia a 10. n sigue en 5.'},
+ {l:4,set:{vx:'–'},out:'5',msg:'La función terminó y su copia desapareció. n imprime 5.'},
+ {l:5,set:{vx:'0x2000'},add:[['bn','lit']],flash:['bx'],msg:'duplicarPuntero recibe &n: x guarda 0x2000, la dirección de n.'},
+ {l:1,set:{vn:'10'},flash:['bn'],msg:'*x = *x * 2 escribe en 0x2000: n pasa a 10.'},
+ {l:6,set:{vx:'–'},rem:[['bn','lit']],out:'10',msg:'n imprime 10: la función cambió el original.'}];
+Deck.steps.bm=[
+ {l:1,add:[['n0','lit']],set:{t0:'mayor'},msg:'mayor empieza en a: la dirección de notas[0], que vale 90.'},
+ {l:2,add:[['n1','src']],set:{t1:'p'},msg:'p = a + 1 apunta a 85. ¿85 > 90? No.'},
+ {l:3,rem:[['n1','src']],add:[['n2','src']],set:{t1:'',t2:'p'},msg:'p++: ahora apunta a 78. ¿78 > 90? No.'},
+ {l:3,rem:[['n2','src'],['n0','lit']],add:[['n3','lit']],set:{t2:'',t0:'',t3:'mayor, p'},msg:'p++: apunta a 92. ¿92 > 90? Sí: mayor = p.'},
+ {l:4,set:{t3:'mayor'},msg:'p llega a a + 4 y el for termina. Se devuelve la dirección 0x100C.'},
+ {l:7,out:'92 en la posicion 3',msg:'*m da 92, y m - notas da 3: con una sola dirección, el valor y la posición.'}];
+Deck.steps.pp=[
+ {l:0,set:{vxx:'5'},flash:['bp0'],msg:'x vale 5, en 0x1000.'},
+ {l:1,set:{vp:'0x1000'},flash:['bp1'],msg:'p guarda la dirección de x.'},
+ {l:2,set:{vpp:'0x2000'},flash:['bp2'],msg:'pp guarda la dirección de p: un puntero a un puntero.'},
+ {l:3,add:[['bp2','src'],['bp1','src']],msg:'**pp: el primer * va de pp a p; el segundo va de p a x…'},
+ {l:3,set:{vxx:'10'},add:[['bp0','lit']],flash:['bp0'],msg:'…y escribe 10 en x.'},
+ {l:4,out:'10',msg:'x vale 10, aunque la línea nunca nombró a x.'}];
 
-/* ---------- widget: arithmetic ---------- */
-(function(){var w=document.querySelector('[data-w=arith]'),ty='int',kk=0,BW=30,ru=w.querySelector('.ruler'),el=w.querySelector('.elems'),am=w.querySelector('.am'),r=w.querySelector('.res');
-var h='';for(var b=0;b<32;b++)h+='<div style="width:'+BW+'px;font:500 11px var(--mono);color:#7F95AE;text-align:center;border-left:1px solid #C9D8E8">'+b+'</div>';ru.innerHTML=h;
-function draw(){var sz=ty==='int'?4:8,vals=ty==='int'?['10','20','30','40']:['1.5','2.5','3.5','4.5'],h='';
-  for(var i=0;i<4;i++)h+='<div style="width:'+(sz*BW)+'px;height:56px;border:2px solid '+(i===kk?'#E07A10':'#2A5CAA')+';background:'+(i===kk?'#FFC425':(ty==='int'?'#fff':'#FFF6DE'))+';display:flex;align-items:center;justify-content:center;font:600 20px var(--mono);color:#0E2A47">'+vals[i]+'</div>';
-  el.innerHTML=h;am.style.left=(kk*sz*BW-4)+'px';am.textContent='▲ '+(kk?'p + '+kk:'p');
-  r.textContent=(kk?'p + '+kk:'p')+' = 0x1000 + '+kk+' × sizeof('+ty+') = 0x1000 + '+(kk*sz)+' = '+hex(0x1000+kk*sz)+'    valor: '+vals[kk];}
-w.querySelectorAll('[data-ty]').forEach(function(b){b.onclick=function(){ty=b.dataset.ty;w.querySelectorAll('[data-ty]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});draw()}});
-w.querySelectorAll('[data-k]').forEach(function(b){b.onclick=function(){kk=+b.dataset.k;w.querySelectorAll('[data-k]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});draw()}});
-draw();})();
+/* ---------- laboratorio: verificador ---------- */
+var CASES=window.__CASES,PASS={};try{PASS=JSON.parse(localStorage.getItem('tesi2105-labE')||'{}')||{}}catch(e){PASS={}}
+var cur='c1';
+function markTabs(){Object.keys(CASES).forEach(function(k){$('tb-'+k).classList.toggle('pass',!!PASS[k])})}
+Object.keys(CASES).forEach(function(k){$('tb-'+k).addEventListener('click',function(){cur=k;$('vf-name').textContent=CASES[k].name;$('vf-checks').innerHTML='';$('vf-score').textContent='';$('vf-in').value=''})});
+function norm(x){return x.replace(/\r/g,'').replace(/[ \t]+/g,' ').toLowerCase()}
+$('vf-go').onclick=function(){var C=CASES[cur],raw=$('vf-in').value,ln=0,col=0,ok=0,h='',bad=0;
+  if(!raw.trim()){$('vf-score').textContent='';$('vf-checks').innerHTML='<li class="no">Pegue primero la salida de su programa.</li>';return}
+  var lines=norm(raw).split('\n').map(function(x){return x.trim()});
+  C.chk.forEach(function(c){var t=norm(c),hit=false;
+    for(var i=ln;i<lines.length&&!hit;i++){var p=lines[i].indexOf(t,i===ln?col:0);if(p>=0){hit=true;ln=i;col=p+t.length}}
+    if(hit){ok++;h+='<li class="ok">'+esc(c)+'</li>'}else h+='<li class="no">Falta, o sale en otro orden: '+esc(c)+'</li>'});
+  var tot=C.chk.length;
+  if(C.addr){tot++;var rows=[];lines.forEach(function(x){var m=x.match(/^cant \+ (\d) -> direccion (0x[0-9a-f]+) valor (-?\d+)$/);if(m)rows.push(m)});
+    var good=rows.length===5&&rows.every(function(m,i){return +m[1]===i&&+m[3]===C.addr[i]&&(i===0||parseInt(m[2],16)-parseInt(rows[i-1][2],16)===4)});
+    if(good){ok++;h+='<li class="ok">Cinco direcciones que aumentan de 4 en 4, con los valores 12 15 20 25 2</li>'}else{bad=1;h+='<li class="no">Deben salir 5 líneas «cant + i -> direccion …  valor …» que aumenten de 4 en 4 ('+rows.length+' encontradas)</li>'}}
+  var all=ok===tot;
+  $('vf-checks').innerHTML=h;$('vf-score').textContent=all?'Prueba superada':ok+' de '+tot;
+  if(all){PASS[cur]=1;try{localStorage.setItem('tesi2105-labE',JSON.stringify(PASS))}catch(e){}}
+  markTabs()};
+markTabs();
 
-/* ---------- widget: reveals ---------- */
-document.querySelectorAll('[data-rv]').forEach(function(b){var lbl=b.textContent;b.setAttribute('aria-expanded','false');b.onclick=function(){var on=b.closest('.panel').classList.toggle('shown');b.textContent=on?'Ocultar':lbl;b.setAttribute('aria-expanded',on)}});
-
-/* ---------- widget: asan ---------- */
-(function(){var w=document.querySelector('[data-w=asan]'),r=w.querySelector('.res'),y=w.querySelector('.why');
-var C={wall:['$ g++ -Wall e8.cpp -o e8\n<span class="w">warning: \'notas\' is used uninitialized</span>','Solo una advertencia, y no explica el problema real: que el programa lee fuera del arreglo.'],
-asan:['$ g++ -g -fsanitize=address e8.cpp -o e8\n$ ./e8\n<span class="e">ERROR: AddressSanitizer:\nstack-buffer-overflow</span>\n#0 in main e8.cpp:4','AddressSanitizer dice qué pasó y en qué línea: la 4, donde está *(p + 4).']};
-w.querySelectorAll('[data-c]').forEach(function(b){b.onclick=function(){w.querySelectorAll('[data-c]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});r.innerHTML=C[b.dataset.c][0];y.textContent=C[b.dataset.c][1]}})})();
-
-/* ---------- widget: steppers ---------- */
-var STEPS={
- s9:[
-  {l:0,set:{edad:'20'},on:['edad'],msg:'Se reserva edad en la dirección 0x1004 y se guarda 20.'},
-  {l:1,set:{p:'0x1004'},on:['p'],show:['arr'],msg:'p guarda la dirección de edad: &edad vale 0x1004.'},
-  {l:3,out:'edad = 20',msg:'Se imprime edad usando su nombre.'},
-  {l:4,out:'*p   = 20',flash:['edad'],msg:'*p va a 0x1004 y lee 20. Es el mismo dato.'},
-  {l:6,set:{edad:'21'},flash:['edad'],msg:'*p = 21 escribe en 0x1004. edad cambió sin escribir su nombre.'},
-  {l:7,out:'edad = 21',msg:'Fin del programa. El cambio llegó por la dirección.'}],
- s16:[
-  {l:3,set:{n:'5'},on:['n'],msg:'n vale 5 en main().'},
-  {l:4,show:['frame'],set:{x:'5',fname:'duplicarValor()'},msg:'duplicarValor recibe una COPIA: x es otra casilla con el valor 5.'},
-  {l:0,set:{x:'10'},flash:['x'],msg:'x = x * 2 cambia la copia a 10. n sigue en 5.'},
-  {l:4,hide:['frame'],out:'Por valor:   5',msg:'Al terminar la función, la copia desaparece. n sigue en 5.'},
-  {l:5,show:['frame','arr'],set:{x:'0x2000',fname:'duplicarPuntero()'},ptr:['x'],msg:'duplicarPuntero recibe la DIRECCIÓN de n (0x2000).'},
-  {l:1,set:{n:'10'},flash:['n'],msg:'*x = *x * 2 escribe en 0x2000: n ahora vale 10.'},
-  {l:5,hide:['frame','arr'],out:'Por puntero: 10',msg:'El cambio queda en main() porque se hizo en la casilla original.'}],
- s20:[
-  {l:1,mark:{t0:'mayor'},hit:['c0'],msg:'mayor empieza apuntando al primer elemento: 90.'},
-  {l:3,mark:{t1:'p'},msg:'p apunta a [1]: ¿85 > 90? No. mayor no cambia.'},
-  {l:3,mark:{t1:'',t2:'p'},msg:'p avanza a [2]: ¿78 > 90? No.'},
-  {l:3,mark:{t2:'',t3:'p mayor',t0:''},hit:['c3'],unhit:['c0'],msg:'p avanza a [3]: ¿92 > 90? Sí. mayor = p.'},
-  {l:4,mark:{t3:'mayor'},msg:'p llega a a + 4 y el ciclo termina. Se devuelve la dirección 0x100C.'},
-  {l:7,out:'92 en la posicion 3',msg:'*m da el valor (92). m - notas da la posición: (0x100C − 0x1000) / 4 = 3.'}],
- s22:[
-  {l:0,set:{x:'5'},on:['x'],msg:'x vale 5 en 0x1000.'},
-  {l:1,set:{p:'0x1000'},on:['p'],show:['a2'],msg:'p guarda la dirección de x.'},
-  {l:2,set:{pp:'0x2000'},on:['pp'],show:['a1'],msg:'pp guarda la dirección de p: es un int**.'},
-  {l:3,set:{x:'10'},flash:['pp','p','x'],out:'x = 10, *p = 10, **pp = 10',msg:'Primer salto: *pp es p. Segundo salto: **pp es x. Se escribe 10 en x.'}]
-};
-document.querySelectorAll('[data-w=step]').forEach(function(w){
-  var ws=w.querySelector('.ws'),init=ws.innerHTML,steps=STEPS[w.dataset.steps],code=w.querySelector('pre'),n=w.querySelector('.stepn'),nb=w.querySelector('[data-s=next]'),i=0;
-  var q=function(id){return ws.querySelector('[data-id="'+id+'"]')};
-  function apply(st,anim){
-    code.querySelectorAll('.ln').forEach(function(l,j){l.classList.toggle('cur',j===st.l)});
-    (st.on||[]).forEach(function(id){q(id).classList.remove('ghost')});
-    Object.keys(st.set||{}).forEach(function(id){var e=q(id),b=e.querySelector('.bx');(b||e).textContent=st.set[id]});
-    (st.ptr||[]).forEach(function(id){q(id).classList.add('ptr')});
-    (st.show||[]).forEach(function(id){var e=q(id);e.classList.remove('off');if(anim&&e.tagName==='path'){e.classList.remove('draw');void e.getBBox();e.classList.add('draw')}});
-    (st.hide||[]).forEach(function(id){q(id).classList.add('off')});
-    if(st.hide&&st.hide.indexOf('frame')>=0)q('x').classList.remove('ptr');
-    Object.keys(st.mark||{}).forEach(function(id){q(id).innerHTML=st.mark[id]||'&nbsp;'});
-    (st.hit||[]).forEach(function(id){q(id).classList.add('hit')});(st.unhit||[]).forEach(function(id){q(id).classList.remove('hit')});
-    if(st.out){var o=q('out');o.appendChild(document.createTextNode(st.out+'\n'))}
-    if(anim)(st.flash||[]).forEach(function(id){var e=q(id);e.classList.remove('flash');void e.offsetWidth;e.classList.add('flash')});
-    q('msg').textContent=st.msg;
-  }
-  function render(){ws.innerHTML=init;code.querySelectorAll('.ln').forEach(function(l){l.classList.remove('cur')});
-    for(var j=0;j<i;j++)apply(steps[j],j===i-1);n.textContent='Paso '+i+' de '+steps.length;nb.disabled=i>=steps.length}
-  nb.onclick=function(){if(i<steps.length){i++;render()}};
-  w.querySelector('[data-s=reset]').onclick=function(){i=0;render();nb.focus()};
-  render();
-});
-
-var h=parseInt((location.hash||'').slice(1),10);S[0].classList.add('on');go(h>0?h-1:0);
+Deck.start();
 })();
 </script>
 </body>

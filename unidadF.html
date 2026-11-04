@@ -103,7 +103,7 @@ a.dl{display:inline-block;background:var(--accent);color:#fff;font-weight:600;fo
 .todo code{font-size:19px;white-space:normal}
 .cases [data-tab]{font:600 18px var(--sans);padding:10px 14px}
 .cases [data-tab].pass::after{content:" ✓";color:#5EE08A}
-.cases [data-panel] .term{font-size:18px;line-height:1.4;max-height:236px;overflow:auto}
+.cases [data-panel] .term{font-size:18px;line-height:1.4}
 .typein{font:600 19px var(--mono);background:var(--tone);padding:10px 14px;white-space:pre-wrap}
 textarea.paste{width:100%;height:150px;font:500 16px/1.4 var(--mono);padding:10px 12px;border:0;background:#fff;color:var(--ink);resize:none}
 .checks{list-style:none;margin:8px 0 0;padding:0;font-size:18px;line-height:1.5}
@@ -373,7 +373,7 @@ fila 2 · columna 1</div>
       <div data-panel="e1"><p class="lead">"B2" ocupa 3 bytes: 'B', '2' y '\0'.</p><p class="body sub">Use <code>char codigo[3]</code>, o mejor <code>char codigo[] = "B2";</code> para que el compilador cuente.</p></div>
       <div data-panel="e2" hidden><pre class="code" style="font-size:22px">char a[] = "B2", b[] = "B2";
 cout &lt;&lt; (a == b);               // 0
-cout &lt;&lt; (strcmp(a, b) == 0);   // 1, con &lt;cstring&gt;</pre><div class="term" style="margin-top:10px;font-size:18px"><span class="w">warning: comparison between two arrays [-Warray-compare]</span></div></div>
+cout &lt;&lt; (strcmp(a, b) == 0);   // 1</pre><div class="term" style="margin-top:10px;font-size:18px"><span class="w">warning: comparison between two arrays [-Warray-compare]</span></div></div>
       <div data-panel="e2" hidden><p class="lead">Con arreglos, == compara direcciones, no el texto.</p><p class="body sub">Use <code>strcmp</code> de <code>&lt;cstring&gt;</code>, o <code>string</code>, donde <code>==</code> sí compara el contenido.</p></div>
       <div data-panel="e3" hidden><pre class="code" style="font-size:22px">string a, b;
 cin &gt;&gt; a;             // escribe: Agua fria

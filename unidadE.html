@@ -47,7 +47,7 @@ pre.code .ln.cur{background:rgba(255,196,37,.24)}
 .prop2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .prop2>div{background:var(--ink);color:#fff;padding:20px 24px;min-height:170px}
 .prop2>div.ok{background:var(--accent)}
-.prop2 b{display:block;font:700 26px var(--sans)}.prop2 code{white-space:normal}
+.prop2 b{display:block;font:700 22px var(--sans)}.prop2 b code{white-space:nowrap;font-size:18px}.prop2 span code{white-space:normal}
 .prop2 span{display:block;font-size:22px;margin-top:8px}
 .prop2 .pbtn{margin-top:12px;background:#fff;color:var(--ink);font-size:18px;padding:8px 12px}
 .prop2 span.reveal{display:none}.prop2 .shown span.reveal{display:block}
@@ -68,9 +68,9 @@ a.dl.alt{background:var(--tone2);color:var(--ink)}
 .parts li{background:#fff;padding:12px 16px;font-size:20px;line-height:1.35;display:grid;grid-template-columns:44px 1fr}
 .parts li b.nm{font:800 28px var(--sans);color:var(--accent)}
 .parts code{font-size:18px;white-space:normal}
-.cases [data-tab]{font:600 17px var(--sans);padding:9px 12px}
+.cases [data-tab]{font:600 18px var(--sans);padding:8px 8px}
 .cases [data-tab].pass::after{content:" ✓";color:#2E9E5B}
-.cases [data-panel] .term{font-size:18px;line-height:1.4;max-height:250px;overflow:auto}
+.cases [data-panel] .term{font-size:17px;line-height:1.4;max-height:250px;overflow:auto;white-space:pre-wrap;font-size:18px}
 .typein{font:600 19px var(--mono);background:var(--tone);padding:10px 14px;white-space:pre-wrap}
 textarea.paste{width:100%;height:150px;font:500 16px/1.4 var(--mono);padding:10px 12px;border:0;background:#fff;color:var(--ink);resize:none}
 .checks{list-style:none;margin:8px 0 0;padding:0;font-size:18px;line-height:1.5}
@@ -106,7 +106,7 @@ textarea.paste{width:100%;height:150px;font:500 16px/1.4 var(--mono);padding:10p
     <h1 class="mask"><span>Concepto de punteros</span></h1>
     <p class="lead" data-a style="margin-top:22px;max-width:640px">La memoria es una pared de apartados numerados. Cada variable vive en uno.</p>
     <div class="ext" data-a></div></div>
-    <div data-a style="align-self:center"><span class="slip">p = 0x1004</span><p class="body" style="color:var(--field-ink);margin-top:14px">«Su carta está en el apartado 1004.»</p></div>
+    <div data-a style="align-self:center"><span class="slip">p = 0x1004</span><p class="body" style="color:var(--field-ink);margin-top:14px">«Su carta está en el apartado 0x1004.»</p></div>
   </div>
 </section>
 
@@ -277,14 +277,14 @@ cout &lt;&lt; n &lt;&lt; endl;    // 10</pre>
 
 <section class="slide" data-title="Puntero y referencia">
   <h2 class="mask"><span>Puntero (*) y referencia (&amp;) de la Unidad D</span></h2>
-  <p class="body sub" data-a>Los dos permiten cambiar el original. Se escriben distinto y no pueden lo mismo.</p>
+  <p class="body sub" data-a>Los dos permiten cambiar el original. Se escriben distinto y no pueden hacer lo mismo.</p>
   <table class="t" data-a style="margin-top:22px">
     <tr><th></th><th>Referencia <code>int&amp; x</code></th><th>Puntero <code>int* x</code></th></tr>
     <tr><td>Llamada</td><td><code>duplicar(n);</code></td><td><code>duplicar(&amp;n);</code></td></tr>
     <tr><td>Dentro de la función</td><td><code>x = x * 2;</code></td><td><code>*x = *x * 2;</code></td></tr>
     <tr><td>¿Puede no apuntar a nada?</td><td>No</td><td>Sí, <code>nullptr</code></td></tr>
     <tr><td>¿Puede cambiar a dónde apunta?</td><td>No</td><td>Sí</td></tr>
-    <tr><td>¿Recorre un arreglo?</td><td>No</td><td>Sí, con aritmética</td></tr>
+    <tr><td>¿Admite aritmética?</td><td>No</td><td>Sí: <code>p + 1</code>, <code>p++</code></td></tr>
   </table>
   <p class="body" data-a style="margin-top:18px;font-size:22px">En C++ moderno se prefiere la referencia cuando basta. El puntero se usa cuando hace falta lo que solo él puede hacer.</p>
 </section>
@@ -407,7 +407,7 @@ duplicar(n);</pre><div class="term" style="margin-top:10px;font-size:18px"><span
       <div data-panel="r3" hidden><p class="lead">La función pide una dirección y recibió un valor.</p><p class="body sub">La llamada correcta es <code>duplicar(&amp;n);</code>. El * lee o escribe el dato; el &amp; da la dirección.</p></div>
       <div data-panel="r4" hidden><pre class="code" style="font-size:22px">int notas[4] = {90, 85, 78, 92};
 int* p = notas;
-return *(p + 4);</pre><div class="term" style="margin-top:10px;font-size:17px"><span class="p">g++ -Wall:</span> <span class="w">warning: 'notas' is used uninitialized</span>
+return *(p + 4);</pre><div class="term" style="margin-top:10px;font-size:18px"><span class="p">g++ -Wall:</span> <span class="w">warning: 'notas' is used uninitialized</span>
 <span class="p">g++ -fsanitize=address:</span> <span class="e">ERROR: AddressSanitizer: stack-buffer-overflow</span></div></div>
       <div data-panel="r4" hidden><p class="lead">-Wall da un aviso confuso; AddressSanitizer dice qué pasó.</p><p class="body sub">Compile con <code>-g -fsanitize=address</code> cuando un programa con punteros falle sin explicación. Está en g++ de Linux y macOS; en Windows, use OnlineGDB o WSL.</p></div>
     </div>
@@ -418,7 +418,7 @@ return *(p + 4);</pre><div class="term" style="margin-top:10px;font-size:17px"><
   <p class="q mask"><span>Para intercambiar dos variables, ¿referencia o puntero?</span></p>
   <p class="body gap" data-a style="max-width:1000px;font-size:27px">Piensen en cómo se ve la llamada en main y en qué puede salir mal con cada una.</p>
   <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
-  <div class="prop2" data-a><div><b><code>void swap(int* a, int* b)</code></b><span>se llama con <code>swap(&amp;x, &amp;y)</code></span></div><div class="ok" data-rv-box><b><code>void swap(int&amp; a, int&amp; b)</code></b><span>se llama con <code>swap(x, y)</code></span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">la referencia: no puede ser nullptr y la llamada es más clara; el puntero, cuando hace falta moverse o «nada»</span></div></div></div>
+  <div class="prop2" data-a><div><b><code>void swap(int* a, int* b)</code></b><span>se llama con <code>swap(&amp;x,&nbsp;&amp;y)</code></span></div><div class="ok" data-rv-box><b><code>void swap(int&amp; a, int&amp; b)</code></b><span>se llama con <code>swap(x, y)</code></span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">la referencia: no puede ser nullptr y la llamada es más clara; el puntero, cuando hace falta moverse o «nada»</span></div></div></div>
 </section>
 
 <section class="slide" data-title="Lo esencial de la unidad">
@@ -427,7 +427,7 @@ return *(p + 4);</pre><div class="term" style="margin-top:10px;font-size:17px"><
     <div><h3>&amp; y *</h3><p><code>&amp;x</code> da la dirección; <code>*p</code> da lo que hay allí. Inicialice con <code>nullptr</code>.</p></div>
     <div><h3>Aritmética</h3><p><code>p + 1</code> avanza un elemento. <code>p2 - p1</code> da la distancia en elementos.</p></div>
     <div><h3>Funciones</h3><p>Con un puntero, la función cambia el original. Un arreglo llega como puntero y necesita su tamaño.</p></div>
-    <div><h3>Hacia la POO</h3><p><code>this</code>, <code>new</code>/<code>delete</code> y el polimorfismo de las Unidades H e I son punteros.</p></div>
+    <div><h3>Hacia la POO</h3><p><code>this</code>, <code>new</code>/<code>delete</code> y el polimorfismo de las Unidades H e I usan punteros.</p></div>
   </div>
 </section>
 
@@ -463,7 +463,7 @@ return *(p + 4);</pre><div class="term" style="margin-top:10px;font-size:17px"><
   <h2 class="mask"><span>Seis pruebas del programa</span></h2>
   <div style="display:grid;grid-template-columns:620px 1fr;gap:30px;margin-top:18px">
     <div class="cases" data-tabs="c1" data-a>
-      <div class="row" style="gap:6px"><button data-tab="c1" id="tb-c1">1 Totales</button><button data-tab="c2" id="tb-c2">2 Recibir</button><button data-tab="c3" id="tb-c3">3 Intercambiar</button><button data-tab="c4" id="tb-c4">4 Destacado</button><button data-tab="c5" id="tb-c5">5 Inválidos</button><button data-tab="c6" id="tb-c6">6 Direcciones</button></div>
+      <div class="row" style="gap:6px"><button data-tab="c1" id="tb-c1">Caso 1</button><button data-tab="c2" id="tb-c2">Caso 2</button><button data-tab="c3" id="tb-c3">Caso 3</button><button data-tab="c4" id="tb-c4">Caso 4</button><button data-tab="c5" id="tb-c5">Caso 5</button><button data-tab="c6" id="tb-c6">Caso 6</button></div>
       <div id="cases-panels" style="margin-top:12px"></div>
     </div>
     <div data-a>
@@ -480,9 +480,9 @@ return *(p + 4);</pre><div class="term" style="margin-top:10px;font-size:17px"><
   <div style="display:grid;grid-template-columns:640px 1fr;gap:40px;margin-top:22px">
     <table class="t rub" data-a>
       <tr><th>Criterio</th><th>Puntos</th></tr>
-      <tr><td>Compila sin errores ni avisos con -Wall -Wextra</td><td>15</td></tr>
+      <tr><td>Compila sin errores ni advertencias con -Wall -Wextra</td><td>15</td></tr>
       <tr><td>Blancos completos y correctos (20 × 3)</td><td>60</td></tr>
-      <tr><td>Los seis casos de prueba dan lo esperado</td><td>15</td></tr>
+      <tr><td>Los seis casos de prueba dan el resultado esperado</td><td>15</td></tr>
       <tr><td>Preguntas de reflexión</td><td>10</td></tr>
       <tr><th>Total</th><th>100</th></tr>
     </table>
@@ -491,9 +491,9 @@ return *(p + 4);</pre><div class="term" style="margin-top:10px;font-size:17px"><
       <p class="body" style="margin-top:8px;font-size:22px">Por OrbundSIS, solo el archivo <code>LabE_Apellido_Nombre.cpp</code>, con los 20 blancos y las respuestas de reflexión en un comentario al final.</p>
       <h3 style="font-size:24px;margin-top:20px">Reflexión</h3>
       <ol style="font-size:21px;line-height:1.4;margin:8px 0 0;padding-left:26px">
-        <li>¿Por qué <code>buscarMayor</code> devuelve un <code>int*</code> y no un <code>int</code>?</li>
-        <li>En la prueba 4, el destacado pasó de 15 a 18 sin volver a marcarlo. ¿Por qué?</li>
-        <li>¿Qué pasaría si <code>intercambiarEnteros</code> recibiera <code>int a, int b</code>?</li>
+        <li>¿Por qué <code>buscarMayor</code> devuelve un <code>int*</code> y no un <code>int</code>? ¿Qué dos datos obtiene <code>main()</code> gracias a eso?</li>
+        <li>En el Caso 4, el destacado cambió de 15 a 18 sin volver a marcarlo. Explique por qué.</li>
+        <li>¿Qué pasaría si <code>intercambiarEnteros</code> recibiera <code>int a, int b</code>? Pruébelo y describa el resultado.</li>
       </ol>
     </div>
   </div>
@@ -503,7 +503,7 @@ return *(p + 4);</pre><div class="term" style="margin-top:10px;font-size:17px"><
   <h2 class="mask"><span>Referencias</span></h2>
   <div class="gap" data-a style="font-size:21px;line-height:1.5;max-width:1080px">
     <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">cppreference.com. (s. f.). <i>Pointer declaration</i>. https://en.cppreference.com/w/cpp/language/pointer</p>
-    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">cppreference.com. (s. f.). <i>Pointer arithmetic</i>. https://en.cppreference.com/w/cpp/language/operator_arithmetic</p>
+    <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">cppreference.com. (s. f.). <i>Arithmetic operators</i>. https://en.cppreference.com/w/cpp/language/operator_arithmetic</p>
     <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Kumar, A. (2024). <i>Hands-on object-oriented programming: Mastering OOP features for real-world software systems development</i>. Apress.</p>
     <p style="padding-left:36px;text-indent:-36px;margin-bottom:12px">Lutz, M. (2025). <i>Learning Python: Powerful object-oriented programming</i>. O’Reilly Media.</p>
   </div>
@@ -518,17 +518,17 @@ return *(p + 4);</pre><div class="term" style="margin-top:10px;font-size:17px"><
 function esc(x){return x.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
 window.__CASES={
  c1:{name:'1 Totales',input:'1\n2\n3\n4\n0',out:'1   Computadora HP ProDesk          12      650.00\n…\n5   Proyector                        2      489.00\nTotal de unidades: 74\nValor del inventario: $11411.60\nEquipo con mas unidades: Mouse optico (25 unidades, posicion 4)',
-   chk:['Computadora HP ProDesk 12 650.00','Monitor 24 pulgadas 15 139.99','Teclado USB 20 14.50','Mouse optico 25 9.75','Proyector 2 489.00','Total de unidades: 74','Valor del inventario: $11411.60','Equipo con mas unidades: Mouse optico (25 unidades, posicion 4)']},
+   chk:['===== INVENTARIO LABORATORIO A-201 =====','Computadora HP ProDesk 12 650.00','Monitor 24 pulgadas 15 139.99','Teclado USB 20 14.50','Mouse optico 25 9.75','Proyector 2 489.00','Total de unidades: 74','Valor del inventario: $11411.60','Equipo con mas unidades: Mouse optico (25 unidades, posicion 4)']},
  c2:{name:'2 Recibir',input:'5\n5\n8\n4\n0',out:'Posicion del equipo (1-5): 5\nUnidades recibidas: 8\nProyector ahora tiene 10 unidades.\n…\nEquipo con mas unidades: Mouse optico (25 unidades, posicion 4)',
-   chk:['Proyector ahora tiene 10 unidades.','Equipo con mas unidades: Mouse optico (25 unidades, posicion 4)']},
+   chk:['===== INVENTARIO LABORATORIO A-201 =====','Proyector ahora tiene 10 unidades.','Equipo con mas unidades: Mouse optico (25 unidades, posicion 4)']},
  c3:{name:'3 Intercambiar',input:'6\n1\n5\n1\n3\n0',out:'Equipos intercambiados.\n…\n1   Proyector                        2      489.00\n…\n5   Computadora HP ProDesk          12      650.00\nValor del inventario: $11411.60',
-   chk:['Equipos intercambiados.','1 Proyector 2 489.00','5 Computadora HP ProDesk 12 650.00','Valor del inventario: $11411.60']},
+   chk:['===== INVENTARIO LABORATORIO A-201 =====','Equipos intercambiados.','1 Proyector 2 489.00','5 Computadora HP ProDesk 12 650.00','Valor del inventario: $11411.60']},
  c4:{name:'4 Destacado',input:'7\n2\n5\n2\n3\n7\n2\n0',out:'Destacado: Monitor 24 pulgadas con 15 unidades.\n…\nMonitor 24 pulgadas ahora tiene 18 unidades.\n…\nDestacado: Monitor 24 pulgadas con 18 unidades.',
-   chk:['Destacado: Monitor 24 pulgadas con 15 unidades.','Monitor 24 pulgadas ahora tiene 18 unidades.','Destacado: Monitor 24 pulgadas con 18 unidades.']},
+   chk:['===== INVENTARIO LABORATORIO A-201 =====','Destacado: Monitor 24 pulgadas con 15 unidades.','Monitor 24 pulgadas ahora tiene 18 unidades.','Destacado: Monitor 24 pulgadas con 18 unidades.']},
  c5:{name:'5 Inválidos',input:'5\n9\n3\n7\n0\n9\n0',out:'Datos invalidos.\n…\nDatos invalidos.\n…\nOpcion invalida.',
-   chk:['Datos invalidos.','Datos invalidos.','Opcion invalida.']},
+   chk:['===== INVENTARIO LABORATORIO A-201 =====','Datos invalidos.','Datos invalidos.','Opcion invalida.']},
  c6:{name:'6 Direcciones',input:'8\n0',out:'Cada int ocupa 4 bytes.\ncant + 0 -> direccion 0x7ffe49949ca0  valor 12\ncant + 1 -> direccion 0x7ffe49949ca4  valor 15\n…\ncant + 4 -> direccion 0x7ffe49949cb0  valor 2\n(las direcciones cambian en cada computadora)',
-   chk:['Cada int ocupa 4 bytes.'],addr:[12,15,20,25,2]}
+   chk:['===== INVENTARIO LABORATORIO A-201 =====','Cada int ocupa 4 bytes.'],addr:[12,15,20,25,2]}
 };
 var C=window.__CASES,ph='';
 Object.keys(C).forEach(function(k){ph+='<div data-panel="'+k+'"'+(k==='c1'?'':' hidden')+'><p style="font-size:19px;font-weight:600">Ejecute el programa y escriba, una por línea:</p><div class="typein">'+esc(C[k].input).replace(/\n/g,'  ⏎  ')+'</div><p style="font-size:19px;font-weight:600;margin-top:10px">Debe ver, entre los menús:</p><div class="term">'+esc(C[k].out)+'</div></div>'});
@@ -554,7 +554,7 @@ var slides=[].slice.call(document.querySelectorAll('.slide'));
 /* ---------- memoria básica (portada y lámina 3) ---------- */
 var MEM=[[0x1000,'',''],[0x1004,'20','edad'],[0x1008,'',''],[0x100C,'',''],[0x1010,'0x1004','p',1]];
 function mem(id){var e=$(id);e.innerHTML=MEM.map(function(m){return box(m[0],m[1],m[2],m[3])}).join('');return e}
-var PT=mem('pt-boxes');[].forEach.call(PT.querySelectorAll('.bx'),function(b){b.style.width='84px';b.querySelector('.vl').style.fontSize=b.querySelector('.vl.ptr')?'16px':'30px';b.querySelector('.ad').style.fontSize='15px'});
+var PT=mem('pt-boxes');[].forEach.call(PT.querySelectorAll('.bx'),function(b){b.style.width='84px';b.querySelector('.vl').style.fontSize=b.querySelector('.vl.ptr')?'18px':'30px';b.querySelector('.ad').style.fontSize='18px'});
 $('pt-go').onclick=function(){lit(PT,[0x1010],'src');lit(PT,[0x1004]);$('pt-msg').textContent='p dice 0x1004: allí está edad.'};
 var M1=mem('m1');
 $('m1-go').onclick=function(){lit(M1,[0x1010],'src');lit(M1,[0x1004]);$('m1-msg').textContent='p vale 0x1004, la dirección de edad. Ir a esa dirección y leer da 20.'};
@@ -601,8 +601,8 @@ Deck.steps.dv=[
 Deck.steps.bm=[
  {l:1,add:[['n0','lit']],set:{t0:'mayor'},msg:'mayor empieza en a: la dirección de notas[0], que vale 90.'},
  {l:2,add:[['n1','src']],set:{t1:'p'},msg:'p = a + 1 apunta a 85. ¿85 > 90? No.'},
- {l:3,rem:[['n1','src']],add:[['n2','src']],set:{t1:'',t2:'p'},msg:'p++: ahora apunta a 78. ¿78 > 90? No.'},
- {l:3,rem:[['n2','src'],['n0','lit']],add:[['n3','lit']],set:{t2:'',t0:'',t3:'mayor, p'},msg:'p++: apunta a 92. ¿92 > 90? Sí: mayor = p.'},
+ {l:2,rem:[['n1','src']],add:[['n2','src']],set:{t1:'',t2:'p'},msg:'p++: ahora apunta a 78. ¿78 > 90? No.'},
+ {l:3,rem:[['n2','src'],['n0','lit']],add:[['n3','lit']],set:{t2:'',t0:'',t3:'mayor, p'},msg:'Tras otro p++, p apunta a 92. ¿92 > 90? Sí: mayor = p.'},
  {l:4,set:{t3:'mayor'},msg:'p llega a a + 4 y el for termina. Se devuelve la dirección 0x100C.'},
  {l:7,out:'92 en la posicion 3',msg:'*m da 92, y m - notas da 3: con una sola dirección, el valor y la posición.'}];
 Deck.steps.pp=[
@@ -611,7 +611,7 @@ Deck.steps.pp=[
  {l:2,set:{vpp:'0x2000'},flash:['bp2'],msg:'pp guarda la dirección de p: un puntero a un puntero.'},
  {l:3,add:[['bp2','src'],['bp1','src']],msg:'**pp: el primer * va de pp a p; el segundo va de p a x…'},
  {l:3,set:{vxx:'10'},add:[['bp0','lit']],flash:['bp0'],msg:'…y escribe 10 en x.'},
- {l:4,out:'10',msg:'x vale 10, aunque la línea nunca nombró a x.'}];
+ {l:4,out:'10',msg:'x vale 10, aunque la línea 4 nunca nombró a x.'}];
 
 /* ---------- laboratorio: verificador ---------- */
 var CASES=window.__CASES,PASS={};try{PASS=JSON.parse(localStorage.getItem('tesi2105-labE')||'{}')||{}}catch(e){PASS={}}
@@ -626,7 +626,7 @@ $('vf-go').onclick=function(){var C=CASES[cur],raw=$('vf-in').value,ln=0,col=0,o
     for(var i=ln;i<lines.length&&!hit;i++){var p=lines[i].indexOf(t,i===ln?col:0);if(p>=0){hit=true;ln=i;col=p+t.length}}
     if(hit){ok++;h+='<li class="ok">'+esc(c)+'</li>'}else h+='<li class="no">Falta, o sale en otro orden: '+esc(c)+'</li>'});
   var tot=C.chk.length;
-  if(C.addr){tot++;var rows=[];lines.forEach(function(x){var m=x.match(/^cant \+ (\d) -> direccion (0x[0-9a-f]+) valor (-?\d+)$/);if(m)rows.push(m)});
+  if(C.addr){tot++;var rows=[];lines.forEach(function(x){var m=x.match(/^cant \+ (\d) -> direccion ((?:0x)?[0-9a-f]+) valor (-?\d+)$/);if(m)rows.push(m)});
     var good=rows.length===5&&rows.every(function(m,i){return +m[1]===i&&+m[3]===C.addr[i]&&(i===0||parseInt(m[2],16)-parseInt(rows[i-1][2],16)===4)});
     if(good){ok++;h+='<li class="ok">Cinco direcciones que aumentan de 4 en 4, con los valores 12 15 20 25 2</li>'}else{bad=1;h+='<li class="no">Deben salir 5 líneas «cant + i -> direccion …  valor …» que aumenten de 4 en 4 ('+rows.length+' encontradas)</li>'}}
   var all=ok===tot;

@@ -17,6 +17,7 @@ Página del curso: https://oneill162.github.io/tesi2105-poo/
 | `unidadE.html` | Unidad E: Punteros (presentación interactiva con el Laboratorio E integrado; la versión del 21 de octubre queda en `presentaciones/unidadE_version_21oct.html`) |
 | `unidadF.html` | Unidad F: Arreglos y cadenas de caracteres (presentación interactiva con el Laboratorio F integrado) |
 | `unidadG.html` | Unidad G: Estructuras y uniones (presentación interactiva con el Laboratorio G integrado) |
+| `unidadH.html` | Unidad H: Clases y objetos (presentación interactiva con el Laboratorio H integrado) |
 | `ejemplos/` | Programas completos de los ejemplos de las presentaciones, verificados con g++ |
 | `assets/deck.css`, `assets/deck.js` | Motor común de las presentaciones: escala, transiciones, barra de navegación, índice, temporizador, paso a paso |
 | `assets/fonts/` | Schibsted Grotesk y JetBrains Mono (licencia SIL OFL), incluidas para no depender de servicios externos |
@@ -26,6 +27,8 @@ Página del curso: https://oneill162.github.io/tesi2105-poo/
 ## Uso en clase
 
 Flechas o barra espaciadora para avanzar, **I** abre el índice, **F** pone pantalla completa. `#12` al final del enlace abre la lámina 12.
+
+Las fotos que abren los capítulos de la Unidad H se cargan desde Pexels (sus créditos están en la última lámina). Sin conexión a internet, la presentación funciona igual: en su lugar queda el marco de la ventanilla.
 
 Para OrbundSIS:
 

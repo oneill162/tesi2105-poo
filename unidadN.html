@@ -6,6 +6,7 @@
 <title>Unidad N: Fundamentos de seguridad en POO · TESI 2105</title>
 <meta name="description" content="TESI 2105 Programación Orientada a Objetos. Unidad N: fundamentos de seguridad en POO, contados con la cerradura y las llaves del laboratorio. Incluye el Laboratorio N.">
 <link rel="preload" href="assets/fonts/schibsted-grotesk-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="assets/deck.css">
 <style>
 /* Tema de la Unidad N: la cerradura y las llaves.
@@ -448,12 +449,12 @@ public:
 
 <section class="slide" data-title="AddressSanitizer lo detecta">
   <h2 class="mask"><span>AddressSanitizer encuentra el desborde</span></h2>
-  <div style="display:grid;grid-template-columns:560px minmax(0,1fr);gap:26px;margin-top:16px">
+  <div style="display:grid;grid-template-columns:580px minmax(0,1fr);gap:26px;margin-top:16px">
     <div data-a>
       <p class="cap">nombre.cpp</p>
       <pre class="code c18 nums" style="counter-reset:ln 6">string texto;
 getline(cin, texto);
-char nombre[8];                  // 7 letras + '\0'
+char nombre[8];       // 7 letras + '\0'
 strcpy(nombre, texto.c_str());   // MAL
 cout &lt;&lt; "Hola, " &lt;&lt; nombre &lt;&lt; endl;</pre>
       <p class="t20 gap14">Se teclea <code>Bienvenida-al-laboratorio</code> (25 letras). Sin sanitizador, el programa a veces se cae lejos del error y a veces no se nota nada. Con <code>-fsanitize=address</code> se detiene en la línea exacta.</p>
@@ -559,14 +560,13 @@ SELECT * FROM estudiantes WHERE apellido = 'O'Neill';</div>
   <div class="g2" style="grid-template-columns:700px minmax(0,1fr);margin-top:16px">
     <div data-a>
       <pre class="code c18">struct Consulta {
-    string orden;              // fija: la escribe el programador
-    vector&lt;string&gt; datos;      // aparte: lo que tecleo el usuario
+    string orden;            // fija: la escribe el programador
+    vector&lt;string&gt; datos;    // aparte: lo que tecleo el usuario
 };
 Consulta porApellido(const string&amp; apellido) {
     return {"SELECT * FROM estudiantes WHERE apellido = ?",
             {apellido}};
 }
-// Lista blanca: solo nombres de columna conocidos
 bool columnaPermitida(const string&amp; c) {
     const set&lt;string&gt; permitidas =
         {"apellido", "nombre", "programa"};
@@ -642,7 +642,7 @@ cout &lt;&lt; copia-&gt;numero &lt;&lt; endl;  // MAL: colgante</pre>
         </div>
         <div class="obj" data-id="ob" hidden><small data-id="obs">en el heap, dirección 0x5020…10</small>Entrada { numero 7, abierta true }</div>
       </div>
-      <p class="msg gap14" data-id="msg" style="min-height:96px">Pulse «Siguiente paso».</p>
+      <p class="msg gap14" data-id="msg" style="min-height:0">Pulse «Siguiente paso».</p>
       <div class="term t18 gap10" data-id="out" hidden style="min-height:0;white-space:pre-wrap"></div>
     </div>
   </div>
@@ -650,7 +650,7 @@ cout &lt;&lt; copia-&gt;numero &lt;&lt; endl;  // MAL: colgante</pre>
 
 <section class="slide" data-title="RAII: un solo dueño">
   <h2 class="mask"><span>unique_ptr: un solo dueño, sin delete</span></h2>
-  <div class="g2" style="grid-template-columns:640px minmax(0,1fr);margin-top:16px">
+  <div class="g2" style="grid-template-columns:680px minmax(0,1fr);margin-top:16px">
     <div data-a>
       <pre class="code c18">unique_ptr&lt;Entrada&gt; ultima =
     make_unique&lt;Entrada&gt;(Entrada{7, true});
@@ -718,7 +718,6 @@ public:
 Prueba 2: rechazado, de 4 a 6 digitos
 Prueba 3: rechazado, solo digitos
 Prueba 4: rechazado, de 4 a 6 digitos</div>
-      <p class="t20 gap10">Si el constructor lanza, el objeto nunca existe: ninguna otra función tiene que dudar del PIN.</p>
     </div>
   </div>
 </section>
@@ -792,8 +791,8 @@ cout &lt;&lt; c.verBitacora().size() &lt;&lt; " entradas" &lt;&lt; endl;</pre><d
     <div data-a>
       <pre class="code c18">if (it == usuarios.end() || it-&gt;second != pin) {
     cerr &lt;&lt; "[interno] fallo de acceso: "
-         &lt;&lt; usuario &lt;&lt; endl;            // para el tecnico
-    cout &lt;&lt; "Usuario o PIN incorrecto" &lt;&lt; endl;  // publico
+         &lt;&lt; usuario &lt;&lt; endl;
+    cout &lt;&lt; "Usuario o PIN incorrecto" &lt;&lt; endl;
     return false;
 }</pre>
       <p class="cap">Lo que ve el usuario (cout), con un PIN malo y un usuario que no existe:</p>
@@ -811,7 +810,7 @@ Usuario o PIN incorrecto</div>
   <div class="g2" style="grid-template-columns:600px minmax(0,1fr);gap:26px;margin-top:16px">
     <div data-a>
       <p class="cap">avisos.cpp</p>
-      <pre class="code c18 nums" style="counter-reset:ln 7">int main() {
+      <pre class="code c18 nums" style="counter-reset:ln 6">int main() {
     vector&lt;string&gt; bitacora = {"Puerta abierta",
                                "PIN incorrecto"};
     for (int i = 0; i &lt; bitacora.size(); i++)
@@ -826,12 +825,12 @@ Usuario o PIN incorrecto</div>
     </div>
     <div data-tabs="wr1" data-a>
       <div class="row tabsrow"><button data-tab="wr1">-Wall -Wextra</button><button data-tab="wr2">-Wall -Wextra -Werror</button></div>
-      <div data-panel="wr1" class="gap10"><div class="term t18" style="white-space:pre-wrap"><span class="w">avisos.cpp:9:23: warning: comparison of integer expressions of different signedness: 'int' and 'std::vector&lt;…&gt;::size_type' {aka 'long unsigned int'} [-Wsign-compare]
-avisos.cpp:17:11: warning: format not a string literal and no format arguments [-Wformat-security]
+      <div data-panel="wr1" class="gap10"><div class="term t18" style="white-space:pre-wrap"><span class="w">avisos.cpp:10:23: warning: comparison of integer expressions of different signedness: 'int' and 'std::vector&lt;…&gt;::size_type' {aka 'long unsigned int'} [-Wsign-compare]
+avisos.cpp:16:11: warning: format not a string literal and no format arguments [-Wformat-security]
 avisos.cpp:13:13: warning: 'intentos' may be used uninitialized [-Wmaybe-uninitialized]</span></div>
         <p class="t20 gap10">Compila igual, y los avisos se pierden entre tanto texto. Cada uno es un error de seguridad posible: comparar con signo distinto, usar un valor basura y dejar que el texto del usuario sea el formato de <code>printf</code> (un <code>%</code> tecleado se trataría como instrucción).</p></div>
-      <div data-panel="wr2" hidden class="gap10"><div class="term t18" style="white-space:pre-wrap"><span class="e">avisos.cpp:9:23: error: comparison of integer expressions of different signedness: … [-Werror=sign-compare]
-avisos.cpp:17:11: error: format not a string literal and no format arguments [-Werror=format-security]
+      <div data-panel="wr2" hidden class="gap10"><div class="term t18" style="white-space:pre-wrap"><span class="e">avisos.cpp:10:23: error: comparison of integer expressions of different signedness: … [-Werror=sign-compare]
+avisos.cpp:16:11: error: format not a string literal and no format arguments [-Werror=format-security]
 avisos.cpp:13:13: error: 'intentos' may be used uninitialized [-Werror=maybe-uninitialized]
 cc1plus: all warnings being treated as errors</span></div>
         <p class="t20 gap10">Con <code>-Werror</code> no hay ejecutable hasta corregirlos: <code>size_t i</code>, <code>int intentos = 0;</code> y <code>printf("%s", mensaje.c_str())</code> (o, mejor, <code>cout</code>).</p></div>
@@ -1100,7 +1099,7 @@ function dpRun(){
 dpBuild();grupo('dp-in','data-x',function(k){dpX=k;dpRun()},'larga');
 
 /* encapsulación */
-var EN={a:['1 0','abrir("1111") devuelve 0 (false): ese PIN no es. Por fuera solo se ve el resultado; la comparación y el contador se quedan dentro.',false],
+var EN={a:['0 1','abrir("1111") devuelve 0 (false): ese PIN no es. Por fuera solo se ve el resultado; la comparación y el contador se quedan dentro.',false],
  b:['error: \'std::string Cerradura::pin\' is private within this context','private: el PIN no se puede leer desde afuera, ni para mostrarlo.',true],
  c:['error: \'int Cerradura::intentos\' is private within this context','Nadie reinicia el contador desde afuera para seguir probando: solo abrir() lo cambia, y siempre respeta 0 &lt;= intentos &lt;= 3.',true],
  d:['error: assignment of member \'Cerradura::intentos\' in read-only object','Si intentosFallidos() const tratara de poner intentos = 0, g++ lo rechaza: const promete que la función solo lee.',true]};
@@ -1184,7 +1183,7 @@ Deck.steps.uaf=[
  {l:0,show:['ob'],set:{vu:'0x5020…10 →'},msg:'new reserva un Entrada en el heap y ultima guarda su dirección.'},
  {l:1,show:['pc'],set:{vc:'0x5020…10 →'},msg:'copia guarda la MISMA dirección: dos punteros, un solo objeto. Ninguno de los dos «sabe» del otro.'},
  {l:2,add:[['ob','libre'],['pu','colg'],['pc','colg']],set:{obs:'liberada: ya no es de nadie'},msg:'delete devuelve la memoria. Pero ultima y copia siguen guardando la dirección: quedaron colgando, como la llave de una puerta demolida.'},
- {l:3,show:['out'],out:'Sin sanitizador: 1676377772   (un número cualquiera)\nCon ASan:\nERROR: AddressSanitizer: heap-use-after-free\nREAD of size 4 … in main …/colgante.cpp:13\nfreed by thread T0 here: … colgante.cpp:12',msg:'Leer por copia es comportamiento indefinido: da basura, se cae o, peor, lee datos de otro objeto que ocupó ese lugar. ASan dice dónde se usó (línea 13) y dónde se liberó (línea 12).'}];
+ {l:3,show:['out'],out:'Sin ASan: 1676377772 (un número cualquiera)\nERROR: AddressSanitizer: heap-use-after-free\nREAD … colgante.cpp:13 · freed … colgante.cpp:12',msg:'Leer por copia es comportamiento indefinido: da basura, se cae o, peor, lee datos de otro objeto que ocupó ese lugar. ASan dice dónde se usó (línea 13) y dónde se liberó (línea 12).'}];
 
 /* constructor */
 function pnDraw(){var v=$('pn-in').value,largo=v.length>=4&&v.length<=6,dig=/^[0-9]*$/.test(v)&&v.length>0;

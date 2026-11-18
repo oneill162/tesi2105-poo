@@ -41,6 +41,10 @@ pre.code.gap10{margin-top:10px}pre.code.gap14{margin-top:14px}
 p.t20,.t20{font-size:20px;line-height:1.42}
 p.t21,.t21{font-size:21px;line-height:1.42}
 .mono{font-family:var(--mono)}
+code{font-size:max(.9em,18px)}
+.nw{white-space:nowrap}
+.btn18 button{font-size:18px;padding:10px 12px;white-space:nowrap}
+.term.cmd{color:var(--code-ink);white-space:pre-wrap}
 
 /* capítulos */
 .chwrap{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:56px;height:100%}
@@ -66,7 +70,8 @@ svg.cand.roto .cuerpo{fill:var(--no)}
 .puerta::before{content:"";position:absolute;left:34px;top:34px;width:180px;height:180px;border:3px solid rgba(255,255,255,.08)}
 .puerta::after{content:"";position:absolute;left:34px;top:244px;width:180px;height:180px;border:3px solid rgba(255,255,255,.08)}
 .puerta .placa{position:absolute;left:30px;top:40px;width:180px;font:700 18px var(--mono);color:var(--laton2);letter-spacing:.06em;line-height:1.35}
-.puerta .cerrs{position:absolute;right:22px;top:26px;bottom:26px;display:flex;flex-direction:column;justify-content:space-between;width:160px}
+.puerta .cerrs{position:absolute;right:18px;top:24px;bottom:24px;display:flex;flex-direction:column;justify-content:space-between;width:190px}
+.cerr small{font-size:18px;font-weight:500;opacity:.8}
 .cerr{display:grid;grid-template-columns:52px 1fr;align-items:center;gap:10px;background:#0B141B;color:var(--field-ink);padding:10px 12px;text-align:left;font:600 18px var(--sans);border:0}
 .cerr:hover{background:#000;color:var(--hi)}
 .cerr svg{width:46px;height:58px}
@@ -76,11 +81,12 @@ svg.cand.roto .cuerpo{fill:var(--no)}
 
 /* llavero */
 .llavero{position:relative;padding:12px 0 0 0}
-.llaves{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px}
+.llaves{display:flex;flex-direction:column;gap:18px}
 .llave{position:relative;display:flex;align-items:center;gap:0;padding:0;background:transparent;text-align:left;font:600 19px var(--sans);color:var(--ink)}
 .llave .cab{flex:none;width:56px;height:56px;border-radius:50%;background:var(--laton);position:relative;box-shadow:inset 0 0 0 4px rgba(0,0,0,.12)}
 .llave .cab::after{content:"";position:absolute;left:19px;top:19px;width:18px;height:18px;border-radius:50%;background:var(--ground)}
-.llave .vara{flex:1;background:var(--tone2);padding:11px 16px 11px 14px;margin-left:-4px;clip-path:polygon(0 0,100% 0,100% 62%,92% 62%,92% 100%,84% 100%,84% 62%,0 62%,0 0);min-height:56px;line-height:1.15;padding-bottom:26px}
+.llave .vara{flex:1;position:relative;background:var(--tone2);padding:0 70px 0 18px;margin-left:-4px;height:44px;display:flex;align-items:center;white-space:nowrap}
+.llave .vara::after{content:"";position:absolute;right:14px;top:100%;width:40px;height:12px;background:inherit;clip-path:polygon(0 0,100% 0,100% 100%,75% 100%,75% 45%,50% 45%,50% 100%,25% 100%,25% 45%,0 45%)}
 .llave:hover{background:transparent;color:var(--ink)}
 .llave:hover .vara{background:var(--laton2)}
 .llave[aria-pressed=true]{background:transparent;color:var(--ink)}
@@ -92,7 +98,7 @@ svg.cand.roto .cuerpo{fill:var(--no)}
 .ficha .ej{font:500 19px/1.45 var(--mono);background:var(--tone);padding:10px 14px;margin-top:12px;white-space:pre-wrap}
 
 /* CIA */
-.cia{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.cia{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .cia button{background:var(--field);color:var(--field-ink);text-align:left;padding:14px 16px 16px;min-height:150px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
 .cia button b{font:800 54px/1 var(--sans);color:var(--laton2)}
 .cia button span{font:700 21px var(--sans)}
@@ -132,9 +138,9 @@ svg.cand.roto .cuerpo{fill:var(--no)}
 .mem8 .cel{height:56px;display:flex;align-items:center;justify-content:center;font:600 20px var(--mono);background:#fff;color:var(--ink);border-bottom:6px solid var(--accent)}
 .mem8 .cel.vec{border-bottom-color:var(--acero);background:#EEF1F3}
 .mem8 .cel.otr{border-bottom-color:var(--tone2);background:repeating-linear-gradient(45deg,var(--tone) 0 8px,var(--ground) 8px 16px);color:var(--soft)}
-.mem8 .cel.cero{color:var(--soft);font-size:16px}
+.mem8 .cel.cero{color:var(--soft);font-size:18px}
 .mem8 .cel.pisa{background:var(--no);color:#fff}
-.mem8 .ix{font:600 16px var(--mono);color:var(--soft);text-align:center}
+.mem8 .ix{font:600 18px var(--mono);color:var(--soft);text-align:center}
 .mem8 .rot{grid-column:span 8;font:600 18px var(--sans);padding:4px 2px;border-top:4px solid var(--accent)}
 .mem8 .rot.vec{grid-column:span 4;border-top-color:var(--acero)}
 .mem8 .rot.otr{grid-column:span 12;border-top-color:var(--tone2);color:var(--soft)}
@@ -221,7 +227,7 @@ a.dl{display:inline-flex;align-items:center;background:var(--accent);color:#fff;
 .cases .cc{display:grid;grid-template-columns:250px 1fr;gap:14px}
 .cases .cl{font-size:18px;font-weight:600;margin-bottom:4px}
 .cases .nota{font-size:18px;font-weight:500;color:var(--soft);margin-top:6px}
-.cases .term{font-size:17px;line-height:1.38;white-space:pre-wrap;padding:10px 14px}
+.cases .term{font-size:18px;line-height:1.36;white-space:pre-wrap;padding:10px 14px}
 ol.typein{margin:0;padding:8px 10px 8px 34px;background:var(--tone);font:600 18px/1.3 var(--mono)}
 ol.typein li{padding:3px 0}
 kbd{display:inline-block;background:#fff;border:2px solid var(--tone2);padding:1px 7px;margin-right:6px;font:600 18px var(--mono);white-space:nowrap}
@@ -319,7 +325,7 @@ c.saldo = 1000000;          // g++ lo detiene</pre><div class="term t18 gap10"><
 <section class="slide" data-title="El llavero de principios">
   <h2 class="mask"><span>Seis llaves para diseñar seguro</span></h2>
   <p class="body" data-a style="margin-top:12px;font-size:22px">Cada llave es un principio. Tome una y vea cómo se nota en el código.</p>
-  <div style="display:grid;grid-template-columns:600px minmax(0,1fr);gap:30px;margin-top:16px">
+  <div style="display:grid;grid-template-columns:440px minmax(0,1fr);gap:34px;margin-top:18px">
     <div class="llavero" data-a><div class="llaves" id="ll-b"></div></div>
     <div class="ficha" data-a id="ll-f" aria-live="polite"></div>
   </div>
@@ -342,17 +348,17 @@ c.saldo = 1000000;          // g++ lo detiene</pre><div class="term t18 gap10"><
   <h2 class="mask"><span>Si algo falla, la puerta queda cerrada</span></h2>
   <div data-tabs="fs1" data-a style="margin-top:18px">
     <div class="row tabsrow"><button data-tab="fs1">Fallar de forma segura</button><button data-tab="fs2">Un secreto en el código</button><button data-tab="fs3">El secreto, afuera</button></div>
-    <div class="g2" style="margin-top:16px">
-      <div data-panel="fs1"><pre class="code c19">bool puedeEntrar(const string&amp; rol) {
+    <div class="g2" style="grid-template-columns:680px minmax(0,1fr);margin-top:16px">
+      <div data-panel="fs1"><pre class="code c18">bool puedeEntrar(const string&amp; rol) {
     if (rol == "profesor") return true;
     if (rol == "tecnico")  return true;
-    return false;          // todo lo demas: denegado
+    return false;          // lo demas: denegado
 }</pre><div class="term t19 gap10">[profesor] entra
 [estudiante] denegado
 [] denegado
 [PROFESOR] denegado</div></div>
       <div data-panel="fs1"><p class="lead" style="font-size:27px">Se enumera lo que sí entra; todo lo demás se niega.</p><p class="t21 gap14">Un rol vacío o escrito de otra forma no abre por accidente. Lo contrario (negar solo lo que se conoce como malo) deja abierta cualquier puerta que nadie pensó.</p></div>
-      <div data-panel="fs2" hidden><pre class="code c19">const string CLAVE_SERVIDOR = "Lab-Manati-7731";   // MAL
+      <div data-panel="fs2" hidden><pre class="code c18">const string CLAVE_SERVIDOR = "Lab-Manati-7731";   // MAL
 
 int main() {
     cout &lt;&lt; "Conectando..." &lt;&lt; endl;
@@ -360,7 +366,7 @@ int main() {
 }</pre><div class="term t19 gap10"><span class="p">$ strings clave | grep Lab</span>
 Lab-Manati-7731</div></div>
       <div data-panel="fs2" hidden><p class="lead" style="font-size:27px">El texto queda dentro del ejecutable.</p><p class="t21 gap14"><code>strings</code> lista el texto que hay en un archivo: quien tenga el programa, tiene la clave. Y si el código se sube a un repositorio, la clave queda publicada para siempre en su historial.</p></div>
-      <div data-panel="fs3" hidden><pre class="code c19">const char* clave = getenv("CLAVE_SERVIDOR");
+      <div data-panel="fs3" hidden><pre class="code c18">const char* clave = getenv("CLAVE_SERVIDOR");
 if (clave == nullptr) {
     cout &lt;&lt; "Falta la variable CLAVE_SERVIDOR" &lt;&lt; endl;
     return 1;                 // falla de forma segura
@@ -376,15 +382,15 @@ Conectando...</div></div>
 
 <section class="slide" data-title="La encapsulación es una cerradura">
   <h2 class="mask"><span>private, const e invariantes</span></h2>
-  <div class="g2" style="grid-template-columns:620px minmax(0,1fr);margin-top:18px">
+  <div class="g2" style="grid-template-columns:700px minmax(0,1fr);gap:28px;margin-top:18px">
     <pre class="code c18" data-a id="en-code">class Cerradura {
 private:
-    string pin;          // el secreto: nadie lo lee desde afuera
+    string pin;          // el secreto
     int intentos = 0;    // invariante: 0 &lt;= intentos &lt;= 3
 public:
     explicit Cerradura(const string&amp; p) : pin(p) {}
     bool abrir(const string&amp; intento) {
-        if (intentos &gt;= 3) return false;     // bloqueada
+        if (intentos &gt;= 3) return false;   // bloqueada
         if (intento == pin) { intentos = 0; return true; }
         intentos++;
         return false;
@@ -425,8 +431,8 @@ public:
 <section class="slide" data-title="Desbordamiento de búfer">
   <h2 class="mask"><span>Desbordamiento de búfer: más letras que espacio</span></h2>
   <p class="body" data-a style="margin-top:10px;font-size:21px">Simulación de la memoria: <code>nombre</code> tiene 8 bytes y a su lado vive <code>intentos</code>. Escriba un nombre y compare las tres maneras de copiarlo.</p>
-  <div class="row gap10" data-a style="gap:10px;flex-wrap:nowrap">
-    <input class="field" id="bf-in" maxlength="24" value="Bienvenida-al-lab" aria-label="Texto que se copia en nombre" style="width:360px">
+  <div class="row gap10 btn18" data-a style="gap:8px;flex-wrap:nowrap">
+    <input class="field" id="bf-in" maxlength="24" value="Bienvenida-al-lab" aria-label="Texto que se copia en nombre" style="width:290px">
     <button data-v="Ana">Ana</button><button data-v="Margarita">Margarita</button><button data-v="Bienvenida-al-lab">Bienvenida-al-lab</button>
     <span style="flex:1"></span>
     <div class="row" id="bf-m" style="gap:6px"><button data-m="strcpy" class="mono" style="font-size:18px">strcpy</button><button data-m="snprintf" class="mono" style="font-size:18px">snprintf</button><button data-m="string" class="mono" style="font-size:18px">string</button></div>
@@ -442,27 +448,26 @@ public:
 
 <section class="slide" data-title="AddressSanitizer lo detecta">
   <h2 class="mask"><span>AddressSanitizer encuentra el desborde</span></h2>
-  <div style="display:grid;grid-template-columns:540px minmax(0,1fr);gap:26px;margin-top:16px">
+  <div style="display:grid;grid-template-columns:560px minmax(0,1fr);gap:26px;margin-top:16px">
     <div data-a>
       <p class="cap">nombre.cpp</p>
-      <pre class="code c18 nums">string texto;
+      <pre class="code c18 nums" style="counter-reset:ln 6">string texto;
 getline(cin, texto);
-char nombre[8];                    // 7 letras y el '\0'
-strcpy(nombre, texto.c_str());     // MAL: no mira el tamano
+char nombre[8];                  // 7 letras + '\0'
+strcpy(nombre, texto.c_str());   // MAL
 cout &lt;&lt; "Hola, " &lt;&lt; nombre &lt;&lt; endl;</pre>
       <p class="t20 gap14">Se teclea <code>Bienvenida-al-laboratorio</code> (25 letras). Sin sanitizador, el programa a veces se cae lejos del error y a veces no se nota nada. Con <code>-fsanitize=address</code> se detiene en la línea exacta.</p>
     </div>
     <div data-tabs="as1" data-a>
       <div class="row tabsrow"><button data-tab="as1">Sin sanitizador</button><button data-tab="as2">Con AddressSanitizer</button></div>
-      <div data-panel="as1" class="gap14"><pre class="code c18" data-raw style="padding:10px 0"><span class="ln">g++ -std=c++17 -Wall -Wextra -o nombre nombre.cpp</span></pre><div class="term t18 gap10">Hola, Bienvenida-al-laboratorio
+      <div data-panel="as1" class="gap14"><div class="term t18 cmd">$ g++ -std=c++17 -Wall -Wextra -o nombre nombre.cpp</div><div class="term t18 gap10">Hola, Bienvenida-al-laboratorio
 <span class="e">*** stack smashing detected ***: terminated
 Aborted</span></div><p class="t20 gap10">Imprimió todo «bien» y se cayó al final, cuando ya había pisado memoria ajena.</p></div>
-      <div data-panel="as2" hidden class="gap14"><pre class="code c18" data-raw style="padding:10px 0"><span class="ln">g++ -std=c++17 -g -fsanitize=address,undefined -o nombre nombre.cpp</span></pre><div class="term t18 gap10" style="white-space:pre"><span class="e">ERROR: AddressSanitizer: stack-buffer-overflow</span> on address …
+      <div data-panel="as2" hidden class="gap14"><div class="term t18 cmd">$ g++ -std=c++17 -g -fsanitize=address,undefined -o nombre nombre.cpp</div><div class="term t18 gap10" style="white-space:pre-wrap"><span class="e">ERROR: AddressSanitizer: stack-buffer-overflow</span> on address …
 WRITE of size 26 at … thread T0
-    #0 … in strcpy …
-    #1 … in main …/nombre.cpp:10
-  [96, 104) 'nombre' (line 9) <span class="w">&lt;== Memory access at
-   offset 104 overflows this variable</span>
+  #0 … in strcpy …
+  #1 … in main …/nombre.cpp:10
+[96, 104) 'nombre' (line 9) <span class="w">&lt;== Memory access at offset 104 overflows this variable</span>
 <span class="e">SUMMARY: AddressSanitizer: stack-buffer-overflow</span> … in strcpy</div><p class="t20 gap10">Salida resumida (… = direcciones y rutas). Dice qué pasó, en qué línea (10) y qué variable se desbordó.</p></div>
     </div>
   </div>
@@ -472,14 +477,14 @@ WRITE of size 26 at … thread T0
   <h2 class="mask"><span>Tres maneras de cerrar el búfer</span></h2>
   <div data-tabs="cb1" data-a style="margin-top:18px">
     <div class="row tabsrow"><button data-tab="cb1">std::string</button><button data-tab="cb2">std::array y .at()</button><button data-tab="cb3">snprintf y strncpy</button></div>
-    <div class="g2" style="margin-top:16px">
-      <div data-panel="cb1"><pre class="code c19">string nombre;                 // crece lo que haga falta
+    <div class="g2" style="grid-template-columns:680px minmax(0,1fr);margin-top:16px">
+      <div data-panel="cb1"><pre class="code c18">string nombre;                 // crece lo que haga falta
 getline(cin, nombre);
 cout &lt;&lt; "Hola, " &lt;&lt; nombre &lt;&lt; endl;
 cout &lt;&lt; nombre.size() &lt;&lt; " letras" &lt;&lt; endl;</pre><div class="term t19 gap10">Hola, Bienvenida-al-laboratorio
 25 letras</div></div>
       <div data-panel="cb1"><p class="lead" style="font-size:27px">La primera opción en C++.</p><p class="t21 gap14"><code>string</code> administra su propia memoria: no hay tamaño que adivinar. Con <code>getline</code> se lee la línea completa, espacios incluidos.</p></div>
-      <div data-panel="cb2" hidden><pre class="code c19">array&lt;int, 5&gt; casillero = {0, 0, 0, 0, 0};
+      <div data-panel="cb2" hidden><pre class="code c18">array&lt;int, 5&gt; casillero = {0, 0, 0, 0, 0};
 try {
     casillero.at(2) = 1;       // dentro: bien
     casillero.at(7) = 1;       // fuera: lanza out_of_range
@@ -493,7 +498,7 @@ cout &lt;&lt; nombre &lt;&lt; endl;                // corta a 7 + '\0'
 
 char otro[8];
 strncpy(otro, texto.c_str(), sizeof(otro) - 1);
-otro[sizeof(otro) - 1] = '\0';      // strncpy no siempre lo pone
+otro[sizeof(otro) - 1] = '\0';      // a mano
 cout &lt;&lt; otro &lt;&lt; endl;</pre><div class="term t19 gap10">Bienven
 Bienven</div></div>
       <div data-panel="cb3" hidden><p class="lead" style="font-size:27px">Si hay que usar char[], siempre con el tamaño.</p><p class="t21 gap14">Las funciones de C que reciben el tamaño cortan en vez de desbordar. <code>strncpy</code> tiene una trampa: si el texto no cabe, no pone el <code>'\0'</code>; hay que ponerlo a mano.</p></div>
@@ -506,14 +511,14 @@ Bienven</div></div>
   <div class="g2" style="grid-template-columns:600px minmax(0,1fr);margin-top:16px">
     <div data-a>
       <p class="cap">copias.cpp: el costo de imprimir, en centavos</p>
-      <pre class="code c18 nums" style="counter-reset:ln 4">int cantidad, precio = 1500;       // centavos por copia
+      <pre class="code c18 nums" style="counter-reset:ln 4">int cantidad, precio = 1500;  // centavos
 cin &gt;&gt; cantidad;
-int total = cantidad * precio;     // MAL: puede pasarse de INT_MAX</pre>
+int total = cantidad * precio;  // MAL</pre>
       <p class="cap">Con 2000000 copias, compilado con <code>-fsanitize=undefined</code>:</p>
       <div class="term t18" style="white-space:pre-wrap"><span class="e">copias.cpp:7:9: runtime error: signed integer overflow: 1500 * 2000000 cannot be represented in type 'int'</span>
 Total: -1294967296 centavos</div>
       <p class="cap">La corrección: comprobar antes de multiplicar</p>
-      <pre class="code c18">if (a &gt; INT_MAX / b) return false;    // no cabe: se rechaza
+      <pre class="code c18">if (a &gt; INT_MAX / b) return false;  // no cabe
 resultado = a * b;</pre>
     </div>
     <div data-a>
@@ -529,7 +534,7 @@ resultado = a * b;</pre>
 
 <section class="slide" data-title="Inyección: el dato se vuelve orden">
   <h2 class="mask"><span>Inyección: cuando el dato se vuelve orden</span></h2>
-  <div style="display:grid;grid-template-columns:560px minmax(0,1fr);gap:28px;margin-top:16px">
+  <div style="display:grid;grid-template-columns:590px minmax(0,1fr);gap:26px;margin-top:16px">
     <div data-a>
       <pre class="code c18">// MAL: el dato se pega dentro de la orden
 string consultaInsegura(const string&amp; apellido) {
@@ -541,7 +546,7 @@ SELECT * FROM estudiantes WHERE apellido = 'O'Neill';</div>
       <p class="t20 gap10">Solo se imprime el texto: aquí no hay base de datos. Pero así se arma, por error, muchísimo código real.</p>
     </div>
     <div data-a>
-      <div class="row" style="gap:8px;flex-wrap:nowrap"><input class="field" id="sq-in" value="O'Neill" maxlength="30" aria-label="Apellido que escribe el usuario" style="width:260px"><button data-v="Rivera">Rivera</button><button data-v="O'Neill">O'Neill</button><button data-v="De Jesús">De Jesús</button></div>
+      <div class="row btn18" style="gap:8px;flex-wrap:nowrap"><input class="field" id="sq-in" value="O'Neill" maxlength="30" aria-label="Apellido que escribe el usuario" style="width:200px"><button data-v="Rivera">Rivera</button><button data-v="O'Neill">O'Neill</button><button data-v="De Jesús">De Jesús</button></div>
       <div class="row gap10" id="sq-m" style="gap:8px"><button data-m="cat">Concatenar texto</button><button data-m="par">Consulta parametrizada</button></div>
       <div class="sql gap10" id="sq-o"></div>
       <p class="t20 gap10" id="sq-msg" aria-live="polite" style="min-height:116px"></p>
@@ -551,11 +556,11 @@ SELECT * FROM estudiantes WHERE apellido = 'O'Neill';</div>
 
 <section class="slide" data-title="Consultas parametrizadas y listas blancas">
   <h2 class="mask"><span>La orden fija y los datos aparte</span></h2>
-  <div class="g2" style="grid-template-columns:640px minmax(0,1fr);margin-top:16px">
+  <div class="g2" style="grid-template-columns:700px minmax(0,1fr);margin-top:16px">
     <div data-a>
       <pre class="code c18">struct Consulta {
     string orden;              // fija: la escribe el programador
-    vector&lt;string&gt; datos;      // aparte: lo que escribio el usuario
+    vector&lt;string&gt; datos;      // aparte: lo que tecleo el usuario
 };
 Consulta porApellido(const string&amp; apellido) {
     return {"SELECT * FROM estudiantes WHERE apellido = ?",
@@ -563,7 +568,8 @@ Consulta porApellido(const string&amp; apellido) {
 }
 // Lista blanca: solo nombres de columna conocidos
 bool columnaPermitida(const string&amp; c) {
-    const set&lt;string&gt; permitidas = {"apellido", "nombre", "programa"};
+    const set&lt;string&gt; permitidas =
+        {"apellido", "nombre", "programa"};
     return permitidas.count(c) == 1;
 }</pre>
       <div class="term t18 gap10">SELECT * FROM estudiantes WHERE apellido = ?
@@ -582,15 +588,16 @@ ordenar por contrasena: rechazado</div>
 
 <section class="slide" data-title="Inyección de comandos: system()">
   <h2 class="mask"><span>system() le pasa todo al shell</span></h2>
-  <div style="display:grid;grid-template-columns:610px minmax(0,1fr);gap:26px;margin-top:14px">
+  <div style="display:grid;grid-template-columns:640px minmax(0,1fr);gap:26px;margin-top:14px">
     <div data-tabs="sy1" data-a>
       <div class="row tabsrow"><button data-tab="sy1">Con system()</button><button data-tab="sy2">Sin shell</button></div>
       <div data-panel="sy1" class="gap10"><pre class="code c18">string carpeta;
 getline(cin, carpeta);
-string orden = "ls " + carpeta;   // MAL: el dato entra en la orden
-return system(orden.c_str());     // el shell interpreta todo</pre>
+string orden = "ls " + carpeta;  // MAL
+return system(orden.c_str());    // todo pasa al shell</pre>
         <p class="t20 gap14"><code>system()</code> entrega el texto completo al shell, y el shell da significado especial a caracteres como <code>; | &amp; $</code> y los espacios. Un dato que los traiga deja de ser un nombre de carpeta y pasa a ser parte de la orden.</p></div>
-      <div data-panel="sy2" hidden class="gap10"><pre class="code c18">if (!nombreSeguro(carpeta) || !fs::is_directory(carpeta)) {
+      <div data-panel="sy2" hidden class="gap10"><pre class="code c18">if (!nombreSeguro(carpeta) ||
+    !fs::is_directory(carpeta)) {
     cout &lt;&lt; "Carpeta no valida" &lt;&lt; endl;
     return 1;
 }
@@ -608,7 +615,7 @@ Carpeta no valida</div></div>
     <div data-a>
       <p class="t20" style="font-weight:600">Lista blanca de <code>nombreSeguro</code>: letras, dígitos, <code>-</code> y <code>_</code>. Pruebe un nombre:</p>
       <div class="row gap10" style="gap:8px"><input class="field" id="cm-in" value="../otra carpeta" maxlength="30" aria-label="Nombre de carpeta" style="width:300px"></div>
-      <div class="row gap10" id="cm-b" style="gap:8px"><button data-v="entregas" class="mono">entregas</button><button data-v="Lab_2" class="mono">Lab_2</button><button data-v="../otra carpeta" class="mono">../otra carpeta</button><button data-v="datos&amp;copia" class="mono">datos&amp;copia</button></div>
+      <div class="row gap10 btn18" id="cm-b" style="gap:8px"><button data-v="entregas" class="mono">entregas</button><button data-v="Lab_2" class="mono">Lab_2</button><button data-v="../otra carpeta" class="mono">../otra carpeta</button><button data-v="datos&amp;copia" class="mono">datos&amp;copia</button></div>
       <div class="carac gap14" id="cm-c"></div>
       <p class="t20 gap10" id="cm-m" aria-live="polite"></p>
       <p class="t20 gap10"><b>Regla:</b> evite <code>system()</code>. Casi siempre hay una función de la biblioteca (<code>std::filesystem</code> para carpetas y archivos) que hace lo mismo sin pasar por el shell.</p>
@@ -618,13 +625,13 @@ Carpeta no valida</div></div>
 
 <section class="slide" data-title="Uso después de liberar">
   <h2 class="mask"><span>Punteros colgantes: la llave de una puerta demolida</span></h2>
-  <div data-step="uaf" style="display:grid;grid-template-columns:600px minmax(0,1fr);gap:28px;margin-top:16px" data-a>
+  <div data-step="uaf" style="display:grid;grid-template-columns:620px minmax(0,1fr);gap:28px;margin-top:16px" data-a>
     <div>
       <p class="cap">colgante.cpp</p>
-      <pre class="code c19">Entrada* ultima = new Entrada{7, true};
-Entrada* copia  = ultima;        // dos punteros, un objeto
-delete ultima;                   // el objeto deja de existir
-cout &lt;&lt; copia-&gt;numero &lt;&lt; endl;   // MAL: copia quedo colgando</pre>
+      <pre class="code c18 nums" style="counter-reset:ln 9">Entrada* ultima = new Entrada{7, true};
+Entrada* copia  = ultima;       // un objeto
+delete ultima;                  // deja de existir
+cout &lt;&lt; copia-&gt;numero &lt;&lt; endl;  // MAL: colgante</pre>
       <div class="stepbar gap14"><button class="go" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="stepn"></span></div>
     </div>
     <div class="ws">
@@ -635,7 +642,7 @@ cout &lt;&lt; copia-&gt;numero &lt;&lt; endl;   // MAL: copia quedo colgando</pr
         </div>
         <div class="obj" data-id="ob" hidden><small data-id="obs">en el heap, dirección 0x5020…10</small>Entrada { numero 7, abierta true }</div>
       </div>
-      <p class="msg gap14" data-id="msg" style="min-height:110px">Pulse «Siguiente paso».</p>
+      <p class="msg gap14" data-id="msg" style="min-height:96px">Pulse «Siguiente paso».</p>
       <div class="term t18 gap10" data-id="out" hidden style="min-height:0;white-space:pre-wrap"></div>
     </div>
   </div>
@@ -645,12 +652,13 @@ cout &lt;&lt; copia-&gt;numero &lt;&lt; endl;   // MAL: copia quedo colgando</pr
   <h2 class="mask"><span>unique_ptr: un solo dueño, sin delete</span></h2>
   <div class="g2" style="grid-template-columns:640px minmax(0,1fr);margin-top:16px">
     <div data-a>
-      <pre class="code c18">unique_ptr&lt;Entrada&gt; ultima = make_unique&lt;Entrada&gt;(Entrada{7, true});
-cout &lt;&lt; ultima-&gt;numero &lt;&lt; endl;           // se usa como un puntero
-unique_ptr&lt;Entrada&gt; nueva = move(ultima); // pasa el dueno
+      <pre class="code c18">unique_ptr&lt;Entrada&gt; ultima =
+    make_unique&lt;Entrada&gt;(Entrada{7, true});
+cout &lt;&lt; ultima-&gt;numero &lt;&lt; endl;
+unique_ptr&lt;Entrada&gt; nueva = move(ultima);  // pasa el dueno
 cout &lt;&lt; (ultima == nullptr ? "ultima: vacio"
                            : "ultima: lleno") &lt;&lt; endl;
-// sin delete: nueva libera el objeto al final, una sola vez</pre>
+// sin delete: nueva libera el objeto, una sola vez</pre>
       <div class="term t18 gap10">7
 ultima: vacio</div>
       <p class="cap">Y si se intenta tener dos dueños:</p>
@@ -685,33 +693,32 @@ ultima: vacio</div>
 
 <section class="slide" data-title="Validar en el constructor">
   <h2 class="mask"><span>Un objeto inválido no llega a existir</span></h2>
-  <div class="g2" style="grid-template-columns:620px minmax(0,1fr);margin-top:16px">
+  <div class="g2" style="grid-template-columns:640px minmax(0,1fr);margin-top:16px">
     <div data-a>
       <pre class="code c18">class Pin {
-private:
-    string valor;
+    string valor;                // private por omision
 public:
     explicit Pin(const string&amp; v) {
         if (v.size() &lt; 4 || v.size() &gt; 6)
-            throw invalid_argument("lleva de 4 a 6 digitos");
+            throw invalid_argument("de 4 a 6 digitos");
         for (char c : v)
             if (c &lt; '0' || c &gt; '9')
-                throw invalid_argument("solo lleva digitos");
-        valor = v;                // solo llega aqui si es valido
+                throw invalid_argument("solo digitos");
+        valor = v;      // solo llega aqui si es valido
     }
 };</pre>
-      <p class="cap">Con las pruebas <code>"2580"</code>, <code>"12"</code>, <code>"25a0"</code> y <code>"1234567"</code>:</p>
-      <div class="term t18">Prueba 1: aceptado
-Prueba 2: rechazado, lleva de 4 a 6 digitos
-Prueba 3: rechazado, solo lleva digitos
-Prueba 4: rechazado, lleva de 4 a 6 digitos</div>
     </div>
     <div data-a>
       <label class="t20" for="pn-in" style="font-weight:600;display:block">Pruebe un PIN para el constructor</label>
       <input class="field gap10" id="pn-in" value="25a0" maxlength="12" style="width:260px">
-      <div id="pn-r" class="gap14" style="display:flex;flex-direction:column;gap:8px"></div>
-      <div class="dato gap14"><small>Pin p(…);</small><b id="pn-o"></b></div>
-      <p class="t20 gap10">Si el constructor lanza la excepción, el objeto nunca se crea. Ninguna otra función de la clase tiene que preguntarse si el PIN es válido.</p>
+      <div id="pn-r" class="gap10" style="display:flex;flex-direction:column;gap:6px"></div>
+      <div class="dato gap10"><small>Pin p(…);</small><b id="pn-o"></b></div>
+      <p class="cap">Con <code>"2580"</code>, <code>"12"</code>, <code>"25a0"</code> y <code>"1234567"</code>:</p>
+      <div class="term t18">Prueba 1: aceptado
+Prueba 2: rechazado, de 4 a 6 digitos
+Prueba 3: rechazado, solo digitos
+Prueba 4: rechazado, de 4 a 6 digitos</div>
+      <p class="t20 gap10">Si el constructor lanza, el objeto nunca existe: ninguna otra función tiene que dudar del PIN.</p>
     </div>
   </div>
 </section>
@@ -720,22 +727,26 @@ Prueba 4: rechazado, lleva de 4 a 6 digitos</div>
   <h2 class="mask"><span>No preste la llave: devuelva const&amp; o una copia</span></h2>
   <div data-tabs="ex1" data-a style="margin-top:18px">
     <div class="row tabsrow"><button data-tab="ex1">vector&lt;string&gt;&amp;</button><button data-tab="ex2">const vector&lt;string&gt;&amp;</button><button data-tab="ex3">vector&lt;string&gt; (copia)</button></div>
-    <div class="g2" style="grid-template-columns:640px minmax(0,1fr);margin-top:16px">
+    <div class="g2" style="grid-template-columns:680px minmax(0,1fr);margin-top:16px">
       <div data-panel="ex1"><pre class="code c18">// en la clase:
-vector&lt;string&gt;&amp; bitacoraMal() { return bitacora; }   // MAL
+vector&lt;string&gt;&amp; bitacoraMal() { return bitacora; }  // MAL
 
 // en main:
 c.bitacoraMal().clear();            // borra las huellas
 cout &lt;&lt; c.verBitacora().size() &lt;&lt; " entradas" &lt;&lt; endl;</pre><div class="term t19 gap10">0 entradas</div></div>
       <div data-panel="ex1"><p class="lead" style="font-size:27px">Devuelve el vector original.</p><p class="t21 gap14">La bitácora es <code>private</code>, pero esta función entrega una referencia a ella: quien la reciba la puede vaciar. Es dejar la puerta cerrada y la llave pegada en la cerradura.</p></div>
       <div data-panel="ex2" hidden><pre class="code c18">// en la clase:
-const vector&lt;string&gt;&amp; verBitacora() const { return bitacora; }
+const vector&lt;string&gt;&amp; verBitacora() const {
+    return bitacora;
+}
 
 // en main:
 c.verBitacora().clear();</pre><div class="term t18 gap10" style="white-space:pre-wrap"><span class="e">error: passing 'const std::vector&lt;std::__cxx11::basic_string&lt;char&gt; &gt;' as 'this' argument discards qualifiers [-fpermissive]</span></div></div>
       <div data-panel="ex2" hidden><p class="lead" style="font-size:27px">Se puede mirar, no tocar.</p><p class="t21 gap14">Sin copiar nada, el compilador rechaza cualquier intento de cambiarla. El mensaje dice que <code>clear()</code> no es <code>const</code> y el vector sí lo es.</p></div>
       <div data-panel="ex3" hidden><pre class="code c18">// en la clase:
-vector&lt;string&gt; copiaBitacora() const { return bitacora; }
+vector&lt;string&gt; copiaBitacora() const {
+    return bitacora;
+}
 
 // en main:
 vector&lt;string&gt; v = c.copiaBitacora();
@@ -772,7 +783,7 @@ cout &lt;&lt; c.verBitacora().size() &lt;&lt; " entradas" &lt;&lt; endl;</pre><d
 
 <section class="slide" data-title="Errores sin filtrar información">
   <h2 class="mask"><span>Un mensaje de error no da pistas</span></h2>
-  <div style="display:grid;grid-template-columns:560px minmax(0,1fr);gap:28px;margin-top:16px">
+  <div style="display:grid;grid-template-columns:540px minmax(0,1fr);gap:26px;margin-top:16px">
     <div data-a>
       <p class="t20" style="font-weight:600">En cada par, ¿cuál mensaje le mostraría al público?</p>
       <div class="pares gap10" id="ms-p"></div>
@@ -780,8 +791,9 @@ cout &lt;&lt; c.verBitacora().size() &lt;&lt; " entradas" &lt;&lt; endl;</pre><d
     </div>
     <div data-a>
       <pre class="code c18">if (it == usuarios.end() || it-&gt;second != pin) {
-    cerr &lt;&lt; "[interno] fallo de acceso: " &lt;&lt; usuario &lt;&lt; endl;
-    cout &lt;&lt; "Usuario o PIN incorrecto" &lt;&lt; endl;
+    cerr &lt;&lt; "[interno] fallo de acceso: "
+         &lt;&lt; usuario &lt;&lt; endl;            // para el tecnico
+    cout &lt;&lt; "Usuario o PIN incorrecto" &lt;&lt; endl;  // publico
     return false;
 }</pre>
       <p class="cap">Lo que ve el usuario (cout), con un PIN malo y un usuario que no existe:</p>
@@ -796,11 +808,12 @@ Usuario o PIN incorrecto</div>
 
 <section class="slide" data-title="Los avisos del compilador como errores">
   <h2 class="mask"><span>-Werror: ningún aviso se queda sin atender</span></h2>
-  <div class="g2" style="grid-template-columns:540px minmax(0,1fr);margin-top:16px">
+  <div class="g2" style="grid-template-columns:600px minmax(0,1fr);gap:26px;margin-top:16px">
     <div data-a>
       <p class="cap">avisos.cpp</p>
       <pre class="code c18 nums" style="counter-reset:ln 7">int main() {
-    vector&lt;string&gt; bitacora = {"Puerta abierta", "PIN incorrecto"};
+    vector&lt;string&gt; bitacora = {"Puerta abierta",
+                               "PIN incorrecto"};
     for (int i = 0; i &lt; bitacora.size(); i++)
         cout &lt;&lt; bitacora[i] &lt;&lt; endl;
     int intentos;
@@ -886,7 +899,8 @@ cc1plus: all warnings being treated as errors</span></div>
   <div class="ruta gap10" data-a><span>Parte 1 → Caso 2</span><span>Parte 2 → Caso 3</span><span>Partes 3 y 4 → Caso 1</span><span>Parte 5 → Casos 4 y 5</span></div>
   <div class="row gap10" data-a style="gap:14px;align-items:stretch;flex-wrap:nowrap">
     <a class="dl" href="laboratorios/LabN_Cerradura.cpp" download>Descargar LabN_Cerradura.cpp</a>
-    <pre class="code c18" data-raw style="flex:1;padding:6px 0;font-size:18px"><span class="ln">g++ -std=c++17 -Wall -Wextra -o cerradura LabN_Cerradura.cpp</span><span class="ln">g++ -std=c++17 -Wall -Wextra -g -fsanitize=address,undefined -o cerradura LabN_Cerradura.cpp</span></pre>
+    <div class="term t18 cmd" style="flex:1;padding:8px 14px">$ g++ -std=c++17 -Wall -Wextra -o cerradura LabN_Cerradura.cpp
+$ g++ -std=c++17 -Wall -Wextra -g -fsanitize=address,undefined -o cerradura LabN_Cerradura.cpp</div>
   </div>
   <p class="small" data-a style="margin-top:8px;font-size:18px">La segunda línea es para el Caso 2: con la entrada larga, su programa corregido no debe mostrar ningún mensaje de AddressSanitizer. El código base compila desde el principio; el aviso <code>unused parameter</code> desaparece al completar la parte 1.</p>
 </section>
@@ -1176,7 +1190,7 @@ Deck.steps.uaf=[
 function pnDraw(){var v=$('pn-in').value,largo=v.length>=4&&v.length<=6,dig=/^[0-9]*$/.test(v)&&v.length>0;
   var r=[['De 4 a 6 caracteres ('+v.length+')',largo],['Solo dígitos',dig]];
   $('pn-r').innerHTML=r.map(function(x){return '<div class="dato" style="padding:8px 14px"><b class="'+(x[1]?'bien':'mal')+'" style="font:600 20px var(--sans);margin:0">'+(x[1]?'✓ ':'✗ ')+esc(x[0])+'</b></div>'}).join('');
-  var o=$('pn-o');if(!largo){o.textContent='lanza invalid_argument: lleva de 4 a 6 digitos';o.className='mal'}else if(!dig){o.textContent='lanza invalid_argument: solo lleva digitos';o.className='mal'}else{o.textContent='se construye: el objeto existe y es válido';o.className='bien'}}
+  var o=$('pn-o');if(!largo){o.textContent='lanza invalid_argument: de 4 a 6 digitos';o.className='mal'}else if(!dig){o.textContent='lanza invalid_argument: solo digitos';o.className='mal'}else{o.textContent='se construye: el objeto existe y es válido';o.className='bien'}}
 $('pn-in').addEventListener('input',pnDraw);pnDraw();
 
 /* hash */

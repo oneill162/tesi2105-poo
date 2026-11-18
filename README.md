@@ -18,6 +18,7 @@ Página del curso: https://oneill162.github.io/tesi2105-poo/
 | `unidadF.html` | Unidad F: Arreglos y cadenas de caracteres (presentación interactiva con el Laboratorio F integrado) |
 | `unidadG.html` | Unidad G: Estructuras y uniones (presentación interactiva con el Laboratorio G integrado) |
 | `unidadH.html` | Unidad H: Clases y objetos (presentación interactiva con el Laboratorio H integrado) |
+| `unidadO.html` | Unidad O: Tecnologías emergentes y ética en POO (presentación interactiva con la actividad de auditoría ética) |
 | `ejemplos/` | Programas completos de los ejemplos de las presentaciones, verificados con g++ |
 | `assets/deck.css`, `assets/deck.js` | Motor común de las presentaciones: escala, transiciones, barra de navegación, índice, temporizador, paso a paso |
 | `assets/fonts/` | Schibsted Grotesk y JetBrains Mono (licencia SIL OFL), incluidas para no depender de servicios externos |

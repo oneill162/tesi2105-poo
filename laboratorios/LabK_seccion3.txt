@@ -1,0 +1,7 @@
+numero,nombre,nota1,nota2,nota3
+40125,Gabriel Ortiz,80,85,90
+
+,Valeria Rios,90,91,92
+40388,Diego Marrero,70,75,80,85
+40412,Natalia Burgos,-5,60,70
+40550,Ivan Morales,100,95,98

@@ -1,0 +1,1132 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unidad I: Herencia y polimorfismo · TESI 2105</title>
+<meta name="description" content="TESI 2105 Programación Orientada a Objetos. Unidad I: herencia y polimorfismo en C++, contados con la estación de peaje de la autopista. Incluye el Laboratorio I.">
+<link rel="preload" href="assets/fonts/schibsted-grotesk-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* Tema de la Unidad I: la estación de peaje de la autopista.
+   Verde de rótulo de autopista, asfalto, la raya amarilla del carril y la pantalla ámbar de la caseta.
+   Cada vehículo «es un» Vehiculo; la caseta cobra sin preguntar qué clase de vehículo llega. */
+:root{--ground:#F2F4F0;--tone:#E2E7E1;--tone2:#CBD4CB;--ink:#14201A;--soft:#46564C;--accent:#0B6B3A;--field:#1E2925;--field-ink:#F3F7F2;--hi:#FFC425;--code-bg:#15201B;--code-ink:#E7EFE9;--c-kw:#8FE3B0;--c-str:#FFD38A;--c-num:#FFE58F;--c-cmt:#9DB0A4;--asfalto:#39433E;--led:#FFB000;--led-bg:#0B0E0C;--rojo:#C0352B;--si:#0B6B3A;--no:#B3261E;--papel:#FFFFFD}
+[hidden]{display:none!important}
+pre.code .ln.cur{background:rgba(255,196,37,.24)}
+.term{background:#0F1713}
+#map{gap:2px}
+#map button{width:12px}
+#map button.ch{width:16px;box-shadow:inset 0 0 0 3px #7FC79C;background:transparent}
+#map button.ch.seen{background:#7FC79C}
+#map button.cur,#map button.ch.cur{background:var(--hi);box-shadow:none}
+
+/* código en tres tamaños */
+pre.c18{font-size:18px;line-height:1.5;padding:12px 0}
+pre.c18 .ln{padding:0 18px}
+pre.c19{font-size:19px;line-height:1.5;padding:12px 0}
+pre.c19 .ln{padding:0 20px}
+pre.c21{font-size:21px;line-height:1.55;padding:14px 0}
+pre.code .ln.err{background:rgba(255,138,128,.22)}
+.term.t18{font-size:18px;line-height:1.45;padding:12px 16px;min-height:0}
+.term.espera:empty::before{content:"Aquí sale lo que imprime el programa";color:#8DA195;font-family:var(--sans)}
+.gap8{margin-top:8px}.gap12{margin-top:12px}.gap16{margin-top:16px}.gap20{margin-top:20px}
+pre.code.gap8{margin-top:8px}pre.code.gap12{margin-top:12px}pre.code.gap16{margin-top:16px}
+.cap{font-size:19px;line-height:1.3;font-weight:600;color:var(--soft);margin:0 0 6px}
+.cap code{font-size:18px}
+.field-hi button:focus-visible,.field-hi a:focus-visible{outline-color:var(--ink)}
+.msg{background:var(--tone);padding:12px 16px;font-size:20px;line-height:1.4;min-height:56px}
+.msg code{font-size:18px}
+.vt{color:var(--c-kw)}
+.ops{display:flex;flex-wrap:wrap;gap:8px}
+.ops button{font:600 19px var(--sans);padding:10px 13px}
+.ops.cod button{font-family:var(--mono);font-size:18px}
+.lbl{font-size:19px;font-weight:600;color:var(--soft)}
+.lbl code{font-size:18px}
+.obj .dos{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.obj .dos .capa{margin:8px 4px}
+
+/* capítulos */
+.chwrap{display:grid;grid-template-columns:minmax(0,1fr) 480px;gap:44px;height:100%}
+.chwrap .left{display:flex;flex-direction:column;min-width:0}
+.chapter h1{font-size:84px}
+.chapter h1.largo{font-size:60px;line-height:1}
+.chapter .ext{display:flex;flex-wrap:wrap;gap:12px 15px;margin-top:auto;font-size:18px;font-weight:700}
+.chapter .ext span{opacity:.5;white-space:nowrap}
+.chapter .ext span.on{opacity:1}
+.chapter .ext span.on::after{content:"";display:block;height:5px;background:var(--hi);margin-top:6px}
+.chapter .derecha{align-self:center;display:flex;flex-direction:column;gap:16px}
+.chapter pre.code{background:rgba(0,0,0,.28)}
+
+/* la plaza de peaje */
+.plaza{position:relative;background:linear-gradient(#2B3833 0 70%,#24302B 70%);overflow:hidden}
+.plaza svg{display:block;width:100%;height:auto}
+.pz-veh{transition:transform 1.05s cubic-bezier(.33,.7,.3,1)}
+.pz-arm{transform-box:view-box;transform-origin:506px 226px;transition:transform .45s var(--ease-out)}
+.pz-arm.up{transform:rotate(-78deg)}
+.pz-win{transition:fill .3s}
+.pz-win.on{fill:var(--led)}
+.pantalla{background:var(--led-bg);color:var(--led);font-family:var(--mono);padding:10px 16px;border-top:6px solid var(--accent);min-height:96px}
+.pantalla .p1{display:block;font:600 21px/1.3 var(--mono)}
+.pantalla .p2{display:flex;align-items:baseline;gap:16px;margin-top:4px}
+.pantalla .p2 b{font:600 36px/1 var(--mono)}
+.pantalla .p2 span{font:400 19px var(--mono);color:#FFD27A}
+.chapter .pantalla{border-top-color:var(--hi)}
+.botones{display:flex;flex-wrap:wrap;gap:8px}
+.botones button{font:600 18px var(--mono);padding:10px 12px;background:var(--field-ink);color:var(--ink)}
+.botones button:hover,.botones button[aria-pressed=true]{background:var(--hi);color:var(--ink)}
+.tarifas{display:grid;grid-template-columns:repeat(4,auto);gap:4px 16px;font-size:18px;font-weight:600;justify-content:start}
+.tarifas b{font-family:var(--mono);color:var(--hi)}
+
+/* tarjetas de clase (como un diagrama de clases) */
+.cls{background:var(--papel);border:3px solid var(--ink);font-family:var(--mono);min-width:0}
+.cls .ch{font:700 19px var(--mono);padding:6px 10px;background:var(--ink);color:#fff;display:flex;justify-content:space-between;gap:8px;white-space:nowrap}
+.cls .ch small{font:600 18px var(--mono);color:#9FD8B5}
+.cls .cm{padding:5px 10px 7px}
+.cls .cm div{font:600 18px/1.5 var(--mono);white-space:nowrap;transition:background .25s,color .25s}
+.cls .cm div.rep{color:var(--no)}
+.cls .cm div.rep::after{content:" ×";font-weight:800}
+.cls .cm div.lit{background:var(--hi);color:var(--ink)}
+.cls.base{border-color:var(--accent)}
+.cls.base .ch{background:var(--accent)}
+.cls.lit{outline:5px solid var(--hi)}
+.cls.fila1 .cm{display:flex;gap:22px;flex-wrap:wrap}
+.cuatro{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.flecha{text-align:center;font:700 20px var(--mono);color:var(--accent)}
+.cuenta{display:flex;gap:12px;flex-wrap:wrap}
+.cuenta div{background:#fff;padding:10px 16px}
+.cuenta small{display:block;font-size:18px;color:var(--soft);font-weight:600}
+.cuenta b{font:700 30px var(--mono);color:var(--accent)}
+
+/* objeto por capas */
+.obj{background:var(--papel);border:3px solid var(--ink);font-family:var(--mono)}
+.obj .oh{font:700 20px var(--mono);background:var(--ink);color:#fff;padding:6px 12px}
+.obj .capa{margin:8px;border:3px dashed var(--soft);padding:4px 10px 6px}
+.obj .capa.b{border-color:var(--accent)}
+.obj .capa .ct{font:700 18px var(--sans);color:var(--soft)}
+.obj .capa.b .ct{color:var(--accent)}
+.obj .fl{display:grid;grid-template-columns:120px 1fr;font:600 19px/1.6 var(--mono);transition:background .25s}
+.obj .fl b{font-weight:700}
+.obj .fl.lit,.obj .capa.lit{background:var(--hi)}
+.obj .capa.mal{border-color:var(--no);background:rgba(179,38,30,.08)}
+.obj .capa.mal .ct{color:var(--no)}
+
+/* es un / tiene un */
+.sort{display:grid;grid-template-columns:330px repeat(3,auto) 50px;gap:8px 8px;align-items:center}
+.sort .par{font:700 21px var(--sans)}
+.sort button{font:600 18px var(--sans);padding:8px 12px}
+.sort .ver{font:800 26px var(--sans);text-align:center}
+.sort .ver.si{color:var(--si)}.sort .ver.no{color:var(--no)}
+
+/* diagrama de clases con flechas */
+.diag{position:relative}
+.diag svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.diag svg path{stroke:var(--ink);stroke-width:3;fill:none;transition:stroke .25s}
+.diag svg path.lit{stroke:#D99A00;stroke-width:6}
+
+/* matriz de acceso */
+.acceso{display:grid;grid-template-columns:auto auto;gap:10px 16px;align-items:center}
+.acceso .row button{font:600 18px var(--mono);padding:9px 12px}
+.semaforo{display:inline-block;font:800 21px var(--sans);padding:6px 12px;color:#fff}
+.semaforo.si{background:var(--si)}.semaforo.no{background:var(--no)}
+table.t.hr td,table.t.hr th{padding:7px 12px;font-size:19px}
+table.t.hr td:first-child{font-family:var(--mono);font-size:18px}
+.si-t{color:var(--si);font-weight:700}.no-t{color:var(--no);font-weight:700}
+
+/* construcción por capas */
+.armado{display:flex;flex-direction:column-reverse;gap:6px;min-height:150px;justify-content:flex-start}
+.armado .pz{padding:10px 14px;font:700 20px var(--mono);color:#fff}
+.armado .pz small{display:block;font:600 18px var(--sans);opacity:.9}
+.armado .pz.b{background:var(--accent)}
+.armado .pz.d{background:#2F6FB0}
+
+/* chips de la fila */
+.fila{display:flex;gap:6px;flex-wrap:wrap}
+.fila .chip{background:#fff;padding:5px 9px;font:600 18px var(--mono);border-left:6px solid var(--tone2);transition:opacity .3s}
+.fila .chip small{display:block;font:600 18px var(--sans);color:var(--soft)}
+.fila .chip.cur{border-left-color:var(--hi);background:#FFF6D6}
+.fila .chip.ido{opacity:.38}
+.total{font:800 30px var(--mono);color:var(--accent)}
+
+/* memoria */
+.heap{display:flex;gap:6px;align-items:stretch}
+.heap .bl{flex:1;padding:10px 12px;font:600 18px var(--mono);color:#fff;background:var(--accent);transition:background .4s}
+.heap .bl.libre{background:transparent;color:var(--soft);box-shadow:inset 0 0 0 2px var(--tone2)}
+.heap .bl.perdida{background:var(--no)}
+
+/* interruptor */
+.interruptor{display:flex;gap:0}
+.interruptor button{font:600 19px var(--mono);padding:10px 14px}
+
+/* discusiones, repaso */
+.field-hi .q{font-size:56px;line-height:1.05;letter-spacing:-.03em;font-weight:800;max-width:1110px}
+.field-hi .q code{font-size:.8em;white-space:normal}
+.field-hi .timer{flex-direction:column;align-items:flex-start;gap:8px;margin-top:0}
+.field-hi .timer .row{margin-bottom:0}
+.prop2{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch}
+.prop2>div{background:var(--ink);color:#fff;padding:16px 22px;min-height:126px;transition:opacity .3s}
+.prop2>div.ok{background:var(--accent)}
+.prop2 b{display:block;font:700 24px var(--sans)}
+.prop2 b code{white-space:nowrap;font-size:21px}
+.prop2 span{display:block;font-size:21px;line-height:1.35;margin-top:6px}
+.prop2 .pbtn{margin-top:10px;background:#fff;color:var(--ink);font-size:18px;padding:8px 12px}
+.prop2 .reveal{display:none}
+.prop2.shown .reveal{display:block}
+.prop2>div.resp{grid-column:1/3;min-height:0;background:var(--field);font-size:21px;line-height:1.4;padding:14px 22px}
+.prop2.shown>div:first-child{opacity:.55}
+.discrow{position:absolute;left:72px;right:72px;bottom:32px}
+.dir{display:grid;grid-template-columns:repeat(3,1fr);gap:22px 36px;margin-top:26px}
+.dir h3{font-size:25px;color:var(--accent)}
+.dir p{font-size:21px;line-height:1.4;margin-top:6px}
+
+/* laboratorio */
+a.dl{display:inline-block;background:var(--accent);color:#fff;font-weight:600;font-size:20px;padding:12px 18px;text-decoration:none}
+a.dl:hover{background:var(--ink)}
+.todo{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 24px}
+.todo li{background:#fff;padding:8px 14px;font-size:19px;line-height:1.32;display:grid;grid-template-columns:38px 1fr;align-items:baseline}
+.todo li b.nm{font:800 26px var(--sans);color:var(--accent)}
+.todo code{font-size:18px;white-space:normal;font-weight:600}
+.ruta{display:flex;gap:8px;flex-wrap:wrap;font-size:18px;font-weight:600}
+.ruta span{background:var(--tone2);padding:6px 10px}
+.cases [data-tab]{font:600 18px var(--sans);padding:9px 14px}
+.cases [data-tab].pass::after{content:" ✓";color:#2E9E5B}
+.cases .ct{font-size:24px;line-height:1.2}
+.cases .cc{display:grid;grid-template-columns:200px 1fr;gap:16px;margin-top:10px;align-items:start}
+.cases .cl{font-size:18px;line-height:1.3;font-weight:600}
+.cases .cl.nota{font-weight:400;color:var(--soft);margin-top:6px}
+.cases [data-panel] .term{font-size:18px;line-height:1.35;white-space:pre-wrap;padding:10px 14px;margin-top:6px}
+.typein{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:5px}
+.typein li{display:flex;gap:5px;flex-wrap:wrap;background:var(--tone);padding:5px 8px}
+.typein kbd{font:600 18px/1.25 var(--mono);background:#fff;padding:2px 7px;border-bottom:3px solid var(--tone2)}
+textarea.paste{width:100%;height:118px;font:500 16px/1.4 var(--mono);padding:10px 12px;border:0;background:#fff;color:var(--ink);resize:none;display:block}
+.checks{list-style:none;margin:8px 0 0;padding:0;font-size:18px;line-height:1.4;max-height:214px;overflow:auto}
+.checks li{overflow-wrap:anywhere}
+.checks li.ok{color:#0B6B47}.checks li.ok::before{content:"✓  "}
+.checks li.no{color:#B3261E}.checks li.no::before{content:"✗  "}
+.score{font:800 34px var(--sans)}
+.rub td:last-child,.rub th:last-child{text-align:right;width:100px}
+.rub td{padding:7px 16px!important;font-size:20px}
+.rub th{padding:8px 16px!important;font-size:20px}
+.rub td code{font-size:18px}
+
+@media (prefers-reduced-motion:reduce){
+  .pz-veh,.pz-arm,.pz-win{transition:none!important}
+}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage" data-name="Unidad I · Herencia y polimorfismo" role="region" aria-roledescription="presentación" aria-label="Unidad I: Herencia y polimorfismo">
+
+<!-- PORTADA -->
+<section class="slide chapter" data-title="Portada">
+  <div class="chwrap">
+    <div class="left">
+      <h1 class="mask"><span>Herencia y polimorfismo</span></h1>
+      <p class="lead" data-a style="margin-top:22px;max-width:560px;font-size:29px">En la caseta de peaje pasan autos, motoras, camiones y guaguas. Cada uno <b>es un</b> vehículo, y la caseta cobra sin preguntar cuál llegó.</p>
+      <div class="ext" data-a><span class="on">Herencia</span><span class="on">Base y derivadas</span><span class="on">Virtuales</span><span class="on">Abstractas</span><span class="on">Laboratorio</span></div>
+      <p class="body" data-a style="margin-top:18px;font-size:20px">TESI 2105, Unidad I<br>Prof. Eduardo O. De Jesús Arroyo · ITPR, Recinto de Manatí</p>
+    </div>
+    <div class="derecha" data-a>
+      <div id="pt-plaza"></div>
+      <div class="pantalla" id="pt-pan" aria-live="polite"></div>
+      <div class="botones" id="pt-b"><button data-v="auto">new Auto</button><button data-v="motora">new Motora</button><button data-v="camion">new Camion</button><button data-v="guagua">new Guagua</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Cuatro clases que se repiten">
+  <h2 class="mask"><span>Cuatro clases que repiten lo mismo</span></h2>
+  <p class="body sub" data-a style="max-width:1120px">Todos los vehículos tienen tablilla y la caseta la lee igual. Sin herencia, eso se escribe cuatro veces. Cambie de vista.</p>
+  <div class="row interruptor" data-a style="margin-top:16px" id="rp-b"><button data-m="sin">Sin herencia</button><button data-m="con">Con herencia</button></div>
+  <div data-a style="margin-top:14px;min-height:262px">
+    <div id="rp-base" hidden></div>
+    <div class="cuatro" id="rp-cls"></div>
+  </div>
+  <div class="row" data-a style="gap:18px;align-items:stretch;margin-top:4px">
+    <div class="cuenta"><div><small>tablilla se escribe</small><b id="rp-n1"></b></div><div><small>obtenerTablilla() se escribe</small><b id="rp-n2"></b></div></div>
+    <p class="msg" id="rp-msg" style="flex:1;font-size:20px" aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- TEMA 1 -->
+<section class="slide chapter" data-title="Tema 1: Concepto de herencia (simple y múltiple)" data-topic="1">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask largo"><span>Concepto de herencia (simple y múltiple)</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:620px">Una clase nueva recibe todo lo de otra y le añade lo suyo. Un camión es un vehículo, con ejes.</p>
+    <div class="ext" data-a></div></div>
+    <div class="derecha" data-a>
+      <pre class="code c21">class Camion : public Vehiculo {
+    int ejes;
+};</pre>
+      <div id="t1-veh"></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Herencia simple: es un">
+  <h2 class="mask"><span>class Derivada : public Base</span></h2>
+  <div style="display:grid;grid-template-columns:680px 1fr;gap:28px;margin-top:20px">
+    <div data-a>
+      <pre class="code c18" id="hs-code">class Vehiculo {
+public:
+    string tablilla;
+    void describir() const {
+        cout &lt;&lt; "Vehiculo " &lt;&lt; tablilla &lt;&lt; endl;
+    }
+};
+class Camion : public Vehiculo {   // Camion es un Vehiculo
+public:
+    int ejes = 2;
+};
+int main() {
+    Camion c;
+    c.tablilla = "TRK-450";   // heredado de Vehiculo
+    c.ejes = 3;               // propio de Camion
+    c.describir();            // heredado de Vehiculo
+    cout &lt;&lt; "Ejes: " &lt;&lt; c.ejes &lt;&lt; endl;
+}</pre>
+    </div>
+    <div data-a>
+      <div class="ops cod" id="hs-b"><button data-x="t">c.tablilla</button><button data-x="e">c.ejes</button><button data-x="d">c.describir()</button></div>
+      <div class="obj gap12"><div class="oh">Camion c</div>
+        <div class="capa b" id="hs-cb"><div class="ct">parte heredada de Vehiculo</div><div class="fl" id="hs-ft"><span>tablilla</span><b>"TRK-450"</b></div><div class="fl" id="hs-fd"><span>describir()</span><b></b></div></div>
+        <div class="capa" id="hs-cd"><div class="ct">parte propia de Camion</div><div class="fl" id="hs-fe"><span>ejes</span><b>3</b></div></div>
+      </div>
+      <p class="msg gap12" id="hs-msg" aria-live="polite"></p>
+      <div class="term t18 gap12">Vehiculo TRK-450
+Ejes: 3</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="¿Es un o tiene un?">
+  <h2 class="mask"><span>¿Es un o tiene un?</span></h2>
+  <p class="body sub" data-a style="max-width:1120px">La herencia sirve solo cuando la frase «A es un B» es cierta. Si A <b>tiene</b> un B, B va como miembro. Escoja para cada pareja.</p>
+  <div class="sort gap16" data-a id="so"></div>
+  <div class="msg gap16" data-a id="so-msg" aria-live="polite" style="min-height:88px"></div>
+</section>
+
+<section class="slide" data-title="Herencia múltiple">
+  <h2 class="mask"><span>Herencia múltiple: dos clases base</span></h2>
+  <div style="display:grid;grid-template-columns:660px 1fr;gap:30px;margin-top:20px">
+    <div data-a>
+      <pre class="code c18" id="hm-code">class Vehiculo  { public: string tablilla; };
+class Electrico { public: int carga = 100; };
+class AutoElectrico : public Vehiculo, public Electrico {
+};
+int main() {
+    AutoElectrico a;
+    a.tablilla = "EVC-202";   // de Vehiculo
+    a.carga = 64;             // de Electrico
+    cout &lt;&lt; a.tablilla &lt;&lt; " con " &lt;&lt; a.carga
+         &lt;&lt; "% de bateria" &lt;&lt; endl;
+}</pre>
+      <div class="term t18 gap12">EVC-202 con 64% de bateria</div>
+      <p class="body gap16" style="font-size:21px">La lista de bases va separada por comas, cada una con su <code>public</code>. El objeto tiene una parte de cada base, más la suya.</p>
+    </div>
+    <div data-a>
+      <div class="diag" id="hm-d" style="height:250px;width:440px">
+        <svg viewBox="0 0 440 250" aria-hidden="true"><path id="hm-p1" d="M100,78 L100,120 L220,120 L220,166"/><path id="hm-p2" d="M340,78 L340,120 L220,120 L220,166"/></svg>
+        <div class="cls base" id="hm-v" style="position:absolute;left:0;top:0;width:200px"><div class="ch">Vehiculo</div><div class="cm"><div>tablilla</div></div></div>
+        <div class="cls base" id="hm-e" style="position:absolute;left:240px;top:0;width:200px"><div class="ch">Electrico</div><div class="cm"><div>carga</div></div></div>
+        <div class="cls" id="hm-a" style="position:absolute;left:90px;top:166px;width:260px"><div class="ch">AutoElectrico</div><div class="cm"><div>(lo de las dos)</div></div></div>
+      </div>
+      <div class="ops cod gap12" id="hm-b"><button data-x="v">a.tablilla</button><button data-x="e">a.carga</button></div>
+      <p class="msg gap12" id="hm-msg" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="El problema del diamante">
+  <h2 class="mask"><span>El diamante: dos caminos a Vehiculo</span></h2>
+  <div style="display:grid;grid-template-columns:640px 1fr;gap:30px;margin-top:18px">
+    <div data-a>
+      <div class="row interruptor" id="dm-b"><button data-m="sin">Sin virtual</button><button data-m="con">Con virtual</button></div>
+      <pre class="code c18 gap12" id="dm-code"></pre>
+    </div>
+    <div data-a>
+      <div class="obj" id="dm-obj"></div>
+      <div class="term t18 gap12" id="dm-out" style="min-height:62px"></div>
+      <p class="msg gap12" id="dm-msg" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<!-- TEMA 2 -->
+<section class="slide chapter" data-title="Tema 2: Clases base y clases derivadas" data-topic="2">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask largo"><span>Clases base y clases derivadas</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:620px">Qué recibe la derivada, qué puede tocar, y en qué orden se arma y se desarma un objeto que tiene dos partes.</p>
+    <div class="ext" data-a></div></div>
+    <div class="derecha" data-a>
+      <pre class="code c21">Camion(const string&amp; t, int e)
+    : Vehiculo(t), ejes(e) {}</pre>
+      <div id="t2-veh"></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Qué se hereda y protected">
+  <h2 class="mask"><span>public, protected y private en la derivada</span></h2>
+  <div style="display:grid;grid-template-columns:640px 1fr;gap:30px;margin-top:18px">
+    <div data-a>
+      <div class="acceso">
+        <span class="lbl">En Vehiculo</span><div class="row" id="ac-a"><button data-a2="public">public</button><button data-a2="protected">protected</button><button data-a2="private">private</button></div>
+        <span class="lbl">Se usa</span><div class="row" id="ac-w"><button data-w="d">solo en Auto</button><button data-w="m">en Auto y en main</button></div>
+      </div>
+      <pre class="code c18 gap12" id="ac-code"></pre>
+    </div>
+    <div data-a>
+      <p><span class="semaforo" id="ac-sem"></span></p>
+      <div class="term t18 gap8" id="ac-out" style="min-height:88px"></div>
+      <table class="t hr gap16">
+        <tr><th>De la base</th><th>¿Se hereda?</th></tr>
+        <tr><td>datos y funciones</td><td><span class="si-t">Sí</span>, también los private: están en el objeto, pero no se pueden tocar</td></tr>
+        <tr><td>constructores</td><td><span class="no-t">No</span>: se llaman desde la derivada</td></tr>
+        <tr><td>destructor, operator=, friend</td><td><span class="no-t">No</span></td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="El constructor de la base">
+  <h2 class="mask"><span>Llamar al constructor de la base</span></h2>
+  <div data-tabs="cb1" data-a style="margin-top:18px">
+    <div class="row"><button data-tab="cb1">Sin llamarlo</button><button data-tab="cb2">En la lista de inicialización</button></div>
+    <div style="display:grid;grid-template-columns:640px 1fr;gap:30px;margin-top:16px">
+      <div data-panel="cb1"><pre class="code c18">class Vehiculo {
+protected:
+    string tablilla;
+public:
+    Vehiculo(const string&amp; t) : tablilla(t) {}
+};
+class Camion : public Vehiculo {
+    int ejes;
+public:
+    Camion(const string&amp; t, int e) {
+        tablilla = t;
+        ejes = e;
+    }
+};</pre></div>
+      <div data-panel="cb1"><div class="term t18"><span class="e">error: no matching function for call to 'Vehiculo::Vehiculo()'</span>
+<span class="p">note: candidate: 'Vehiculo::Vehiculo(const std::string&amp;)'
+note:   candidate expects 1 argument, 0 provided</span></div><p class="lead gap16" style="font-size:27px">Antes del cuerpo de <code>Camion</code>, C++ tiene que construir la parte <code>Vehiculo</code>.</p><p class="body sub" style="font-size:21px">Si no se dice cómo, busca <code>Vehiculo()</code> sin parámetros. Como no existe, g++ no compila. Asignar <code>tablilla = t</code> en el cuerpo llega tarde.</p></div>
+      <div data-panel="cb2" hidden><pre class="code c18">class Camion : public Vehiculo {
+    int ejes;
+public:
+    Camion(const string&amp; t, int e)
+        : Vehiculo(t), ejes(e) {
+    }
+};
+int main() {
+    Camion c("TRK-450", 3);
+}</pre></div>
+      <div data-panel="cb2" hidden><div class="term t18">(compila sin avisos)</div><p class="lead gap16" style="font-size:27px">En la lista de inicialización, primero la base y después los datos propios.</p><p class="body sub" style="font-size:21px"><code>Vehiculo(t)</code> le pasa la tablilla a quien la sabe guardar: el mismo constructor de la Unidad H, llamado desde la derivada. En el Laboratorio I, cada derivada lo hace así.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Orden de constructores y destructores">
+  <h2 class="mask"><span>Se arma desde la base</span></h2>
+  <div data-step="orden" style="display:grid;grid-template-columns:770px 1fr;gap:24px;margin-top:16px">
+    <div data-a>
+      <pre class="code c18" style="line-height:1.42">// en Vehiculo
+Vehiculo(const string&amp; t) : tablilla(t) {
+    cout &lt;&lt; "Vehiculo(" &lt;&lt; tablilla &lt;&lt; ")" &lt;&lt; endl;
+}
+~Vehiculo() { cout &lt;&lt; "~Vehiculo(" &lt;&lt; tablilla &lt;&lt; ")" &lt;&lt; endl; }
+// en Camion : public Vehiculo
+Camion(const string&amp; t, int e) : Vehiculo(t), ejes(e) {
+    cout &lt;&lt; "Camion(" &lt;&lt; ejes &lt;&lt; " ejes)" &lt;&lt; endl;
+}
+~Camion() { cout &lt;&lt; "~Camion(" &lt;&lt; ejes &lt;&lt; " ejes)" &lt;&lt; endl; }
+cout &lt;&lt; "Llega el camion" &lt;&lt; endl;
+{
+    Camion c("TRK-450", 3);
+    cout &lt;&lt; "Paga y cruza" &lt;&lt; endl;
+}
+cout &lt;&lt; "Se fue" &lt;&lt; endl;</pre>
+      <div class="row" style="margin-top:10px"><button class="go" data-s="next">Siguiente</button><button data-s="reset">Reiniciar</button><span class="stepn"></span></div>
+    </div>
+    <div class="ws" data-a>
+      <p class="lbl">El objeto c</p>
+      <div class="armado gap8" style="min-height:132px"><div class="pz b" data-id="pb" hidden><small>parte Vehiculo</small>"TRK-450"</div><div class="pz d" data-id="pd" hidden><small>parte Camion</small>ejes = 3</div></div>
+      <div class="msg gap8" data-id="msg" aria-live="polite" style="min-height:120px;font-size:19px">Pulse «Siguiente».</div>
+      <div class="term t18 gap8" data-id="out" style="min-height:120px;line-height:1.35"></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: ¿clase nueva o un bool?">
+  <p class="q mask"><span>¿Guagua escolar: otra clase derivada o un <code>bool escolar</code>?</span></p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:26px">Piensen en qué cambia entre las dos: ¿datos nuevos, conducta nueva, o solo un número?</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:56px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a data-rv-box><div><b><code>class GuaguaEscolar : public Guagua</code></b><span>otra clase, con su propia tarifa()</span></div><div class="ok"><b><code>bool escolar</code></b><span>un dato que cambia la tarifa</span><button data-rv="Ocultar" class="pbtn">Respuesta</button></div>
+  <div class="resp reveal">Aquí basta el bool: solo cambia el precio y el nombre. Una clase derivada se justifica cuando trae datos o conducta que la base no tiene, como los ejes del camión. Así lo hace el Laboratorio I.</div></div></div>
+</section>
+
+<!-- TEMA 3 -->
+<section class="slide chapter" data-title="Tema 3: Funciones virtuales y polimorfismo" data-topic="3">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask largo"><span>Funciones virtuales y polimorfismo</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:620px">La caseta solo ve un <code>Vehiculo*</code>. Con <code>virtual</code>, cada vehículo contesta con su propia tarifa.</p>
+    <div class="ext" data-a></div></div>
+    <div class="derecha" data-a>
+      <pre class="code c21">for (Vehiculo* v : fila)
+    total += v-&gt;tarifa();</pre>
+      <div class="pantalla"><span class="p1">TRK-450 · Camion de 3 ejes</span><span class="p2"><b>$3.75</b><span>Camion::tarifa()</span></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Redefinir o virtual">
+  <h2 class="mask"><span>Con un puntero a la base, virtual decide</span></h2>
+  <div style="display:grid;grid-template-columns:640px 1fr;gap:30px;margin-top:18px">
+    <div data-a>
+      <pre class="code c18" id="vi-code" style="line-height:1.45">class Vehiculo {
+public:
+    virtual double tarifa() const { return 1.50; }
+};
+class Camion : public Vehiculo {
+public:
+    double tarifa() const { return 3.75; }   // redefine
+};
+void cobrar(const Vehiculo&amp; v) {
+    cout &lt;&lt; "Cobro: $" &lt;&lt; v.tarifa() &lt;&lt; endl;
+}
+int main() {
+    cout &lt;&lt; fixed &lt;&lt; setprecision(2);
+    Camion c;  Vehiculo* p = &amp;c;
+    cout &lt;&lt; "c.tarifa():  " &lt;&lt; c.tarifa() &lt;&lt; endl;
+    cout &lt;&lt; "p-&gt;tarifa(): " &lt;&lt; p-&gt;tarifa() &lt;&lt; endl;
+    cobrar(c);
+}</pre>
+    </div>
+    <div data-a>
+      <div class="row interruptor" id="vi-b"><button data-m="sin">Sin virtual</button><button data-m="con">Con virtual</button></div>
+      <div class="term t18 gap12" id="vi-out" style="min-height:96px"></div>
+      <div class="pantalla gap12" id="vi-pan"></div>
+      <p class="msg gap12" id="vi-msg" aria-live="polite" style="min-height:150px"></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="La caseta polimórfica">
+  <h2 class="mask"><span>Una fila de Vehiculo*, un solo cobro</span></h2>
+  <div style="display:grid;grid-template-columns:625px 1fr;gap:24px;margin-top:16px">
+    <div data-a>
+      <pre class="code c18" id="fp-code" style="line-height:1.42">vector&lt;Vehiculo*&gt; fila = {
+    new Vehiculo("ABC-123"), new Camion("TRK-450", 3),
+    new Motora("MTR-077"),   new Camion("CRG-901", 5) };
+cout &lt;&lt; fixed &lt;&lt; setprecision(2);
+double total = 0;
+for (Vehiculo* v : fila) {     // no pregunta el tipo
+    cout &lt;&lt; v-&gt;obtenerTablilla() &lt;&lt; "  $"
+         &lt;&lt; v-&gt;tarifa() &lt;&lt; endl;
+    total += v-&gt;tarifa();
+}
+cout &lt;&lt; "Total: $" &lt;&lt; total &lt;&lt; endl;
+for (Vehiculo* v : fila) delete v;</pre>
+      <div class="term t18 gap12" id="fp-out" style="min-height:150px;line-height:1.35"></div>
+    </div>
+    <div data-a>
+      <div id="fp-plaza"></div>
+      <div class="pantalla" id="fp-pan" aria-live="polite" style="min-height:0"></div>
+      <div class="fila gap8" id="fp-fila"></div>
+      <div class="row gap8"><button class="go" id="fp-go">Cobrar el siguiente</button><button id="fp-re">Reiniciar</button><span class="total" id="fp-tot" style="margin-left:auto">$0.00</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="override">
+  <h2 class="mask"><span>override: que g++ vigile la firma</span></h2>
+  <div data-tabs="ov1" data-a style="margin-top:18px">
+    <div class="row"><button data-tab="ov1">Sin override</button><button data-tab="ov2">Con override</button><button data-tab="ov3">Bien escrita</button></div>
+    <div style="display:grid;grid-template-columns:660px 1fr;gap:30px;margin-top:16px">
+      <div data-panel="ov1"><pre class="code c18">class Vehiculo {
+public:
+    virtual double tarifa() const { return 1.50; }
+};
+class Camion : public Vehiculo {
+public:
+    double tarifa() { return 3.75; }   // sin const
+};
+int main() {
+    Camion c;
+    Vehiculo&amp; v = c;
+    cout &lt;&lt; v.tarifa() &lt;&lt; endl;
+}</pre></div>
+      <div data-panel="ov1"><div class="term t18"><span class="w">warning: 'virtual double Vehiculo::tarifa() const' was hidden [-Woverloaded-virtual=]</span>
+<span class="p">note:   by 'double Camion::tarifa()'
+$ ./peaje</span>
+1.5</div><p class="lead gap16" style="font-size:27px">Sin <code>const</code> es otra función: no sustituye a la de Vehiculo.</p><p class="body sub" style="font-size:21px">Compila con solo un aviso, y el camión paga $1.50. Es el error más caro: nadie se entera hasta que se revisan las cuentas.</p></div>
+      <div data-panel="ov2" hidden><pre class="code c18">class Camion : public Vehiculo {
+public:
+    double tarifa() override { return 3.75; }
+};</pre><p class="body gap12" style="font-size:20px">El mismo descuido de antes (sin <code>const</code>), ahora con <code>override</code>.</p></div>
+      <div data-panel="ov2" hidden><div class="term t18"><span class="e">error: 'double Camion::tarifa()' marked 'override', but does not override</span></div><p class="lead gap16" style="font-size:27px"><code>override</code> le promete a g++ que la función sustituye a una virtual de la base.</p><p class="body sub" style="font-size:21px">Si la firma no coincide (un <code>const</code> de menos, un parámetro distinto, una letra cambiada), ya no compila. El error sale en su pantalla, no en la caseta.</p></div>
+      <div data-panel="ov3" hidden><pre class="code c18">class Camion : public Vehiculo {
+public:
+    double tarifa() const override { return 3.75; }
+};
+int main() {
+    Camion c;
+    Vehiculo&amp; v = c;
+    cout &lt;&lt; v.tarifa() &lt;&lt; endl;
+}</pre></div>
+      <div data-panel="ov3" hidden><div class="term t18">3.75</div><p class="lead gap16" style="font-size:27px">Misma firma que en la base, más <code>override</code> al final.</p><p class="body sub" style="font-size:21px"><code>virtual</code> va en la base; en la derivada basta <code>override</code>. En el Laboratorio I, cada <code>tarifa()</code> y cada <code>tipo()</code> lo lleva.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="El destructor virtual">
+  <h2 class="mask"><span>delete con un puntero a la base</span></h2>
+  <div style="display:grid;grid-template-columns:650px 1fr;gap:28px;margin-top:18px">
+    <div data-a>
+      <pre class="code c18" id="dv-code" style="line-height:1.45">class Vehiculo {
+public:
+    virtual ~Vehiculo() { cout &lt;&lt; "~Vehiculo" &lt;&lt; endl; }
+};
+class Camion : public Vehiculo {
+    string* carga;
+public:
+    Camion() : carga(new string("arena")) {}
+    ~Camion() {
+        cout &lt;&lt; "~Camion: libera la carga" &lt;&lt; endl;
+        delete carga;
+    }
+};
+int main() {
+    Vehiculo* p = new Camion();
+    delete p;
+}</pre>
+    </div>
+    <div data-a>
+      <div class="row interruptor" id="dv-b"><button data-m="sin">Sin virtual</button><button data-m="con">Con virtual</button></div>
+      <p class="lbl gap12">Memoria después de <code>delete p</code></p>
+      <div class="heap gap8"><div class="bl" id="dv-h1"></div><div class="bl" id="dv-h2"></div></div>
+      <div class="term t18 gap12" id="dv-out" style="min-height:62px"></div>
+      <div class="row gap8"><button id="dv-asan">Compilar con -fsanitize=address</button></div>
+      <div class="term t18 gap8" id="dv-asan-out" style="min-height:0;font-size:18px" hidden></div>
+      <p class="msg gap12" id="dv-msg" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: ¿qué cobra la caseta?">
+  <p class="q mask"><span>Si <code>tarifa()</code> no fuera virtual, ¿cuánto pagaría cada vehículo de la fila?</span></p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:26px">La fila de la caseta polimórfica: <code>ABC-123</code>, dos camiones y una motora. Calculen el total antes de mirar.</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:56px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a data-rv-box><div><b>Con virtual</b><span>1.50 + 3.75 + 0.75 + 6.25 = $12.25</span></div><div class="ok"><b>Sin virtual</b><span>¿?</span><button data-rv="Ocultar" class="pbtn">Respuesta</button></div>
+  <div class="resp reveal">$6.00: los cuatro pagan $1.50, la de Vehiculo. Sin virtual, la función se escoge al compilar mirando el tipo del puntero (<code>Vehiculo*</code>), no el vehículo que llegó.</div></div></div>
+</section>
+
+<!-- TEMA 4 -->
+<section class="slide chapter" data-title="Tema 4: Clases abstractas e interfaces" data-topic="4">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask largo"><span>Clases abstractas e interfaces</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:620px">Nadie llega a la caseta en «un vehículo» sin más. La base dice qué debe saber hacer cada uno, sin decir cómo.</p>
+    <div class="ext" data-a></div></div>
+    <div class="derecha" data-a>
+      <pre class="code c21">virtual double tarifa() const = 0;</pre>
+      <div id="t4-veh"></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Clase abstracta: virtual pura">
+  <h2 class="mask"><span>= 0: una función sin cuerpo que obliga</span></h2>
+  <div style="display:grid;grid-template-columns:580px 1fr;gap:30px;margin-top:18px">
+    <div data-a>
+      <pre class="code c18">class Vehiculo {
+public:
+    virtual ~Vehiculo() {}
+    virtual double tarifa() const = 0;   // pura
+    virtual string tipo() const = 0;     // pura
+};
+int main() {
+    Vehiculo v;
+}</pre>
+      <div class="term t18 gap12"><span class="e">error: cannot declare variable 'v' to be of abstract type 'Vehiculo'</span>
+<span class="p">note:   because the following virtual functions are pure within 'Vehiculo':
+note:     'virtual double Vehiculo::tarifa() const'
+note:     'virtual std::string Vehiculo::tipo() const'</span></div>
+    </div>
+    <div data-a>
+      <p class="lbl"><code>class Motora : public Vehiculo</code>. Escoja qué funciones escribe y compile <code>Motora m;</code></p>
+      <div class="row gap8" id="ab-b"><button data-f="t" style="font-family:var(--mono)">double tarifa() const override</button><button data-f="p" style="font-family:var(--mono)">string tipo() const override</button></div>
+      <div class="term t18 gap12" id="ab-out" style="min-height:120px"></div>
+      <p class="msg gap12" id="ab-msg" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Interfaces">
+  <h2 class="mask"><span>Una interfaz: solo virtuales puras</span></h2>
+  <div style="display:grid;grid-template-columns:650px 1fr;gap:28px;margin-top:18px">
+    <div data-a>
+      <pre class="code c18">class Cobrable {                // interfaz
+public:
+    virtual double monto() const = 0;
+    virtual string concepto() const = 0;
+    virtual ~Cobrable() = default;
+};
+class Pesable {                 // otra interfaz
+public:
+    virtual int libras() const = 0;
+    virtual ~Pesable() = default;
+};
+class Camion : public Cobrable, public Pesable { ... };
+class Multa : public Cobrable { ... };
+void cobrar(const Cobrable&amp; c);   // la caseta
+void pesar(const Pesable&amp; p);     // la bascula</pre>
+      <p class="body gap12" style="font-size:20px">C++ no tiene la palabra <code>interface</code>: es una clase sin datos, con solo funciones <code>= 0</code>.</p>
+    </div>
+    <div data-a>
+      <p class="lbl"><code>Camion t(3, 4500);</code> y <code>Multa m;</code> Llame a la caseta o a la báscula.</p>
+      <div class="ops cod gap8" id="if-b"><button data-x="ct">cobrar(t)</button><button data-x="cm">cobrar(m)</button><button data-x="pt">pesar(t)</button><button data-x="pm">pesar(m)</button></div>
+      <div class="term t18 gap12" id="if-out" style="min-height:62px"></div>
+      <p class="msg gap12" id="if-msg" aria-live="polite" style="min-height:90px"></p>
+      <p class="body gap12" style="font-size:20px">Heredar de varias interfaces es la forma segura de herencia múltiple: no hay datos repetidos ni diamante.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Seis mensajes de g++">
+  <h2 class="mask"><span>Seis mensajes de g++ de esta unidad</span></h2>
+  <div data-tabs="er1" data-a style="margin-top:20px">
+    <div class="row"><button data-tab="er1">Ambiguo</button><button data-tab="er2">Sin constructor</button><button data-tab="er3">protected</button><button data-tab="er4">override</button><button data-tab="er5">Abstracta</button><button data-tab="er6">Por valor</button></div>
+    <div style="display:grid;grid-template-columns:660px 1fr;gap:30px;margin-top:20px">
+      <div data-panel="er1"><pre class="code c19">Pickup p;                 // dos caminos a Vehiculo
+p.tablilla = "PKP-330";</pre><div class="term t18 gap12"><span class="e">error: request for member 'tablilla' is ambiguous</span></div></div>
+      <div data-panel="er1"><p class="lead" style="font-size:28px">Dos copias de un miembro heredado.</p><p class="body sub" style="font-size:22px">Pasa en el diamante. Se resuelve con <code>virtual public Vehiculo</code> en las clases intermedias, o, mejor, evitando el diamante.</p></div>
+      <div data-panel="er2" hidden><pre class="code c19">Camion(const string&amp; t, int e) {
+    tablilla = t;
+    ejes = e;
+}</pre><div class="term t18 gap12"><span class="e">error: no matching function for call to 'Vehiculo::Vehiculo()'</span></div></div>
+      <div data-panel="er2" hidden><p class="lead" style="font-size:28px">La base no tiene constructor sin parámetros.</p><p class="body sub" style="font-size:22px">Llámelo en la lista de inicialización: <code>: Vehiculo(t), ejes(e)</code>.</p></div>
+      <div data-panel="er3" hidden><pre class="code c19">Auto a;
+cout &lt;&lt; a.tablilla &lt;&lt; endl;    // en main</pre><div class="term t18 gap12"><span class="e">error: 'std::string Vehiculo::tablilla' is protected within this context</span></div></div>
+      <div data-panel="er3" hidden><p class="lead" style="font-size:28px">protected abre la puerta a las derivadas, no a main.</p><p class="body sub" style="font-size:22px">Desde afuera se usa una función pública, como <code>obtenerTablilla()</code>. Con private, g++ dice «is private within this context».</p></div>
+      <div data-panel="er4" hidden><pre class="code c19">double tarifa() override { return 3.75; }</pre><div class="term t18 gap12"><span class="e">error: 'double Camion::tarifa()' marked 'override', but does not override</span></div></div>
+      <div data-panel="er4" hidden><p class="lead" style="font-size:28px">La firma no es la misma que la de la base.</p><p class="body sub" style="font-size:22px">Compare letra por letra: nombre, parámetros y el <code>const</code> del final.</p></div>
+      <div data-panel="er5" hidden><pre class="code c19">Vehiculo* p = new Vehiculo();</pre><div class="term t18 gap12"><span class="e">error: invalid new-expression of abstract class type 'Vehiculo'</span></div></div>
+      <div data-panel="er5" hidden><p class="lead" style="font-size:28px">Una clase abstracta no se crea, ni con <code>new</code>.</p><p class="body sub" style="font-size:22px">Se crea una derivada que escribe todas las funciones <code>= 0</code>: <code>new Auto("ABC-123")</code>.</p></div>
+      <div data-panel="er6" hidden><pre class="code c19">void cobrar(Vehiculo v) {          // por valor
+    cout &lt;&lt; v.tarifa() &lt;&lt; endl;
+}</pre><div class="term t18 gap12"><span class="e">error: cannot declare parameter 'v' to be of abstract type 'Vehiculo'</span></div></div>
+      <div data-panel="er6" hidden><p class="lead" style="font-size:28px">Por valor haría una copia de un Vehiculo, que no puede existir.</p><p class="body sub" style="font-size:22px">El polimorfismo trabaja con referencias y punteros: <code>const Vehiculo&amp;</code> o <code>Vehiculo*</code>.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: ¿por qué abstracta?">
+  <p class="q mask"><span>¿Qué se gana con que no se pueda crear un <code>Vehiculo</code>?</span></p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:26px">En la caseta polimórfica, <code>new Vehiculo("ABC-123")</code> pagaba $1.50 sin ser auto ni nada. ¿Qué pasaría si mañana llega una clase nueva que olvida su tarifa?</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:56px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a data-rv-box><div><b>Base con tarifa() de $1.50</b><span>la clase nueva cobra $1.50 sin que nadie lo note</span></div><div class="ok"><b>Base con tarifa() = 0</b><span>¿?</span><button data-rv="Ocultar" class="pbtn">Respuesta</button></div>
+  <div class="resp reveal">Con <code>= 0</code>, una clase que olvida su tarifa no compila. El error aparece al programar, no en la caseta, y nadie crea por accidente un «vehículo» que no es nada.</div></div></div>
+</section>
+
+<section class="slide" data-title="Lo esencial de la unidad">
+  <h2 class="mask"><span>Lo que se lleva de esta unidad</span></h2>
+  <div class="dir" data-a>
+    <div><h3>Herencia</h3><p><code>class Camion : public Vehiculo</code>. Solo si «es un» es cierto; si «tiene un», va como miembro.</p></div>
+    <div><h3>Múltiple</h3><p>Dos bases a la vez. Si las dos vienen de la misma clase, aparece el diamante; mejor heredar de interfaces.</p></div>
+    <div><h3>Base y derivada</h3><p><code>protected</code> abre a las derivadas. La derivada llama al constructor de la base en la lista. Se arma desde la base; se desarma al revés.</p></div>
+    <div><h3>virtual y override</h3><p>Con un puntero o referencia a la base, <code>virtual</code> llama a la función del objeto real. <code>override</code> hace que g++ vigile la firma.</p></div>
+    <div><h3>Destructor virtual</h3><p>Si se va a hacer <code>delete</code> con un puntero a la base, el destructor de la base es <code>virtual</code>.</p></div>
+    <div><h3>Abstractas e interfaces</h3><p><code>= 0</code> hace la clase abstracta: no se crea y obliga a las derivadas. Una interfaz tiene solo funciones <code>= 0</code>.</p></div>
+  </div>
+</section>
+
+<!-- LABORATORIO -->
+<section class="slide chapter" data-title="Laboratorio I: la caseta de peaje" data-topic="5">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask" style="font-size:86px"><span>Laboratorio&nbsp;I</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:600px">La caseta de peaje: cuatro clases derivadas de una base abstracta, una fila de <code>Vehiculo*</code> y una sola función que cobra.</p>
+    <div class="ext" data-a></div></div>
+    <div class="derecha" data-a>
+      <div id="lab-plaza"></div>
+      <div class="pantalla"><span class="p1">TARIFAS · PLAZA DEL RIO</span><div class="tarifas" style="margin-top:6px;color:var(--field-ink)"><span>Auto</span><b>$1.50</b><span>Motora</span><b>$0.75</b><span>Camión</span><b>$1.25/eje</b><span>Guagua</span><b>$3.00</b></div><span class="p1" style="font-size:18px;margin-top:6px;color:#FFD27A">Guagua escolar: la mitad. Tarifas de ejemplo.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Laboratorio I: la misión">
+  <h2 class="mask"><span>La misión: completar la caseta</span></h2>
+  <p class="body sub" data-a style="max-width:1130px;font-size:21px">La clase abstracta <code>Vehiculo</code> y el menú ya están hechos. El código base compila desde el principio, con avisos <code>unused parameter</code> que se van al completar cada parte.</p>
+  <ol class="todo" data-a style="margin-top:14px">
+    <li><b class="nm">1</b><span>Los 4 <code>constructores</code>: llaman a <code>Vehiculo(t)</code> en la lista de inicialización. Un camión tiene al menos 2 ejes.</span></li>
+    <li><b class="nm">2</b><span>Las 4 <code>tarifa() const override</code>: $1.50, $0.75, $1.25 por eje, $3.00 o $1.50 si es escolar.</span></li>
+    <li><b class="nm">3</b><span>Las 4 <code>tipo() const override</code>: <code>"Auto"</code>, <code>"Camion de 3 ejes"</code>, <code>"Guagua escolar"</code>…</span></li>
+    <li><b class="nm">4</b><span><code>mostrar(const Vehiculo&amp; v)</code>: la pantalla de la caseta, sin preguntar el tipo.</span></li>
+    <li><b class="nm">5</b><span><code>vaciarFila(fila)</code>: <code>delete</code> de cada puntero y <code>fila.clear()</code>.</span></li>
+    <li><b class="nm">6</b><span><code>cobrarFila(fila)</code>: recorre los <code>Vehiculo*</code>, escribe cada cobro y devuelve la suma.</span></li>
+  </ol>
+  <p class="body" data-a style="margin-top:12px;font-size:20px;font-weight:600">Complete cada <code>TODO</code> en este orden y pruebe al terminar cada grupo:</p>
+  <div class="ruta" data-a style="margin-top:6px"><span>Partes 1 a 5 → Casos 1 y 3</span><span>Parte 6 → Casos 2, 4 y 5</span></div>
+  <div class="row" data-a style="margin-top:12px;gap:14px;align-items:stretch;flex-wrap:nowrap">
+    <a class="dl" href="laboratorios/LabI_Peaje.cpp" download>Descargar LabI_Peaje.cpp</a>
+    <pre class="code c18" data-raw style="flex:1;padding:11px 0"><span class="ln">g++ -std=c++17 -Wall -Wextra -o peaje LabI_Peaje.cpp</span></pre>
+  </div>
+</section>
+
+<section class="slide" data-title="Laboratorio I: las pruebas">
+  <h2 class="mask"><span>Cinco pruebas del programa</span></h2>
+  <div style="display:grid;grid-template-columns:760px 1fr;gap:24px;margin-top:16px">
+    <div class="cases" data-tabs="c1" data-a>
+      <div class="row"><button data-tab="c1" id="tb-c1">Caso 1</button><button data-tab="c2" id="tb-c2">Caso 2</button><button data-tab="c3" id="tb-c3">Caso 3</button><button data-tab="c4" id="tb-c4">Caso 4</button><button data-tab="c5" id="tb-c5">Caso 5</button></div>
+      <div id="cases-panels" style="margin-top:12px"></div>
+    </div>
+    <div data-a>
+      <label for="vf-in" style="font-size:20px;font-weight:600;display:block;margin-bottom:6px">Pegue aquí lo que imprimió su programa con el <span id="vf-name">Caso 1</span></label>
+      <textarea class="paste" id="vf-in" spellcheck="false" placeholder="Copie todo el texto de la terminal y péguelo aquí"></textarea>
+      <div class="row" style="margin-top:8px"><button class="go" id="vf-go">Comprobar</button><span class="score" id="vf-score" aria-live="polite"></span></div>
+      <ul class="checks" id="vf-checks" aria-label="Resultado de la comprobación"></ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Laboratorio I: rúbrica y entrega">
+  <h2 class="mask"><span>Rúbrica y entrega</span></h2>
+  <div style="display:grid;grid-template-columns:540px 1fr;gap:40px;margin-top:16px;align-items:start">
+    <table class="t rub" data-a>
+      <tr><th>Criterio</th><th>Puntos</th></tr>
+      <tr><td>1. Constructores con la lista de inicialización</td><td>15</td></tr>
+      <tr><td>2. <code>tarifa()</code> con <code>override</code></td><td>15</td></tr>
+      <tr><td>3. <code>tipo()</code> con <code>override</code></td><td>10</td></tr>
+      <tr><td>4. <code>mostrar(const Vehiculo&amp;)</code></td><td>10</td></tr>
+      <tr><td>5. <code>vaciarFila</code></td><td>15</td></tr>
+      <tr><td>6. <code>cobrarFila</code></td><td>15</td></tr>
+      <tr><td>Compila sin avisos con -Wall -Wextra</td><td>10</td></tr>
+      <tr><td>Nombre, fecha y sangría correcta</td><td>10</td></tr>
+      <tr><th>Total</th><th>100</th></tr>
+    </table>
+    <div data-a>
+      <h3 style="font-size:28px">Qué se entrega</h3>
+      <p class="body" style="margin-top:8px;font-size:21px">Por OrbundSIS, en un .zip llamado <code>Apellido_Nombre_TESI2105_LabI.zip</code>:</p>
+      <ul style="font-size:21px;line-height:1.45;margin:10px 0 0;padding-left:26px"><li>El archivo <code>LabI_Peaje.cpp</code> completo.</li><li>Cinco capturas de la terminal: una por prueba.</li></ul>
+      <p class="body" style="margin-top:12px;font-size:21px">La fecha de entrega se anuncia en OrbundSIS.</p>
+      <p class="body" style="margin-top:10px;font-size:20px">Las pruebas confirman que el programa funciona; la nota de cada parte sale de leer su código.</p>
+      <div class="tone" style="margin-top:10px;padding:12px 20px"><b style="font-size:23px">Reto (+10)</b><p style="font-size:20px;margin-top:4px">Añada otra clase derivada, por ejemplo <code>Ambulancia</code>, que no paga ($0.00), y el tipo 5 en <code>llegaVehiculo</code>. Sin tocar <code>mostrar</code>, <code>cobrarFila</code> ni <code>vaciarFila</code>: si hay que cambiarlas, no es polimorfismo. (En el reto sí se permite cambiar <code>llegaVehiculo</code>: la condición <code>t &gt; 4</code> y el mensaje).</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Referencias">
+  <h2 class="mask"><span>Referencias</span></h2>
+  <div class="gap20" data-a style="font-size:20px;line-height:1.45;max-width:1100px">
+    <p style="font-size:20px;padding-left:36px;text-indent:-36px;margin-bottom:9px">cppreference.com. (s. f.). <i>Derived classes</i>. https://en.cppreference.com/w/cpp/language/derived_class</p>
+    <p style="font-size:20px;padding-left:36px;text-indent:-36px;margin-bottom:9px">cppreference.com. (s. f.). <i>Access specifiers</i>. https://en.cppreference.com/w/cpp/language/access</p>
+    <p style="font-size:20px;padding-left:36px;text-indent:-36px;margin-bottom:9px">cppreference.com. (s. f.). <i>virtual function specifier</i>. https://en.cppreference.com/w/cpp/language/virtual</p>
+    <p style="font-size:20px;padding-left:36px;text-indent:-36px;margin-bottom:9px">cppreference.com. (s. f.). <i>override specifier</i>. https://en.cppreference.com/w/cpp/language/override</p>
+    <p style="font-size:20px;padding-left:36px;text-indent:-36px;margin-bottom:9px">cppreference.com. (s. f.). <i>Abstract class</i>. https://en.cppreference.com/w/cpp/language/abstract_class</p>
+    <p style="font-size:20px;padding-left:36px;text-indent:-36px;margin-bottom:9px">cppreference.com. (s. f.). <i>Destructors</i>. https://en.cppreference.com/w/cpp/language/destructor</p>
+    <p style="font-size:20px;padding-left:36px;text-indent:-36px;margin-bottom:9px">Kumar, A. (2024). <i>Hands-on object-oriented programming: Mastering OOP features for real-world software systems development</i>. Apress.</p>
+    <p style="font-size:20px;padding-left:36px;text-indent:-36px;margin-bottom:9px">Lutz, M. (2025). <i>Learning Python: Powerful object-oriented programming</i>. O’Reilly Media.</p>
+  </div>
+  <p class="body gap16" data-a style="font-size:19px;max-width:1100px">Kumar (2024) y Lutz (2025) son los textos oficiales del prontuario. Los programas, salidas y mensajes se verificaron con g++&nbsp;13.3 en Linux. Las tarifas, tablillas y la Plaza del Río son ficticias.</p>
+</section>
+
+</div></div>
+
+<script>
+(function(){
+function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+var H='===== CASETA DE PEAJE - PLAZA DEL RIO =====';
+var F5=['ABC-123 | Auto | $1.50','TRK-450 | Camion de 3 ejes | $3.75','MTR-077 | Motora | $0.75','BUS-210 | Guagua escolar | $1.50','BUS-318 | Guagua | $3.00'];
+var C5=F5.map(function(x){return 'Cobro: '+x});
+window.__CASES={
+ c1:{titulo:'Ver la fila',pasos:[['1'],['0']],
+  out:F5.join('\n')+'\nEn la fila: 5\n…\nFin del turno. Total del turno: $0.00\nVehiculos en memoria: 0',
+  chk:[H].concat(F5,['En la fila: 5','Fin del turno. Total del turno: $0.00','Vehiculos en memoria: 0'])},
+ c2:{titulo:'Cobrar la fila',pasos:[['3'],['1'],['0']],
+  out:C5.join('\n')+'\nTotal cobrado: $10.50\nSe abre la barrera. Vehiculos en memoria: 0\n…\nEn la fila: 0\n…\nFin del turno. Total del turno: $10.50\nVehiculos en memoria: 0',
+  chk:[H].concat(C5,['Total cobrado: $10.50','Se abre la barrera. Vehiculos en memoria: 0','En la fila: 0','Fin del turno. Total del turno: $10.50','Vehiculos en memoria: 0'])},
+ c3:{titulo:'Llegan camiones y una guagua',pasos:[['2','3','CRG-901','5'],['2','3','CRG-100','1'],['2','4','ESC-005','1'],['1'],['0']],
+  out:'Llega: CRG-901 | Camion de 5 ejes | $6.25\n…\nLlega: CRG-100 | Camion de 2 ejes | $2.50\n…\nLlega: ESC-005 | Guagua escolar | $1.50\n…\n(las 5 de la fila y después)\nCRG-901 | Camion de 5 ejes | $6.25\nCRG-100 | Camion de 2 ejes | $2.50\nESC-005 | Guagua escolar | $1.50\nEn la fila: 8\n…\nFin del turno. Total del turno: $0.00\nVehiculos en memoria: 0',
+  chk:[H,'Llega: CRG-901 | Camion de 5 ejes | $6.25','Llega: CRG-100 | Camion de 2 ejes | $2.50','Llega: ESC-005 | Guagua escolar | $1.50'].concat(F5,['CRG-901 | Camion de 5 ejes | $6.25','CRG-100 | Camion de 2 ejes | $2.50','ESC-005 | Guagua escolar | $1.50','En la fila: 8','Fin del turno. Total del turno: $0.00','Vehiculos en memoria: 0'])},
+ c4:{titulo:'Dos cobros en el mismo turno',pasos:[['3'],['2','2','MTR-310'],['2','4','BUS-777','0'],['3'],['0']],
+  out:'(los 5 cobros de la fila)\nTotal cobrado: $10.50\nSe abre la barrera. Vehiculos en memoria: 0\n…\nLlega: MTR-310 | Motora | $0.75\n…\nLlega: BUS-777 | Guagua | $3.00\n…\nCobro: MTR-310 | Motora | $0.75\nCobro: BUS-777 | Guagua | $3.00\nTotal cobrado: $3.75\nSe abre la barrera. Vehiculos en memoria: 0\n…\nFin del turno. Total del turno: $14.25\nVehiculos en memoria: 0',
+  chk:[H].concat(C5,['Total cobrado: $10.50','Se abre la barrera. Vehiculos en memoria: 0','Llega: MTR-310 | Motora | $0.75','Llega: BUS-777 | Guagua | $3.00','Cobro: MTR-310 | Motora | $0.75','Cobro: BUS-777 | Guagua | $3.00','Total cobrado: $3.75','Se abre la barrera. Vehiculos en memoria: 0','Fin del turno. Total del turno: $14.25','Vehiculos en memoria: 0'])},
+ c5:{titulo:'Entradas que no existen',pasos:[['2','7'],['9'],['2','1','AUT-555'],['3'],['0']],
+  out:'Tipo invalido\n…\nOpcion invalida\n…\nLlega: AUT-555 | Auto | $1.50\n…\n(los 5 cobros de la fila y después)\nCobro: AUT-555 | Auto | $1.50\nTotal cobrado: $12.00\nSe abre la barrera. Vehiculos en memoria: 0\n…\nFin del turno. Total del turno: $12.00\nVehiculos en memoria: 0',
+  chk:[H,'Tipo invalido','Opcion invalida','Llega: AUT-555 | Auto | $1.50'].concat(C5,['Cobro: AUT-555 | Auto | $1.50','Total cobrado: $12.00','Se abre la barrera. Vehiculos en memoria: 0','Fin del turno. Total del turno: $12.00','Vehiculos en memoria: 0'])}
+};
+var C=window.__CASES,ph='';
+Object.keys(C).forEach(function(k){
+var pasos=C[k].pasos.map(function(p){return '<li>'+p.map(function(x){return '<kbd>'+esc(x)+'</kbd>'}).join('')+'</li>'}).join('');
+ph+='<div data-panel="'+k+'"'+(k==='c1'?'':' hidden')+'><h3 class="ct">Caso '+k.slice(1)+': '+esc(C[k].titulo)+'</h3><div class="cc"><div><p class="cl">Teclee:</p><ol class="typein">'+pasos+'</ol><p class="cl nota">Enter después de cada dato.</p></div><div><p class="cl">Debe ver, entre los menús:</p><div class="term">'+esc(C[k].out)+'</div></div></div></div>'});
+document.getElementById('cases-panels').innerHTML=ph;
+})();
+</script>
+<script src="assets/deck.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id)};
+function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+var LENTO=!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+/* palabras clave que el resaltador común no colorea */
+var KW=/\b(virtual |override|protected|private|new|delete|vector|default)\b/g;
+function kw(pre){
+  var w=document.createTreeWalker(pre,NodeFilter.SHOW_TEXT,null),ns=[],n;
+  while((n=w.nextNode()))if(n.parentNode.classList&&n.parentNode.classList.contains('ln'))ns.push(n);
+  ns.forEach(function(t){
+    if(!KW.test(t.nodeValue)){KW.lastIndex=0;return}KW.lastIndex=0;
+    var s=document.createElement('span');
+    s.innerHTML=esc(t.nodeValue).replace(KW,function(m){return '<span class="k'+(m==='virtual '?' vt':'')+'">'+m+'</span>'});
+    while(s.firstChild)t.parentNode.insertBefore(s.firstChild,t);
+    t.parentNode.removeChild(t);
+  });
+}
+[].forEach.call(document.querySelectorAll('pre.code:not([data-raw])'),kw);
+function fuente(pre){return [].map.call(pre.querySelectorAll('.ln'),function(l){return l.textContent}).join('\n')}
+function pinta(pre,txt){pre.textContent=txt;Deck.hl(pre);kw(pre)}
+function lineas(pre,idx){[].forEach.call(pre.querySelectorAll('.ln'),function(l,i){l.classList.toggle('cur',idx.indexOf(i)>=0)})}
+function grupo(caja,attr,fn,inicial){
+  var bs=[].slice.call($(caja).querySelectorAll('button'));
+  function ver(k){bs.forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute(attr)===k)});fn(k)}
+  bs.forEach(function(b){b.onclick=function(){ver(b.getAttribute(attr))}});
+  if(inicial)ver(inicial);
+}
+
+/* ---------- vehículos en SVG (vista de lado, el frente a la derecha, el suelo en y = 0) ---------- */
+var VERDE='#0B6B3A',VID='#CFE3F2';
+function rueda(x){return '<circle cx="'+x+'" cy="-12" r="12" fill="#121714"/><circle cx="'+x+'" cy="-12" r="5" fill="#BFC7C1"/>'}
+var VEH={
+ auto:function(){return{w:128,s:'<path d="M4,-14 Q4,-34 22,-36 L36,-36 L50,-54 L92,-54 L110,-36 L120,-35 Q128,-33 128,-20 L128,-14 Z" fill="#2F6FB0"/><path d="M54,-50 L70,-50 L70,-38 L42,-38 Z" fill="'+VID+'"/><path d="M75,-50 L90,-50 L102,-38 L75,-38 Z" fill="'+VID+'"/>'+rueda(30)+rueda(100)}},
+ motora:function(){return{w:84,s:'<path d="M14,-13 L34,-34 L58,-34 L70,-13" stroke="#C0352B" stroke-width="6" fill="none"/><path d="M30,-40 L60,-40 L64,-29 L34,-29 Z" fill="#C0352B"/><path d="M58,-36 L66,-54" stroke="#121714" stroke-width="4"/><path d="M40,-40 L48,-64" stroke="#14201A" stroke-width="10" stroke-linecap="round"/><path d="M47,-58 L63,-50" stroke="#14201A" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="-73" r="9" fill="#C0352B"/>'+'<circle cx="14" cy="-13" r="13" fill="#121714"/><circle cx="14" cy="-13" r="5" fill="#BFC7C1"/><circle cx="70" cy="-13" r="13" fill="#121714"/><circle cx="70" cy="-13" r="5" fill="#BFC7C1"/>'}},
+ camion:function(n){n=n||3;var r=n-1,T=40+34*r,w=T+58,s='<rect x="0" y="-74" width="'+T+'" height="52" fill="#DDE3DC" stroke="#14201A" stroke-width="2"/><rect x="0" y="-24" width="'+w+'" height="7" fill="#14201A"/><path d="M'+(T+4)+',-20 L'+(T+4)+',-64 L'+(T+36)+',-64 L'+w+',-42 L'+w+',-20 Z" fill="'+VERDE+'"/><path d="M'+(T+28)+',-60 L'+(T+38)+',-60 L'+(w-5)+',-44 L'+(T+28)+',-44 Z" fill="'+VID+'"/>';
+   for(var i=0;i<r;i++)s+=rueda(20+34*i);return{w:w,s:s+rueda(T+34)}},
+ guagua:function(esc){var col=esc?'#F2B705':'#EEF2EC',s='<rect x="0" y="-78" width="180" height="62" rx="8" fill="'+col+'" stroke="#14201A" stroke-width="2"/>';
+   for(var i=0;i<6;i++)s+='<rect x="'+(12+24*i)+'" y="-70" width="18" height="18" fill="'+VID+'"/>';
+   s+='<rect x="160" y="-70" width="14" height="32" fill="'+VID+'"/>';
+   s+=esc?'<rect x="0" y="-46" width="180" height="4" fill="#14201A"/><rect x="0" y="-36" width="180" height="4" fill="#14201A"/>':'<rect x="0" y="-44" width="180" height="8" fill="'+VERDE+'"/>';
+   return{w:180,s:s+rueda(36)+rueda(146)}},
+ nada:function(){return{w:128,s:'<path d="M4,-14 Q4,-34 22,-36 L36,-36 L50,-54 L92,-54 L110,-36 L120,-35 Q128,-33 128,-20 L128,-14 Z" fill="none" stroke="#9FD8B5" stroke-width="3" stroke-dasharray="8 6"/><circle cx="30" cy="-12" r="12" fill="none" stroke="#9FD8B5" stroke-width="3" stroke-dasharray="6 5"/><circle cx="100" cy="-12" r="12" fill="none" stroke="#9FD8B5" stroke-width="3" stroke-dasharray="6 5"/><text x="64" y="-22" text-anchor="middle" font-family="Schibsted Grotesk,Arial" font-weight="800" font-size="30" fill="#9FD8B5">?</text>'}}
+};
+function vehSVG(k,a,alto){var v=VEH[k](a);return '<svg viewBox="-4 -86 '+(v.w+8)+' 90" style="height:'+(alto||90)+'px;width:auto;display:block" role="img" aria-label="'+k+'"><g>'+v.s+'</g></svg>'}
+
+/* ---------- la plaza de peaje ---------- */
+function plazaSVG(){
+  var s='<svg viewBox="0 0 640 300" aria-hidden="true">';
+  s+='<rect x="40" y="10" width="560" height="50" rx="6" fill="'+VERDE+'"/><rect x="46" y="16" width="548" height="38" rx="4" fill="none" stroke="#fff" stroke-width="2"/>';
+  s+='<text x="320" y="44" text-anchor="middle" font-family="Schibsted Grotesk,Arial" font-weight="800" font-size="24" fill="#fff" letter-spacing="2">PEAJE · PLAZA DEL RIO</text>';
+  s+='<rect x="64" y="60" width="8" height="190" fill="#7D8A82"/><rect x="568" y="60" width="8" height="190" fill="#7D8A82"/>';
+  s+='<rect x="350" y="102" width="150" height="16" fill="'+VERDE+'"/><rect x="362" y="118" width="126" height="132" fill="#E4EAE3" stroke="#14201A" stroke-width="2"/>';
+  s+='<rect class="pz-win" x="376" y="132" width="98" height="54" fill="#3C4A43"/><rect x="376" y="200" width="98" height="10" fill="#C3CCC4"/>';
+  s+='<rect x="0" y="246" width="640" height="54" fill="#39433E"/><rect x="0" y="246" width="640" height="3" fill="#E7ECE6"/>';
+  s+='<path d="M0,284 H640" stroke="#FFC425" stroke-width="4" stroke-dasharray="26 18"/>';
+  s+='<g class="pz-veh" style="transform:translate(-300px,272px)"></g>';
+  s+='<rect x="500" y="214" width="12" height="58" fill="#F3F7F2" stroke="#14201A" stroke-width="2"/>';
+  s+='<g class="pz-arm"><rect x="506" y="221" width="128" height="10" fill="#F3F7F2" stroke="#14201A" stroke-width="1.5"/>';
+  for(var i=0;i<4;i++)s+='<rect x="'+(518+i*30)+'" y="222" width="15" height="8" fill="#C0352B"/>';
+  s+='</g><circle cx="506" cy="226" r="5" fill="#14201A"/></svg>';
+  return s;
+}
+function Plaza(el){el.innerHTML='<div class="plaza">'+plazaSVG()+'</div>';this.g=el.querySelector('.pz-veh');this.arm=el.querySelector('.pz-arm');this.win=el.querySelector('.pz-win');this.tok=0}
+Plaza.prototype.coloca=function(k,a,x){var v=VEH[k](a),g=this.g;g.style.transition='none';g.innerHTML=v.s;g.style.transform='translate('+(x===undefined?470-v.w:x)+'px,272px)';void g.getBoundingClientRect();g.style.transition=''};
+Plaza.prototype.pasa=function(k,a,alParar,alSalir){
+  var t=++this.tok,me=this,g=this.g,v=VEH[k](a),R=LENTO?1:0.05;
+  function luego(ms,f){setTimeout(function(){if(t===me.tok)f()},ms*R)}
+  me.arm.classList.remove('up');me.win.classList.remove('on');
+  g.style.transition='none';g.innerHTML=v.s;g.style.transform='translate('+(-v.w-30)+'px,272px)';void g.getBoundingClientRect();
+  g.style.transition='';g.style.transform='translate('+(470-v.w)+'px,272px)';
+  luego(1050,function(){me.win.classList.add('on');if(alParar)alParar();
+    luego(900,function(){me.arm.classList.add('up');
+      luego(450,function(){g.style.transform='translate(680px,272px)';
+        luego(1000,function(){me.arm.classList.remove('up');me.win.classList.remove('on');if(alSalir)alSalir()})})})});
+};
+function pantalla(el,l1,precio,fn){el.innerHTML='<span class="p1">'+esc(l1)+'</span><span class="p2"><b>'+esc(precio)+'</b><span>'+esc(fn||'')+'</span></span>'}
+
+/* capítulos */
+var EX=['Herencia','Base y derivadas','Virtuales','Abstractas','Laboratorio'];
+[].forEach.call(document.querySelectorAll('[data-topic]'),function(sl){var t=+sl.dataset.topic,e=sl.querySelector('.ext');
+  if(e)e.innerHTML=EX.map(function(w,i){return '<span class="'+(i+1===t?'on':'')+'">'+(i+1===t?'→ ':'')+w+'</span>'}).join('')});
+$('t1-veh').innerHTML='<div class="row" style="gap:18px;align-items:flex-end">'+vehSVG('auto',0,62)+vehSVG('motora',0,62)+vehSVG('camion',3,62)+vehSVG('guagua',true,62)+'</div>';
+$('t2-veh').innerHTML='<div class="row" style="gap:24px;align-items:flex-end">'+vehSVG('camion',2,80)+vehSVG('camion',4,80)+'</div>';
+$('t4-veh').innerHTML='<div class="row" style="gap:24px;align-items:flex-end">'+vehSVG('nada',0,96)+'<span style="font:700 40px var(--mono);color:var(--hi)">→</span>'+vehSVG('auto',0,74)+vehSVG('motora',0,74)+'</div>';
+
+/* ---------- portada ---------- */
+var INFO={auto:{k:'auto',tab:'ABC-123',tipo:'Auto',p:'$1.50',f:'Auto::tarifa()'},motora:{k:'motora',tab:'MTR-077',tipo:'Motora',p:'$0.75',f:'Motora::tarifa()'},
+ camion:{k:'camion',a:3,tab:'TRK-450',tipo:'Camion de 3 ejes',p:'$3.75',f:'Camion::tarifa()'},guagua:{k:'guagua',a:true,tab:'BUS-210',tipo:'Guagua escolar',p:'$1.50',f:'Guagua::tarifa()'}};
+var PT=new Plaza($('pt-plaza'));PT.coloca('camion',3);
+pantalla($('pt-pan'),'Caseta abierta · escoja un vehículo','$0.00','v->tarifa()');
+grupo('pt-b','data-v',function(k){var I=INFO[k];pantalla($('pt-pan'),'Llega un vehículo…','','');
+  PT.pasa(I.k,I.a,function(){pantalla($('pt-pan'),I.tab+' · '+I.tipo,I.p,I.f)})});
+
+/* ---------- cuatro clases que se repiten ---------- */
+var CL=[['Auto',[]],['Motora',[]],['Camion',['ejes']],['Guagua',['escolar']]];
+function rpShow(m){
+  var con=m==='con';
+  $('rp-base').hidden=!con;
+  $('rp-base').innerHTML='<div class="cls base fila1" style="width:760px;margin:0 auto"><div class="ch">Vehiculo<small>clase base</small></div><div class="cm"><div class="lit">tablilla</div><div class="lit">obtenerTablilla()</div><div>virtual tarifa()</div><div>virtual tipo()</div></div></div><div class="flecha" style="margin:2px 0">▲ : public Vehiculo ▲</div>';
+  $('rp-cls').innerHTML=CL.map(function(c){var com=con?'':'<div class="rep">tablilla</div><div class="rep">obtenerTablilla()</div>';
+    return '<div class="cls"><div class="ch">'+c[0]+(con?'<small>: Vehiculo</small>':'')+'</div><div class="cm">'+com+'<div>tarifa()</div><div>tipo()</div>'+c[1].map(function(x){return '<div>'+x+'</div>'}).join('')+'</div></div>'}).join('');
+  $('rp-n1').textContent=con?'1 vez':'4 veces';$('rp-n2').textContent=con?'1 vez':'4 veces';
+  $('rp-msg').innerHTML=con?'Lo común sube a <code>Vehiculo</code> y se escribe una vez. Cada derivada guarda solo lo suyo: su tarifa, su tipo, y los ejes o si es escolar.':'Las marcas × son código copiado. Si mañana la tablilla lleva otro formato, hay que corregirlo en cuatro sitios… y es fácil olvidar uno.';
+}
+grupo('rp-b','data-m',rpShow,'sin');
+
+/* ---------- herencia simple ---------- */
+var HS={t:[13,['hs-ft'],'tablilla no está escrita en Camion: llegó de Vehiculo. Es pública, así que main la puede usar.'],
+ e:[14,['hs-fe'],'ejes es lo único que Camion añade. Un Vehiculo cualquiera no tiene ejes.'],
+ d:[15,['hs-fd'],'describir() también es heredada: Camion la usa sin escribirla, y ella lee la tablilla del mismo objeto.']};
+grupo('hs-b','data-x',function(k){var h=HS[k];lineas($('hs-code'),[h[0]]);['hs-ft','hs-fd','hs-fe'].forEach(function(id){$(id).classList.toggle('lit',h[1].indexOf(id)>=0)});$('hs-msg').textContent=h[2]},'t');
+
+/* ---------- es un / tiene un ---------- */
+var SO=[
+ ['Camion','Vehiculo','es','Un camión es un vehículo: herencia.','class Camion : public Vehiculo { ... };'],
+ ['Camion','Motor','tiene','Un camión tiene un motor; no es un motor. El motor va como miembro.','class Camion : public Vehiculo { Motor motor; };'],
+ ['Caseta','Barrera','tiene','La caseta tiene una barrera: miembro.','class Caseta { Barrera barrera; };'],
+ ['Guagua','Vehiculo','es','Una guagua es un vehículo: herencia.','class Guagua : public Vehiculo { ... };'],
+ ['Motora','Camion','ninguna','Una motora no es un camión ni lo tiene. Son hermanas: las dos derivan de Vehiculo.','class Motora : public Vehiculo { ... };'],
+ ['Caseta','Vehiculo','ninguna','La caseta no es un vehículo ni lo guarda: lo recibe para cobrarle. Va como parámetro.','double cobrar(const Vehiculo& v);']];
+var LB={es:'es un',tiene:'tiene un',ninguna:'ninguna'};
+$('so').innerHTML=SO.map(function(s,i){return '<span class="par">'+s[0]+' — '+s[1]+'</span>'+['es','tiene','ninguna'].map(function(o){return '<button data-i="'+i+'" data-o="'+o+'">'+LB[o]+'</button>'}).join('')+'<span class="ver" id="so-v'+i+'"></span>'}).join('');
+[].forEach.call($('so').querySelectorAll('button'),function(b){b.onclick=function(){var i=+b.dataset.i,s=SO[i],ok=b.dataset.o===s[2];
+  [].forEach.call($('so').querySelectorAll('button[data-i="'+i+'"]'),function(x){x.setAttribute('aria-pressed',x===b)});
+  var v=$('so-v'+i);v.textContent=ok?'✓':'✗';v.className='ver '+(ok?'si':'no');
+  $('so-msg').innerHTML='<b>'+(ok?'Correcto. ':'No: es «'+LB[s[2]]+'». ')+'</b>'+esc(s[3])+'<br><code style="font-size:19px">'+esc(s[4])+'</code>'}});
+$('so-msg').textContent='Escoja una respuesta en cualquier fila.';
+
+/* ---------- herencia múltiple ---------- */
+grupo('hm-b','data-x',function(k){var v=k==='v';$('hm-p1').classList.toggle('lit',v);$('hm-p2').classList.toggle('lit',!v);$('hm-v').classList.toggle('lit',v);$('hm-e').classList.toggle('lit',!v);
+  $('hm-msg').innerHTML=v?'<code>a.tablilla</code> sube por el camino de la izquierda: viene de <code>Vehiculo</code>.':'<code>a.carga</code> sube por la derecha: viene de <code>Electrico</code>. Un AutoElectrico es un Vehiculo y también es un Electrico.'},'v');
+
+/* ---------- diamante ---------- */
+var DMC='class Vehiculo { public: string tablilla; };\nclass Pasajeros : VV public Vehiculo {\n    public: int asientos = 5;\n};\nclass Carga : VV public Vehiculo {\n    public: int libras = 1000;\n};\nclass Pickup : public Pasajeros, public Carga { };\nint main() {\n    Pickup p;\n    p.tablilla = "PKP-330";\n    cout << p.tablilla << " | " << p.asientos\n         << " asientos | " << p.libras << " lb" << endl;\n}';
+grupo('dm-b','data-m',function(m){var con=m==='con';
+  pinta($('dm-code'),con?DMC.replace(/VV /g,'virtual '):DMC.replace(/VV /g,''));
+  [].forEach.call($('dm-code').querySelectorAll('.ln'),function(l,i){l.classList.toggle('err',!con&&(i===10||i===11));l.classList.toggle('cur',(i===1||i===4))});
+  $('dm-out').innerHTML=con?'PKP-330 | 5 asientos | 1000 lb':'<span class="e">error: request for member \'tablilla\' is ambiguous</span>\n<span class="p">note: candidates are: \'std::string Vehiculo::tablilla\'\nnote:                 \'std::string Vehiculo::tablilla\'</span>';
+  var tv=function(c){return '<div class="capa b'+c+'"><div class="ct">Vehiculo</div><div class="fl"><span>tablilla</span><b>'+(con?'"PKP-330"':'¿?')+'</b></div></div>'};
+  $('dm-obj').innerHTML='<div class="oh">Pickup p</div>'+(con?tv(' lit')+'<div class="dos"><div class="capa"><div class="ct">Pasajeros</div><div class="fl"><span>asientos</span><b>5</b></div></div><div class="capa"><div class="ct">Carga</div><div class="fl"><span>libras</span><b>1000</b></div></div></div>'
+    :'<div class="dos"><div class="capa"><div class="ct">Pasajeros</div>'+tv(' mal')+'<div class="fl"><span>asientos</span><b>5</b></div></div><div class="capa"><div class="ct">Carga</div>'+tv(' mal')+'<div class="fl"><span>libras</span><b>1000</b></div></div></div>');
+  $('dm-msg').innerHTML=con?'Con <code>virtual public</code>, las dos ramas comparten <b>una sola</b> parte Vehiculo. Funciona, pero complica el diseño: mejor evitar el diamante.':'Una pickup lleva pasajeros y carga, y cada rama trae su parte Vehiculo: hay <b>dos</b> tablillas. ¿Cuál quiso decir? g++ no adivina.';
+},'sin');
+
+/* ---------- acceso ---------- */
+var AC={a:'protected',w:'m'};
+var ACR={'public|d':[1,'ABC-123'],'public|m':[1,'ABC-123\nABC-123'],'protected|d':[1,'ABC-123'],'protected|m':[0,"error: 'std::string Vehiculo::tablilla' is protected within this context",[10]],
+ 'private|d':[0,"error: 'std::string Vehiculo::tablilla' is private within this context",[6]],'private|m':[0,"error: 'std::string Vehiculo::tablilla' is private within this context\nerror: 'std::string Vehiculo::tablilla' is private within this context",[6,10]]};
+function acShow(){
+  var txt='class Vehiculo {\n'+AC.a+':\n    string tablilla = "ABC-123";\n};\nclass Auto : public Vehiculo {\npublic:\n    void mostrar() const { cout << tablilla << endl; }\n};\nint main() {\n    Auto a;  a.mostrar();\n'+(AC.w==='m'?'    cout << a.tablilla << endl;\n':'')+'}';
+  pinta($('ac-code'),txt);var r=ACR[AC.a+'|'+AC.w];
+  [].forEach.call($('ac-code').querySelectorAll('.ln'),function(l,i){l.classList.toggle('err',!r[0]&&r[2].indexOf(i)>=0);l.classList.toggle('cur',i===1)});
+  var s=$('ac-sem');s.textContent=r[0]?'Compila':'No compila';s.className='semaforo '+(r[0]?'si':'no');
+  $('ac-out').innerHTML=r[0]?esc(r[1]):'<span class="e">'+esc(r[1])+'</span>';
+}
+grupo('ac-a','data-a2',function(k){AC.a=k;acShow()},'protected');
+grupo('ac-w','data-w',function(k){AC.w=k;acShow()},'m');
+
+/* ---------- orden de construcción ---------- */
+Deck.steps.orden=[
+ {l:10,out:'Llega el camion',msg:'Todavía no hay camión.'},
+ {l:12,msg:'Se declara c. Antes del cuerpo de Camion, su lista de inicialización llama a Vehiculo(t).'},
+ {l:2,show:['pb'],flash:['pb'],out:'Vehiculo(TRK-450)',msg:'Primero se arma la base: el cuerpo de Vehiculo corre y la tablilla ya existe.'},
+ {l:7,show:['pd'],flash:['pd'],out:'Camion(3 ejes)',msg:'Ahora la parte Camion: ejes = 3. El objeto ya está completo.'},
+ {l:13,out:'Paga y cruza',msg:'El camión se usa.'},
+ {l:9,hide:['pd'],out:'~Camion(3 ejes)',msg:'Al llegar a la llave } se destruye c: primero la parte Camion, la última que se armó.'},
+ {l:4,hide:['pb'],out:'~Vehiculo(TRK-450)',msg:'Después la base. Se desarma en el orden inverso al que se armó.'},
+ {l:15,out:'Se fue',msg:'Salida real del programa: base, derivada… derivada, base.'}];
+
+/* ---------- virtual ---------- */
+var VIC=fuente($('vi-code'));
+grupo('vi-b','data-m',function(m){var con=m==='con';
+  pinta($('vi-code'),con?VIC:VIC.replace('virtual double','double'));
+  lineas($('vi-code'),[2,15,16]);
+  $('vi-out').textContent=con?'c.tarifa():  3.75\np->tarifa(): 3.75\nCobro: $3.75':'c.tarifa():  3.75\np->tarifa(): 1.50\nCobro: $1.50';
+  pantalla($('vi-pan'),'TRK-450 · llega un Camion',con?'$3.75':'$1.50',con?'Camion::tarifa()':'Vehiculo::tarifa()');
+  $('vi-msg').innerHTML=con?'<b>virtual:</b> la función se escoge al ejecutar, según el objeto real. <code>p</code> apunta a un Camion, así que contesta <code>Camion::tarifa()</code>. Eso es el polimorfismo: una llamada, muchas formas.':'<b>Redefinir sin virtual:</b> la función se escoge al compilar, mirando el tipo del puntero. <code>p</code> es <code>Vehiculo*</code>, así que llama a <code>Vehiculo::tarifa()</code> aunque haya un Camion. Solo <code>c.tarifa()</code> da 3.75.';
+},'sin');
+
+/* ---------- la fila polimórfica ---------- */
+var FP=[{k:'auto',tab:'ABC-123',cl:'Vehiculo',p:1.50},{k:'camion',a:3,tab:'TRK-450',cl:'Camion',p:3.75},{k:'motora',tab:'MTR-077',cl:'Motora',p:0.75},{k:'camion',a:5,tab:'CRG-901',cl:'Camion',p:6.25}];
+var FPi=0,FPt=0,FPP=new Plaza($('fp-plaza')),FPbusy=false;
+function fpFila(){ $('fp-fila').innerHTML=FP.map(function(f,i){return '<div class="chip'+(i<FPi?' ido':'')+(i===FPi?' cur':'')+'"><small>fila['+i+']</small>'+f.cl+'</div>'}).join('') }
+function fpReset(){FPi=0;FPt=0;FPbusy=false;FPP.tok++;$('fp-out').textContent='';$('fp-tot').textContent='$0.00';FPP.coloca('auto',0,-300);FPP.arm.classList.remove('up');FPP.win.classList.remove('on');
+  pantalla($('fp-pan'),'Fila de 4 · Vehiculo*','$0.00','');lineas($('fp-code'),[0,1,2]);$('fp-go').disabled=false;$('fp-go').textContent='Cobrar el siguiente';fpFila()}
+$('fp-go').onclick=function(){
+  if(FPi>=FP.length||FPbusy)return;var f=FP[FPi];FPbusy=true;lineas($('fp-code'),[5]);
+  pantalla($('fp-pan'),'v = fila['+FPi+'] · Vehiculo*','','');
+  FPP.pasa(f.k,f.a,function(){
+    FPt=Math.round((FPt+f.p)*100)/100;
+    pantalla($('fp-pan'),f.tab+' · el objeto es '+f.cl,'$'+f.p.toFixed(2),f.cl+'::tarifa()');
+    $('fp-out').textContent+=f.tab+'  $'+f.p.toFixed(2)+'\n';$('fp-tot').textContent='$'+FPt.toFixed(2);lineas($('fp-code'),[6,7,8]);
+  },function(){FPbusy=false;FPi++;fpFila();
+    if(FPi>=FP.length){$('fp-out').textContent+='Total: $'+FPt.toFixed(2);lineas($('fp-code'),[10,11]);$('fp-go').disabled=true;pantalla($('fp-pan'),'Fila cobrada · delete de cada uno','$'+FPt.toFixed(2),'')}});
+  fpFila();
+};
+$('fp-re').onclick=fpReset;fpReset();
+
+/* ---------- destructor virtual ---------- */
+var DVC=fuente($('dv-code')),DVm='sin';
+grupo('dv-b','data-m',function(m){DVm=m;var con=m==='con';
+  pinta($('dv-code'),con?DVC:DVC.replace('virtual ~','~'));lineas($('dv-code'),[2,15]);
+  $('dv-out').textContent=con?'~Camion: libera la carga\n~Vehiculo':'~Vehiculo';
+  $('dv-h1').className='bl libre';$('dv-h2').className='bl '+(con?'libre':'perdida');
+  $('dv-h1').textContent='Camion: libre';$('dv-h2').textContent=con?'"arena": libre':'"arena": perdida';
+  $('dv-asan').hidden=con;$('dv-asan-out').hidden=true;
+  $('dv-msg').innerHTML=con?'Con <code>virtual ~Vehiculo()</code>, <code>delete p</code> llama primero a <code>~Camion</code> y después a <code>~Vehiculo</code>. Todo vuelve a la memoria.':'<code>delete p</code> solo ve un <code>Vehiculo*</code>: corre <code>~Vehiculo</code> y nunca <code>~Camion</code>. La carga queda perdida. Es comportamiento indefinido.';
+},'sin');
+$('dv-asan').onclick=function(){var o=$('dv-asan-out');o.hidden=false;
+  o.innerHTML='<span class="e">ERROR: AddressSanitizer: new-delete-type-mismatch</span>\n<span class="p">size of the allocated type:   8 bytes;\nsize of the deallocated type: 1 bytes.</span>'};
+
+/* ---------- abstracta ---------- */
+var AB={t:false,p:false};
+function abShow(){
+  [].forEach.call($('ab-b').querySelectorAll('button'),function(b){b.setAttribute('aria-pressed',AB[b.dataset.f])});
+  var falta=[];if(!AB.t)falta.push("note:     'virtual double Vehiculo::tarifa() const'");if(!AB.p)falta.push("note:     'virtual std::string Vehiculo::tipo() const'");
+  if(!falta.length){$('ab-out').innerHTML='(compila sin errores)';$('ab-msg').innerHTML='Escribió las dos: <code>Motora</code> ya es una clase <b>concreta</b> y se puede crear.';return}
+  $('ab-out').innerHTML='<span class="e">error: cannot declare variable \'m\' to be of abstract type \'Motora\'</span>\n<span class="p">note:   because the following virtual functions are pure within \'Motora\':\n'+falta.join('\n')+'</span>';
+  $('ab-msg').innerHTML='Una clase con alguna función <code>= 0</code> sin escribir es <b>abstracta</b>: no se crean objetos de ella. Mientras falte una, Motora también lo es; g++ lista las que faltan.';
+}
+[].forEach.call($('ab-b').querySelectorAll('button'),function(b){b.onclick=function(){AB[b.dataset.f]=!AB[b.dataset.f];abShow()}});abShow();
+
+/* ---------- interfaces ---------- */
+var IF={ct:[1,'Peaje de camion: $3.75','El camión es Cobrable: la caseta le pide monto() y concepto().'],
+ cm:[1,'Multa: cruzo sin pagar: $25.00','Una multa no es un vehículo, pero también es Cobrable. La caseta la cobra con la misma función.'],
+ pt:[1,'Bascula: 13500 lb','El camión también es Pesable: herencia de dos interfaces.'],
+ pm:[0,"error: invalid initialization of reference of type 'const Pesable&' from expression of type 'Multa'",'Una multa no se pesa: Multa no implementa Pesable, y g++ no la deja pasar.']};
+grupo('if-b','data-x',function(k){var r=IF[k];$('if-out').innerHTML=r[0]?esc(r[1]):'<span class="e">'+esc(r[1])+'</span>';$('if-msg').textContent=r[2]},'ct');
+
+/* ---------- laboratorio ---------- */
+var LP=new Plaza($('lab-plaza'));LP.coloca('guagua',true);LP.win.classList.add('on');
+
+/* verificador */
+function norm(x){return x.replace(/\r/g,'').replace(/[ \t   ]+/g,' ')}
+function comprobar(chk,raw){
+  var lines=norm(raw).split('\n').map(function(x){return x.trim()}),ln=0,col=0;
+  return chk.map(function(c){var t=norm(c).trim();
+    for(var i=ln;i<lines.length;i++){var p=lines[i].indexOf(t,i===ln?col:0);if(p>=0){ln=i;col=p+t.length;return true}}
+    return false});
+}
+var CASES=window.__CASES,PASS={},cur='c1';
+try{var g=JSON.parse(localStorage.getItem('tesi2105-labI')||'{}');if(g&&typeof g==='object'&&!Array.isArray(g))Object.keys(CASES).forEach(function(k){if(g[k]===1)PASS[k]=1})}catch(e){PASS={}}
+function marcar(){Object.keys(CASES).forEach(function(k){$('tb-'+k).classList.toggle('pass',!!PASS[k])})}
+function vfLista(h,f){var L=$('vf-checks');L.innerHTML=h;L.scrollTop=0;if(f)L.setAttribute('tabindex','0');else L.removeAttribute('tabindex')}
+function vfGuardar(){try{if(Object.keys(PASS).length)localStorage.setItem('tesi2105-labI',JSON.stringify(PASS));else localStorage.removeItem('tesi2105-labI')}catch(e){}}
+Object.keys(CASES).forEach(function(k){$('tb-'+k).addEventListener('click',function(){cur=k;$('vf-name').textContent='Caso '+k.slice(1);vfLista('',false);$('vf-score').textContent='';$('vf-in').value=''})});
+$('vf-checks').addEventListener('keydown',function(e){if([' ','PageDown','PageUp','Home','End','ArrowDown','ArrowUp'].indexOf(e.key)>=0)e.stopPropagation()});
+['vf-checks','vf-in'].forEach(function(id){['touchstart','touchend'].forEach(function(ev){$(id).addEventListener(ev,function(e){e.stopPropagation()},{passive:true})})});
+$('vf-go').onclick=function(){
+  var C=CASES[cur],raw=$('vf-in').value,h='';
+  if(!raw.trim()){$('vf-score').textContent='';vfLista('<li class="no">Pegue primero la salida de su programa.</li>',false);return}
+  var r=comprobar(C.chk,raw),ok=r.filter(Boolean).length,todo=ok===C.chk.length;
+  C.chk.forEach(function(c,i){h+=r[i]?'<li class="ok">'+esc(c)+'</li>':'<li class="no">Falta, o sale en otro orden: '+esc(c)+'</li>'});
+  vfLista(h,true);
+  $('vf-score').textContent=todo?'Prueba superada':ok+' de '+C.chk.length;
+  var antes=!!PASS[cur];if(todo)PASS[cur]=1;else delete PASS[cur];if(antes!==todo)vfGuardar();marcar();
+};
+marcar();
+
+Deck.start();
+})();
+</script>
+</body>
+</html>

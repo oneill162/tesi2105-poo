@@ -1,0 +1,8 @@
+numero,nombre,nota1,nota2,nota3
+84231,Ana Rivera,90,85,92
+70112,Luis Ortiz,78,81,70
+90517,Marta Colon,ochenta,88,91
+65020,Yadiel Cruz,65,72,60
+88140,Sofia Medina,95,98,100
+73355,Kevin Torres,70,68
+91002,Camila Vega,84,90,79

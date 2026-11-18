@@ -1,0 +1,1239 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unidad K: Ficheros y excepciones · TESI 2105</title>
+<meta name="description" content="TESI 2105 Programación Orientada a Objetos. Unidad K: ficheros y excepciones en C++, contados con el archivero de la Oficina de Registro. Incluye el Laboratorio K.">
+<link rel="preload" href="assets/fonts/schibsted-grotesk-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* Tema de la Unidad K: el archivero de la Oficina de Registro.
+   Acero verde gris, carpetas manila con pestaña y el sello rojo de recibido.
+   Abrir o cerrar una gaveta es abrir o cerrar un archivo; una excepción es el
+   expediente que no aparece y se lleva a la ventanilla de quien puede resolverlo. */
+:root{--ground:#F1F0EA;--tone:#E3E2D8;--tone2:#CFCEC0;--ink:#18211F;--soft:#4B5754;--accent:#1F6B5C;--accent-ink:#fff;--field:#22302D;--field-ink:#F4F2EA;--hi:#FFC425;--code-bg:#18211F;--code-ink:#E7EEEA;--c-kw:#8FD6C2;--c-str:#F4C98C;--c-num:#FFE3A0;--c-cmt:#9CAEA8;--manila:#EBD29B;--manila2:#D3B064;--papel:#FFFDF6;--renglon:#DDD6BF;--sello:#B3261E;--si:#17694A;--acero:#8A9794;--acero2:#B9C3C0;--acero3:#56625F;--hueco:#2B3533}
+[hidden]{display:none!important}
+pre.code .ln.cur{background:rgba(255,196,37,.26)}
+.term{background:#111917}
+#map{gap:2px}
+#map button{width:13px}
+#map button.ch{width:17px;box-shadow:inset 0 0 0 3px var(--manila2);background:transparent}
+#map button.ch.seen{background:var(--manila2)}
+#map button.cur,#map button.ch.cur{background:var(--hi);box-shadow:none}
+
+pre.c18{font-size:18px;line-height:1.42;padding:10px 0}
+pre.c18 .ln{padding:0 18px}
+pre.c19{font-size:19px;line-height:1.5;padding:12px 0}
+pre.c19 .ln{padding:0 20px}
+pre.c21{font-size:21px;line-height:1.5;padding:14px 0}
+.term.t18{font-size:18px;line-height:1.45;padding:10px 16px;min-height:0}
+.term.espera:empty::before{content:"Aquí sale lo que imprime el programa";color:#7F9590;font-family:var(--sans)}
+.term .nada{color:#7F9590;font-family:var(--sans);font-style:italic}
+.gap8{margin-top:8px}.gap12{margin-top:12px}.gap16{margin-top:16px}.gap20{margin-top:20px}
+pre.code.gap8{margin-top:8px}pre.code.gap12{margin-top:12px}pre.code.gap16{margin-top:16px}
+.mono{font-family:var(--mono)}
+.small code{font-size:1em}
+.lead code,.body code,.msg code{white-space:normal}
+.cap{font-size:19px;line-height:1.3;font-weight:600;color:var(--soft);margin:10px 0 5px}
+.cap:first-child{margin-top:0}
+.cap code{font-size:18px}
+.field-hi button:focus-visible,.field-hi a:focus-visible{outline-color:var(--ink)}
+.msg{background:var(--tone);padding:11px 16px;font-size:20px;line-height:1.38;min-height:54px}
+.g2{display:grid;gap:28px;margin-top:18px}
+.ops{display:flex;flex-wrap:wrap;gap:8px}
+.ops button{font:600 18px var(--mono);padding:10px 12px}
+.ops button.sans{font-family:var(--sans)}
+.etq{font:600 18px var(--sans);color:var(--soft);margin-right:4px}
+
+/* capítulos */
+.chwrap{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:56px;height:100%}
+.chwrap .left{display:flex;flex-direction:column;min-width:0}
+.chapter h1{font-size:88px}
+.chapter .ext{display:flex;flex-wrap:wrap;gap:12px 26px;margin-top:auto;font-size:22px;font-weight:700}
+.chapter .ext span{opacity:.5;white-space:nowrap}
+.chapter .ext span.on{opacity:1}
+.chapter .ext span.on::after{content:"";display:block;height:5px;background:var(--hi);margin-top:6px}
+
+/* el archivero */
+.arch{background:linear-gradient(90deg,#66726F,#8C9895 45%,#727E7B);padding:16px 16px 20px;width:420px;position:relative}
+.arch::after{content:"";position:absolute;left:24px;right:24px;bottom:-14px;height:14px;background:#4A5552}
+.arch .gav+.gav{margin-top:12px}
+.arch .int{height:0;overflow:hidden;background:var(--hueco);display:flex;align-items:flex-end;gap:5px;padding:0 16px;transition:height .45s var(--ease-expo)}
+.arch .gav.abierta .int{height:62px}
+.arch .int span{background:var(--manila);font:700 18px var(--mono);color:var(--ink);padding:6px 9px 12px;border-radius:7px 7px 0 0;white-space:nowrap}
+.arch .int span:nth-child(2n){background:var(--manila2)}
+.arch .frente{display:block;width:100%;height:112px;padding:0;background:linear-gradient(#C9D1CF,#A9B3B0);border:3px solid var(--acero3);position:relative;cursor:pointer;color:var(--ink)}
+.arch .frente:hover{background:linear-gradient(#D6DDDB,#B7C0BD);color:var(--ink)}
+.arch .frente:active{transform:none}
+.arch .tarj{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:var(--papel);border:3px solid var(--acero3);font:700 18px var(--mono);padding:4px 14px;white-space:nowrap}
+.arch .asa{position:absolute;left:50%;bottom:20px;width:124px;margin-left:-62px;height:16px;border-radius:8px;background:#38423F}
+.arch .gav.abierta .asa{background:var(--accent)}
+.arch-est{font:600 19px var(--mono);margin-top:26px;color:var(--field-ink)}
+.arch-est b{color:var(--hi)}
+/* gaveta pequeña, para los pasos */
+.gmini{background:linear-gradient(90deg,#66726F,#8C9895 45%,#727E7B);padding:10px;width:100%}
+.gmini .int{height:0;overflow:hidden;background:var(--hueco);transition:height .4s var(--ease-expo);display:flex;align-items:flex-end;padding:0 12px;gap:5px}
+.gmini.abierta .int{height:40px}
+.gmini .int span{background:var(--manila);font:700 18px var(--mono);padding:4px 8px 8px;border-radius:6px 6px 0 0;white-space:nowrap}
+.gmini .fr{height:54px;background:linear-gradient(#C9D1CF,#A9B3B0);border:3px solid var(--acero3);position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 14px;font:700 18px var(--mono)}
+.gmini .fr i{display:block;width:90px;height:12px;border-radius:6px;background:#38423F}
+.gmini.abierta .fr i{background:var(--accent)}
+.gmini .fr em{font:700 18px var(--sans);font-style:normal}
+
+/* la carpeta: así se dibuja un archivo */
+.carp{position:relative;background:var(--manila);padding:10px 12px 12px;margin-top:30px}
+.carp>.pest{position:absolute;left:0;top:-30px;height:30px;background:var(--manila);padding:5px 16px 0;border-radius:8px 8px 0 0;font:700 18px var(--mono);color:var(--ink);white-space:nowrap}
+.carp .hoja{background:var(--papel);font:500 19px/1.5 var(--mono);padding:6px 14px;white-space:pre;color:var(--ink);min-height:44px;overflow:hidden;position:relative}
+.carp .hoja.h18{font-size:18px}
+.hoja .lnf{display:block;border-bottom:2px solid var(--renglon)}
+.hoja .lnf:last-child{border-bottom:0}
+.hoja .vacio{color:#8E8A78;font-family:var(--sans);font-style:italic}
+.hoja .nl{color:#B3A983}
+.hoja .leido{background:#D7E9E3}
+.hoja .tras{position:relative}
+.hoja .tras::after{content:"";position:absolute;right:-2px;top:2px;bottom:2px;width:3px;background:var(--sello)}
+.hoja .fin{color:#8E8A78;font:600 18px var(--sans)}
+.hoja .malo{background:#F6D9D3}
+.carp .sello{position:absolute;right:-12px;bottom:-20px}
+.sello{display:inline-block;font:800 21px/1 var(--sans);letter-spacing:.12em;padding:7px 10px 6px;border:4px solid currentColor;border-radius:6px;transform:rotate(-8deg);color:var(--sello);background:rgba(255,253,246,.88)}
+.sello.si{color:var(--si)}
+
+/* estado del flujo */
+.flags{display:flex;gap:8px;flex-wrap:wrap}
+.flags span{font:600 18px var(--mono);background:#fff;padding:6px 10px;border-left:6px solid var(--acero2)}
+.flags span.t{border-color:var(--si)}
+.flags span.f{border-color:var(--sello)}
+.vars{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;background:#fff;padding:8px 14px;font:600 19px var(--mono);align-items:baseline}
+.vars span{color:var(--soft);font-size:18px}
+.vars b{overflow-wrap:anywhere}
+
+/* tres clases */
+.flujo{display:grid;grid-template-columns:200px 1fr 220px;align-items:center;gap:0;margin-top:6px}
+.flujo .prog{background:var(--ink);color:#fff;font:700 21px var(--mono);padding:24px 16px;text-align:center}
+.flujo .flecha{height:60px;position:relative}
+.flujo .flecha i{position:absolute;left:10px;right:10px;top:50%;height:8px;margin-top:-4px;background:var(--accent);transition:opacity .3s}
+.flujo .flecha i.d::after,.flujo .flecha i.r::before{content:"";position:absolute;top:-10px;border:14px solid transparent}
+.flujo .flecha i.d::after{right:-18px;border-left:18px solid var(--accent);border-right:0}
+.flujo .flecha i.r::before{left:-18px;border-right:18px solid var(--accent);border-left:0}
+.flujo .flecha i.up{top:30%}.flujo .flecha i.dn{top:72%}
+.flujo .flecha i.off{opacity:.12}
+.flujo .carp{margin-top:30px}
+.ficha3{display:grid;grid-template-columns:200px 1fr;gap:6px 14px;background:#fff;padding:12px 18px;font-size:21px;line-height:1.35;margin-top:14px}
+.ficha3 span{color:var(--soft);font-size:19px;font-weight:600}
+.ficha3 code{white-space:normal}
+
+/* ventanillas (catch) */
+.vents{display:grid;gap:8px}
+.vent{background:#fff;border-left:10px solid var(--acero2);padding:8px 14px;transition:background .25s,border-color .25s}
+.vent b{display:block;font:700 18px var(--mono)}
+.vent small{display:block;font-size:18px;color:var(--soft)}
+.vent.lit{background:var(--hi);border-color:var(--ink)}
+.vent.muerta{opacity:.45}
+.vent.muerta b{text-decoration:line-through}
+.exped{display:inline-flex;align-items:center;gap:10px;background:var(--manila);border-top:6px solid var(--sello);padding:8px 14px;font:700 18px var(--mono);color:var(--ink)}
+.exped small{font:600 18px var(--sans);color:var(--sello)}
+.arbol{font:600 19px/1.5 var(--mono);background:#fff;padding:10px 16px}
+.arbol div{padding:1px 6px;white-space:nowrap}
+.arbol .lv1{margin-left:26px}.arbol .lv2{margin-left:52px}
+.arbol .lit{background:var(--hi)}
+.arbol .dim{color:#8A9592}
+.res{background:#fff;padding:12px 18px}
+.res small{display:block;font:600 18px var(--sans);color:var(--soft)}
+.res b{display:block;font:700 22px var(--mono);margin-top:4px;overflow-wrap:anywhere}
+.res b.tipo{color:var(--sello)}
+.res b.ok{color:var(--si)}
+
+/* pila de llamadas */
+.pila{display:flex;flex-direction:column-reverse;gap:6px;min-height:150px;justify-content:flex-start;padding-top:20px}
+.marco{background:linear-gradient(#C9D1CF,#AEB8B5);border:3px solid var(--acero3);padding:5px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative}
+.marco b{font:700 19px var(--mono)}
+.marco .loc{font:600 18px var(--mono);background:var(--manila);padding:3px 8px}
+.marco .loc.cerrada{background:var(--tone2);color:var(--soft);text-decoration:line-through}
+.marco.main{background:var(--ink);color:#fff;border-color:var(--ink)}
+.marco.sale{opacity:.35;border-style:dashed}
+.marco .exped{position:absolute;right:-6px;top:-24px;padding:3px 10px;font-size:18px}
+
+/* bandeja (búfer) */
+.bandeja{display:grid;grid-template-columns:1fr;gap:0}
+.tray{background:var(--tone2);border:3px solid var(--acero3);border-top:0;height:68px;display:flex;align-items:flex-end;justify-content:center;padding:8px;position:relative}
+.tray::before{content:"búfer (bandeja de salida)";position:absolute;top:6px;left:10px;font:600 18px var(--sans);color:var(--soft)}
+.papelito{background:var(--papel);font:600 17px var(--mono);padding:6px 10px;box-shadow:0 2px 0 var(--renglon)}
+
+/* lector */
+.lect{display:grid;grid-template-columns:560px 1fr;gap:26px;margin-top:14px}
+.lect .carp{margin-top:34px}
+
+/* csv */
+input.campo{font:500 21px var(--mono);padding:10px 14px;border:0;background:#fff;color:var(--ink);width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;min-height:62px}
+.chips div{background:var(--manila);padding:4px 10px 6px;font:700 19px var(--mono);border-top:5px solid var(--manila2)}
+.chips div small{display:block;font:600 18px var(--sans);color:var(--soft)}
+.chips div.vacio{background:var(--tone2)}
+table.conv{width:100%;border-collapse:collapse;font:600 18px var(--mono);margin-top:10px}
+table.conv td{padding:6px 10px;border-bottom:2px solid var(--tone2);background:#fff}
+table.conv td:first-child{color:var(--soft);width:120px}
+table.conv td.no{color:var(--sello)}
+table.conv td.si{color:var(--si)}
+
+/* discusiones y repaso */
+.field-hi .q{font-size:58px;line-height:1.05;letter-spacing:-.03em;font-weight:800;max-width:1100px}
+.field-hi .q code{font-size:.82em;white-space:normal}
+.field-hi .timer{flex-direction:column;align-items:flex-start;gap:8px;margin-top:0}
+.field-hi .timer .row{margin-bottom:0}
+.prop2{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch}
+.prop2>div{background:var(--ink);color:#fff;padding:16px 22px;min-height:136px;transition:opacity .3s}
+.prop2>div.ok{background:var(--accent)}
+.prop2 b{display:block;font:700 24px var(--sans)}
+.prop2 b code{white-space:nowrap;font-size:21px}
+.prop2 span{display:block;font-size:21px;line-height:1.35;margin-top:6px}
+.prop2 .pbtn{margin-top:10px;background:#fff;color:var(--ink);font-size:18px;padding:8px 12px}
+.prop2 .reveal{display:none}
+.prop2.shown .reveal{display:block}
+.prop2>div.resp{grid-column:1/3;min-height:0;background:var(--field);font-size:21px;line-height:1.4;padding:14px 22px}
+.prop2.shown>div:first-child{opacity:.55}
+.discrow{position:absolute;left:72px;right:72px;bottom:32px}
+.dir{display:grid;grid-template-columns:repeat(3,1fr);gap:22px 36px;margin-top:26px}
+.dir h3{font-size:25px;color:var(--accent)}
+.dir p{font-size:21px;line-height:1.4;margin-top:6px}
+.regla{background:var(--field);color:var(--field-ink);padding:14px 20px;font-size:21px;line-height:1.4}
+.regla code{color:var(--hi)}
+
+/* laboratorio */
+a.dl{display:inline-block;background:var(--accent);color:#fff;font-weight:600;font-size:19px;padding:11px 16px;text-decoration:none;white-space:nowrap}
+a.dl:hover{background:var(--ink)}
+a.dl.dat{background:var(--manila);color:var(--ink);font-family:var(--mono);font-size:18px;padding:11px 10px}
+a.dl.dat:hover{background:var(--ink);color:#fff}
+.todo{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 24px}
+.todo li{background:#fff;padding:7px 14px;font-size:19px;line-height:1.32;display:grid;grid-template-columns:38px 1fr;align-items:baseline}
+.todo li b.nm{font:800 26px var(--sans);color:var(--accent)}
+.todo code{font-size:18px;white-space:normal;font-weight:600}
+.lineas .lnf{cursor:pointer}
+.lineas .lnf:hover{background:var(--tone)}
+.lineas .lnf.lit{background:var(--hi)}
+.lineas .lnf b{display:inline-block;width:34px;color:#A49B78;font-weight:500}
+.cases [data-tab]{font:600 18px var(--sans);padding:9px 14px}
+.cases [data-tab].pass::after{content:" ✓";color:#2E9E5B}
+.cases .ct{font-size:23px;line-height:1.2}
+.cases .cc{display:grid;grid-template-columns:240px 1fr;gap:16px;margin-top:6px;align-items:start}
+.cases .cl{font-size:18px;line-height:1.3;font-weight:600}
+.cases .cl.nota{font-weight:400;color:var(--soft);margin-top:6px}
+.cases [data-panel] .term{font-size:18px;line-height:1.22;white-space:pre-wrap;padding:10px 14px;margin-top:6px}
+kbd.arch-k{display:block;font:600 18px/1.25 var(--mono);background:#fff;padding:6px 8px;border-bottom:3px solid var(--tone2);margin-top:6px;overflow-wrap:anywhere}
+textarea.paste{width:100%;height:118px;font:500 16px/1.4 var(--mono);padding:10px 12px;border:0;background:#fff;color:var(--ink);resize:none;display:block}
+.checks{list-style:none;margin:8px 0 0;padding:0;font-size:18px;line-height:1.4;max-height:222px;overflow:auto}
+.checks li{overflow-wrap:anywhere}
+.checks li.ok{color:#0B6B47}.checks li.ok::before{content:"✓  "}
+.checks li.no{color:#B3261E}.checks li.no::before{content:"✗  "}
+.score{font:800 34px var(--sans)}
+.rub td:last-child,.rub th:last-child{text-align:right;width:110px}
+.rub td{padding:7px 16px!important;font-size:20px}
+.rub th{padding:8px 16px!important;font-size:20px}
+.rub td code{font-size:19px}
+
+@media (prefers-reduced-motion:no-preference){
+  .sello{animation:estampar .32s cubic-bezier(.2,.9,.3,1.25) both}
+  .nace{animation:nacer .45s var(--ease-expo) both}
+  .marco.sale{transition:opacity .4s}
+  .vent{transition:background .3s,border-color .3s}
+}
+@media (prefers-reduced-motion:reduce){
+  .arch .int,.gmini .int{transition:none}
+}
+@keyframes estampar{from{opacity:0;transform:rotate(-8deg) scale(2)}to{opacity:1;transform:rotate(-8deg) scale(1)}}
+@keyframes nacer{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage" data-name="Unidad K · Ficheros y excepciones" role="region" aria-roledescription="presentación" aria-label="Unidad K: Ficheros y excepciones">
+
+<!-- PORTADA -->
+<section class="slide chapter" data-title="Portada">
+  <div class="chwrap">
+    <div class="left">
+      <h1 class="mask"><span>Ficheros y excepciones</span></h1>
+      <p class="lead" data-a style="margin-top:22px;max-width:600px;font-size:29px">En la Oficina de Registro, lo que se archiva sigue ahí mañana. Y cuando un expediente no aparece, alguien sabe qué hacer.</p>
+      <div class="ext" data-a><span class="on">Ficheros</span><span class="on">Excepciones</span><span class="on">Laboratorio</span></div>
+      <p class="body" data-a style="margin-top:18px;font-size:20px">TESI 2105, Unidad K<br>Prof. Eduardo O. De Jesús Arroyo · ITPR, Recinto de Manatí</p>
+    </div>
+    <div data-a style="align-self:center">
+      <div class="arch" id="pt-arch">
+        <div class="gav"><div class="int"><span>Acosta</span><span>Colón</span><span>Cruz</span><span>Díaz</span></div><button class="frente" data-g="0" aria-label="Gaveta A a G"><span class="tarj">A – G</span><span class="asa"></span></button></div>
+        <div class="gav"><div class="int"><span>Medina</span><span>Nieves</span><span>Ortiz</span></div><button class="frente" data-g="1" aria-label="Gaveta H a O"><span class="tarj">H – O</span><span class="asa"></span></button></div>
+        <div class="gav"><div class="int"><span>Rivera</span><span>Torres</span><span>Vega</span></div><button class="frente" data-g="2" aria-label="Gaveta P a Z"><span class="tarj">P – Z</span><span class="asa"></span></button></div>
+      </div>
+      <p class="arch-est" id="pt-est" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="La memoria se olvida; el archivo no">
+  <h2 class="mask"><span>La memoria se olvida; el archivo no</span></h2>
+  <p class="body sub" data-a style="max-width:1120px;font-size:22px">Hasta ahora, todo lo que un programa sabía se perdía al terminar. Ejecute este programa varias veces y compare los dos contadores.</p>
+  <div class="g2" style="grid-template-columns:600px 1fr">
+    <div data-a>
+      <pre class="code c18">int enMemoria = 0;
+enMemoria++;
+
+int guardado = 0;
+ifstream lee("contador.txt");
+if (lee.is_open()) lee &gt;&gt; guardado;
+lee.close();
+guardado++;
+ofstream esc("contador.txt");
+esc &lt;&lt; guardado &lt;&lt; endl;
+esc.close();
+
+cout &lt;&lt; "En memoria: " &lt;&lt; enMemoria
+     &lt;&lt; "  En el archivo: " &lt;&lt; guardado &lt;&lt; endl;</pre>
+    </div>
+    <div data-a>
+      <div class="row"><button class="go" id="ct-run">Ejecutar ./contador</button><button id="ct-del">Borrar contador.txt</button></div>
+      <div class="term t18 espera gap12" id="ct-out" style="min-height:140px" aria-live="polite"></div>
+      <div class="carp" style="margin-top:44px"><span class="pest">contador.txt</span><div class="hoja" id="ct-file"></div></div>
+      <p class="msg gap12" id="ct-msg">La variable vive en la memoria y muere con el programa. El archivo queda en el disco.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TEMA 1 -->
+<section class="slide chapter" data-title="Tema 1: Operaciones de entrada/salida con ficheros" data-topic="1">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask"><span>Operaciones de entrada/salida con ficheros</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:620px">Abrir la gaveta, comprobar que abrió, sacar o guardar expedientes y cerrarla. Con <code>&lt;fstream&gt;</code>, un archivo se usa como <code>cin</code> y <code>cout</code>.</p>
+    <div class="ext" data-a></div></div>
+    <div data-a style="align-self:center">
+      <pre class="code c21" style="margin-bottom:8px">#include &lt;fstream&gt;</pre>
+      <div class="carp" style="margin-top:44px"><span class="pest">registro.txt</span><div class="hoja h18"><span class="lnf">84231,Ana Rivera,90,85,92</span><span class="lnf">70112,Luis Ortiz,78,81,70</span></div><span class="sello si">RECIBIDO</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Tres clases en &lt;fstream&gt;">
+  <h2 class="mask"><span>ofstream, ifstream y fstream</span></h2>
+  <p class="body sub" data-a style="font-size:22px">Escoja una clase. <code>f &lt;&lt;</code> escribe como <code>cout &lt;&lt;</code>; <code>f &gt;&gt;</code> lee como <code>cin &gt;&gt;</code>.</p>
+  <div class="ops gap16" data-a id="tc-b"><button data-c="o">ofstream</button><button data-c="i">ifstream</button><button data-c="f">fstream</button></div>
+  <div class="g2" style="grid-template-columns:1fr 560px;margin-top:10px">
+    <div data-a>
+      <div class="flujo"><div class="prog">programa</div><div class="flecha"><i class="d up" id="tc-d"></i><i class="r dn" id="tc-r"></i></div><div class="carp"><span class="pest">tres.txt</span><div class="hoja h18"><span class="lnf">84231</span></div></div></div>
+      <div class="ficha3" id="tc-f"></div>
+    </div>
+    <div data-a>
+      <pre class="code c18" id="tc-code">ofstream esc("tres.txt");    // escribe
+esc &lt;&lt; "84231" &lt;&lt; endl;
+esc.close();
+ifstream lee("tres.txt");     // lee
+string s;
+lee &gt;&gt; s;
+cout &lt;&lt; "ifstream leyo " &lt;&lt; s &lt;&lt; endl;
+lee.close();
+fstream ambos("tres.txt", ios::in | ios::out);
+cout &lt;&lt; "fstream abierto: "
+     &lt;&lt; ambos.is_open() &lt;&lt; endl;</pre>
+      <div class="term t18 gap8">ifstream leyo 84231
+fstream abierto: 1</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Escribir: abrir, comprobar, escribir y cerrar">
+  <h2 class="mask"><span>Escribir: abrir, comprobar, escribir, cerrar</span></h2>
+  <div data-step="esc" class="g2" style="grid-template-columns:620px 1fr;margin-top:20px" data-a>
+    <div>
+      <pre class="code c19">ofstream f("registro.txt");
+if (!f.is_open()) {
+    cout &lt;&lt; "No se pudo crear registro.txt" &lt;&lt; endl;
+    return 1;
+}
+f &lt;&lt; "84231,Ana Rivera,90,85,92" &lt;&lt; endl;
+f &lt;&lt; "70112,Luis Ortiz,78,81,70" &lt;&lt; endl;
+f.close();
+cout &lt;&lt; "Se guardaron 2 expedientes" &lt;&lt; endl;</pre>
+      <div class="row gap12"><button class="go" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="small stepn" aria-live="polite"></span></div>
+    </div>
+    <div class="ws">
+      <div class="gmini" data-id="gav"><div class="int"><span>registro.txt</span></div><div class="fr"><span>Registro</span><i></i><em data-id="gest">cerrada</em></div></div>
+      <div class="carp" style="margin-top:40px"><span class="pest">registro.txt</span><div class="hoja h18"><span class="vacio" data-id="vac">(no existe todavía)</span><span class="lnf nace" data-id="l1" hidden>84231,Ana Rivera,90,85,92</span><span class="lnf nace" data-id="l2" hidden>70112,Luis Ortiz,78,81,70</span></div><span class="sello si" data-id="sello" hidden>RECIBIDO</span></div>
+      <div class="term t18 espera gap12" data-id="out"></div>
+      <p class="msg gap12" data-id="msg" aria-live="polite">Pulse «Siguiente paso».</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Modos de apertura: ios::out e ios::app">
+  <h2 class="mask"><span>ios::out vacía la gaveta; ios::app añade</span></h2>
+  <p class="body sub" data-a style="font-size:22px;max-width:1120px">El programa lee un nombre y un modo, anota la visita y muestra el archivo completo. Ejecútelo varias veces.</p>
+  <div class="g2" style="grid-template-columns:560px 1fr;margin-top:16px">
+    <div data-a>
+      <pre class="code c18">string nombre, modo;
+cin &gt;&gt; nombre &gt;&gt; modo;
+ofstream f;
+if (modo == "app")
+    f.open("visitas.txt", ios::app);
+else
+    f.open("visitas.txt", ios::out);
+f &lt;&lt; "Visita: " &lt;&lt; nombre &lt;&lt; endl;
+f.close();
+
+ifstream lee("visitas.txt");
+string linea;
+while (getline(lee, linea))
+    cout &lt;&lt; linea &lt;&lt; endl;</pre>
+    </div>
+    <div data-a>
+      <div class="row"><span class="etq">Nombre</span><div class="ops" id="md-n"><button data-n="Ana">Ana</button><button data-n="Luis">Luis</button><button data-n="Marta">Marta</button></div></div>
+      <div class="row gap8"><span class="etq">Modo</span><div class="ops" id="md-m"><button data-m="app">ios::app</button><button data-m="out">ios::out</button></div></div>
+      <div class="row gap12"><button class="go" id="md-run">Ejecutar</button><button id="md-del">Borrar visitas.txt</button></div>
+      <div class="term t18 espera gap12" id="md-out" style="min-height:108px" aria-live="polite"></div>
+      <p class="msg gap12" id="md-msg">Con g++ 13.3: «Ana app», «Luis app» y luego «Marta out» dejan una sola línea: Visita: Marta.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="is_open(): la gaveta que no abre">
+  <h2 class="mask"><span>is_open(): la gaveta que no abre</span></h2>
+  <p class="body sub" data-a style="font-size:22px;max-width:1120px">El archivo <code>notas2026.txt</code> no existe. Antes de ver la salida, piense qué imprime el programa.</p>
+  <div class="g2" style="grid-template-columns:620px 1fr;margin-top:16px">
+    <div data-a>
+      <pre class="code c18">ifstream f("notas2026.txt");      // no existe
+string linea;
+int n = 0;
+while (getline(f, linea)) n++;
+cout &lt;&lt; "Lineas leidas: " &lt;&lt; n &lt;&lt; endl;
+
+ifstream g("notas2026.txt");
+if (!g.is_open()) {
+    cout &lt;&lt; "No se pudo abrir notas2026.txt" &lt;&lt; endl;
+    return 1;
+}</pre>
+    </div>
+    <div data-a data-rv-box>
+      <div class="gmini"><div class="int"></div><div class="fr"><span>notas2026.txt</span><i></i><em>no abre</em></div></div>
+      <button class="go gap16" data-rv="Ocultar la salida" style="margin-top:16px">Ver la salida</button>
+      <div class="reveal">
+        <div class="term t18 gap12">Lineas leidas: 0
+No se pudo abrir notas2026.txt</div>
+        <p class="msg gap12">Sin comprobar, el ciclo no lee nada y el programa sigue como si el archivo estuviera vacío. Nadie se entera. Con <code>is_open()</code>, el programa avisa y termina.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Leer línea a línea con getline">
+  <h2 class="mask"><span>Leer línea a línea con getline</span></h2>
+  <div class="lect" data-a>
+    <div>
+      <div class="ops" id="lc-m"><button data-m="l">while (getline(f, linea))</button><button data-m="p">while (f &gt;&gt; palabra)</button></div>
+      <pre class="code c18 gap12" id="lc-cl">ifstream f("expediente.txt");
+string linea;
+int n = 0;
+while (getline(f, linea)) {
+    n++;
+    cout &lt;&lt; n &lt;&lt; ": " &lt;&lt; linea &lt;&lt; endl;
+}</pre>
+      <pre class="code c18 gap12" id="lc-cp" hidden>ifstream f("expediente.txt");
+string palabra;
+int n = 0;
+while (f &gt;&gt; palabra) {
+    n++;
+    cout &lt;&lt; n &lt;&lt; ": " &lt;&lt; palabra &lt;&lt; endl;
+}</pre>
+      <div class="row gap12"><button class="go" id="lc-go">Leer una vuelta</button><button id="lc-rs">Reiniciar</button><button id="lc-nx" aria-pressed="false">El archivo no existe</button></div>
+      <p class="msg gap12" id="lc-msg" aria-live="polite" style="min-height:84px"></p>
+    </div>
+    <div>
+      <div class="carp" style="margin-top:30px"><span class="pest" id="lc-p">expediente.txt</span><div class="hoja h18" id="lc-h"></div></div>
+      <div class="flags gap12" id="lc-fl"></div>
+      <div class="vars gap8" id="lc-v"></div>
+      <div class="term t18 espera gap8" id="lc-out" style="min-height:96px" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Leer por campos con &gt;&gt;">
+  <h2 class="mask"><span>Leer por campos con &gt;&gt;</span></h2>
+  <p class="body sub" data-a style="font-size:22px;max-width:1120px">Si el archivo separa los datos con espacios, <code>&gt;&gt;</code> los lee y convierte en una sola condición. Pero un espacio de más lo descuadra todo.</p>
+  <div data-tabs="cp1" data-a style="margin-top:16px">
+    <div class="row"><button data-tab="cp1">Una palabra por campo</button><button data-tab="cp2">Un nombre con espacio</button></div>
+    <div class="g2" style="grid-template-columns:640px 1fr;margin-top:14px">
+      <div data-panel="cp1"><pre class="code c18">ifstream f("notas.txt");
+if (!f.is_open()) return 1;
+int numero;
+string nombre;
+double n1, n2, n3;
+cout &lt;&lt; fixed &lt;&lt; setprecision(2);
+while (f &gt;&gt; numero &gt;&gt; nombre &gt;&gt; n1 &gt;&gt; n2 &gt;&gt; n3) {
+    cout &lt;&lt; numero &lt;&lt; " " &lt;&lt; nombre &lt;&lt; " "
+         &lt;&lt; (n1 + n2 + n3) / 3 &lt;&lt; endl;
+}</pre></div>
+      <div data-panel="cp1"><div class="carp" style="margin-top:30px"><span class="pest">notas.txt</span><div class="hoja h18"><span class="lnf">84231 Ana 90 85 92</span><span class="lnf">70112 Luis 78 81 70</span></div></div>
+        <div class="term t18 gap12">84231 Ana 89.00
+70112 Luis 76.33</div>
+        <p class="msg gap12">Cada <code>&gt;&gt;</code> salta los espacios y los saltos de línea, lee hasta el próximo espacio y convierte al tipo de la variable.</p></div>
+      <div data-panel="cp2" hidden><pre class="code c18">ifstream f("notas_apellido.txt");
+if (!f.is_open()) return 1;
+int numero;
+string nombre;
+double n1, n2, n3;
+cout &lt;&lt; fixed &lt;&lt; setprecision(2);
+while (f &gt;&gt; numero &gt;&gt; nombre &gt;&gt; n1 &gt;&gt; n2 &gt;&gt; n3) {
+    cout &lt;&lt; numero &lt;&lt; " " &lt;&lt; nombre &lt;&lt; " "
+         &lt;&lt; (n1 + n2 + n3) / 3 &lt;&lt; endl;
+}</pre></div>
+      <div data-panel="cp2" hidden><div class="carp" style="margin-top:30px"><span class="pest">notas_apellido.txt</span><div class="hoja h18"><span class="lnf">84231 Ana <span class="malo">Rivera</span> 90 85 92</span><span class="lnf">70112 Luis Ortiz 78 81 70</span></div></div>
+        <div class="term t18 gap12"><span class="nada">(no imprime nada)</span></div>
+        <p class="msg gap12"><code>nombre</code> recibe «Ana» y <code>n1</code> intenta leer «Rivera» como número: falla, el ciclo termina en la primera vuelta y no hay aviso. Para nombres con espacios: CSV con <code>getline</code>.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="CSV: getline con ',' y stringstream">
+  <h2 class="mask"><span>CSV: getline con ',' y stringstream</span></h2>
+  <div class="g2" style="grid-template-columns:600px 1fr;margin-top:18px">
+    <div data-a>
+      <pre class="code c18">string linea = "84231,Ana Rivera,90,85,92";
+stringstream ss(linea);       // &lt;sstream&gt;
+string campo;
+vector&lt;string&gt; campos;
+while (getline(ss, campo, ','))
+    campos.push_back(campo);
+
+for (const string&amp; c : campos)
+    cout &lt;&lt; "[" &lt;&lt; c &lt;&lt; "] ";
+cout &lt;&lt; endl;
+
+int numero = stoi(campos[0]);
+double suma = stod(campos[2]) + stod(campos[3])
+            + stod(campos[4]);
+cout &lt;&lt; numero &lt;&lt; " " &lt;&lt; campos[1] &lt;&lt; " "
+     &lt;&lt; suma / 3 &lt;&lt; endl;</pre>
+      <div class="term t18 gap8">[84231] [Ana Rivera] [90] [85] [92]
+84231 Ana Rivera 89</div>
+    </div>
+    <div data-a>
+      <label for="cv-in" class="cap" style="display:block">Escriba una línea del archivo (pruebe a dañarla):</label>
+      <input class="campo" id="cv-in" value="84231,Ana Rivera,90,85,92" spellcheck="false" autocomplete="off">
+      <div class="ops gap8" id="cv-b"><button data-v="84231,Ana Rivera,90,85,92">buena</button><button data-v="90517,Marta Colon,ochenta,88,91">ochenta</button><button data-v="73355,Kevin Torres,70,68">faltan campos</button><button data-v="61844,Andrea Nieves,105,80,75">105</button></div>
+      <div class="chips" id="cv-ch" aria-live="polite"></div>
+      <table class="conv" id="cv-t"></table>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="El error clásico: while (!f.eof())">
+  <h2 class="mask"><span>while (!f.eof()) repite la última línea</span></h2>
+  <div data-step="eof" class="g2" style="grid-template-columns:640px 1fr;margin-top:18px" data-a>
+    <div>
+      <pre class="code c18">ifstream f("notas.txt");
+int numero;  string nombre;
+double n1, n2, n3;
+int vueltas = 0;
+while (!f.eof()) {
+    f &gt;&gt; numero &gt;&gt; nombre &gt;&gt; n1 &gt;&gt; n2 &gt;&gt; n3;
+    vueltas++;
+    cout &lt;&lt; vueltas &lt;&lt; ": " &lt;&lt; numero &lt;&lt; " "
+         &lt;&lt; nombre &lt;&lt; endl;
+}</pre>
+      <div class="row gap12"><button class="go" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="small stepn" aria-live="polite"></span></div>
+    </div>
+    <div class="ws">
+      <p class="msg" data-id="msg" aria-live="polite" style="min-height:84px">Siga el programa: el archivo tiene dos líneas y termina con un salto de línea.</p>
+      <div class="carp" style="margin-top:42px"><span class="pest">notas.txt</span><div class="hoja h18"><span class="lnf"><span data-id="s1">84231 Ana 90 85 92</span><span class="nl" data-id="n1">↵</span></span><span class="lnf"><span data-id="s2">70112 Luis 78 81 70</span><span class="nl" data-id="n2">↵</span></span><span class="lnf"><span class="fin" data-id="fin">fin del archivo</span></span></div></div>
+      <div class="flags gap12"><span data-id="feof" class="f">eof(): false</span><span data-id="ffail" class="f">fail(): false</span></div>
+      <div class="vars gap8"><span>numero</span><b data-id="vnum">¿?</b><span>nombre</span><b data-id="vnom">¿?</b><span>vueltas</span><b data-id="vv">0</b></div>
+      <div class="term t18 gap12" data-id="out" style="min-height:96px"></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Con getline y la forma correcta">
+  <h2 class="mask"><span>Que la lectura misma sea la condición</span></h2>
+  <p class="body sub" data-a style="font-size:22px;max-width:1120px"><code>eof()</code> se vuelve true solo después de que una lectura falla. Por eso se pregunta tarde. Con <code>getline</code> el síntoma cambia, pero el error es el mismo.</p>
+  <div data-tabs="ef1" data-a style="margin-top:16px">
+    <div class="row"><button data-tab="ef1">Con getline</button><button data-tab="ef2">La forma correcta</button></div>
+    <div class="g2" style="grid-template-columns:640px 1fr;margin-top:14px">
+      <div data-panel="ef1"><pre class="code c18">ifstream f("expediente.txt");
+string linea;
+int vueltas = 0;
+while (!f.eof()) {
+    getline(f, linea);
+    vueltas++;
+    cout &lt;&lt; vueltas &lt;&lt; ": [" &lt;&lt; linea &lt;&lt; "]" &lt;&lt; endl;
+}</pre></div>
+      <div data-panel="ef1"><div class="term t18">1: [numero,nombre,nota1,nota2,nota3]
+2: [84231,Ana Rivera,90,85,92]
+3: [70112,Luis Ortiz,78,81,70]
+4: []</div><p class="msg gap12">La cuarta vuelta: <code>getline</code> falla, deja <code>linea</code> vacía y el programa procesa una línea que no existe. En el laboratorio sería un estudiante fantasma.</p></div>
+      <div data-panel="ef2" hidden><pre class="code c18">ifstream f("notas.txt");
+int numero;  string nombre;
+double n1, n2, n3;
+int vueltas = 0;
+while (f &gt;&gt; numero &gt;&gt; nombre &gt;&gt; n1 &gt;&gt; n2 &gt;&gt; n3) {
+    vueltas++;
+    cout &lt;&lt; vueltas &lt;&lt; ": " &lt;&lt; numero &lt;&lt; " "
+         &lt;&lt; nombre &lt;&lt; endl;
+}</pre></div>
+      <div data-panel="ef2" hidden><div class="term t18">1: 84231 Ana
+2: 70112 Luis</div><p class="msg gap12">La lectura devuelve el flujo, y el flujo en un <code>while</code> vale false si la lectura falló. Se lee, y solo si salió bien se usa el dato.</p></div>
+    </div>
+  </div>
+  <p class="regla" data-a style="margin-top:16px"><code>while (getline(f, linea))</code> y <code>while (f &gt;&gt; x)</code>: así se lee un archivo completo.</p>
+</section>
+
+<section class="slide" data-title="Cerrar: close() y RAII">
+  <h2 class="mask"><span>Lo escrito llega al disco al cerrar</span></h2>
+  <p class="body sub" data-a style="font-size:22px;max-width:1120px"><code>ofstream</code> junta lo escrito en un búfer; <code>close()</code> o el destructor (RAII) lo pasan al archivo.</p>
+  <div class="g2" style="grid-template-columns:680px 1fr;margin-top:14px">
+    <div data-a>
+      <pre class="code c18">ofstream f("recibo.txt");
+f &lt;&lt; "Recibido: 84231\n";
+cout &lt;&lt; "Antes de cerrar: " &lt;&lt; leer("recibo.txt") &lt;&lt; endl;
+f.close();
+cout &lt;&lt; "Despues de cerrar: " &lt;&lt; leer("recibo.txt") &lt;&lt; endl;
+{
+    ofstream g("recibo2.txt");
+    g &lt;&lt; "Recibido: 70112\n";
+}   // aqui se destruye g y el archivo se cierra solo
+cout &lt;&lt; "Fuera del bloque: " &lt;&lt; leer("recibo2.txt") &lt;&lt; endl;</pre>
+      <div class="term t18 gap8">Antes de cerrar: (vacio)
+Despues de cerrar: Recibido: 84231
+Fuera del bloque: Recibido: 70112</div>
+      <p class="small gap8" style="font-size:18px"><code>leer(archivo)</code> abre el archivo con un <code>ifstream</code> y devuelve su primera línea, o <code>(vacio)</code>.</p>
+    </div>
+    <div data-a>
+      <div class="ops"><button id="rc-w">f &lt;&lt; "Recibido: 84231\n";</button><button id="rc-c">f.close();</button><button id="rc-r">leer("recibo.txt")</button><button id="rc-x" class="sans">Reiniciar</button></div>
+      <div class="bandeja gap12"><div class="tray" id="rc-tray"></div><div class="carp" style="margin-top:42px"><span class="pest">recibo.txt</span><div class="hoja h18" id="rc-file" style="min-height:44px"></div></div></div>
+      <div class="term t18 espera gap12" id="rc-out" style="min-height:62px" aria-live="polite"></div>
+      <p class="msg gap12" id="rc-msg" aria-live="polite">El archivo existe desde que se abre, pero está vacío.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: el archivo que no existe">
+  <p class="q mask"><span>Si notas.txt no existe y nadie llama a is_open(), ¿qué ve el usuario?</span></p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:27px">El programa lee las notas con <code>while (f &gt;&gt; nota)</code> y al final imprime el promedio.</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a data-rv-box><div><b>Un error</b><span>g++ o el programa avisan que falta el archivo</span></div><div class="ok"><b>Nada raro</b><span>el programa corre como si el archivo estuviera vacío</span><button data-rv="Ocultar" class="pbtn">Respuesta</button></div><div class="reveal resp">Nada raro, y ese es el peligro: g++ no revisa archivos y el ciclo simplemente no da ninguna vuelta. El promedio sale 0 o se divide entre cero. Solo <code>is_open()</code> lo descubre.</div></div></div>
+</section>
+
+<!-- TEMA 2 -->
+<section class="slide chapter" data-title="Tema 2: Manejo de excepciones (try-catch)" data-topic="2">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask"><span>Manejo de excepciones (try-catch)</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:620px">Cuando un expediente no aparece, quien lo busca no lo resuelve: lo lleva a la ventanilla de quien sabe qué hacer.</p>
+    <div class="ext" data-a></div></div>
+    <div data-a style="align-self:center">
+      <div class="exped" style="font-size:20px">expediente 90517 <small>NO APARECE</small></div>
+      <pre class="code c19" style="margin-top:14px">try {
+    buscar(90517);
+} catch (const exception&amp; e) {
+    cout &lt;&lt; e.what();
+}</pre>
+      <div class="vent lit" style="margin-top:14px"><b>Ventanilla de Registro</b><small>atiende lo que el resto no pudo resolver</small></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="throw, try y catch">
+  <h2 class="mask"><span>throw lanza; try vigila; catch atiende</span></h2>
+  <div data-step="thr" class="g2" style="grid-template-columns:690px 1fr;margin-top:18px" data-a>
+    <div>
+      <pre class="code c18">double promedio(double suma, int cantidad) {
+    if (cantidad == 0)
+        throw runtime_error("el expediente no tiene notas");
+    return suma / cantidad;
+}
+
+int main() {
+    try {
+        cout &lt;&lt; promedio(267, 3) &lt;&lt; endl;
+        cout &lt;&lt; promedio(0, 0) &lt;&lt; endl;
+        cout &lt;&lt; "Esta linea no se ejecuta" &lt;&lt; endl;
+    } catch (const exception&amp; e) {
+        cout &lt;&lt; "Error: " &lt;&lt; e.what() &lt;&lt; endl;
+    }
+    cout &lt;&lt; "El programa sigue" &lt;&lt; endl;
+    return 0;
+}</pre>
+      <div class="row gap12"><button class="go" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="small stepn" aria-live="polite"></span></div>
+    </div>
+    <div class="ws">
+      <div class="vars"><span>suma</span><b data-id="vs">¿?</b><span>cantidad</span><b data-id="vc">¿?</b></div>
+      <div style="min-height:58px;margin-top:12px"><div class="exped nace" data-id="exc" hidden>runtime_error <small>el expediente no tiene notas</small></div></div>
+      <div class="vent" data-id="vent"><b>catch (const exception&amp; e)</b><small>la ventanilla de main</small></div>
+      <div class="term t18 gap12" data-id="out" style="min-height:96px"></div>
+      <p class="msg gap12" data-id="msg" aria-live="polite">Pulse «Siguiente paso». Necesita <code>#include &lt;stdexcept&gt;</code>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Excepciones estándar y what()">
+  <h2 class="mask"><span>Las excepciones estándar y e.what()</span></h2>
+  <p class="body sub" data-a style="font-size:21px;max-width:1130px">Con <code>vector&lt;int&gt; notas = {90, 85, 92}</code> y <code>string nombre = "Ana"</code>, escoja una expresión. Los mensajes son los que da g++ 13.3.</p>
+  <div class="ops gap12" data-a id="se-b"><button data-i="0">notas.at(5)</button><button data-i="1">nombre.at(10)</button><button data-i="2">stoi("abc")</button><button data-i="3">stoi("99999999999")</button><button data-i="4">stod("")</button><button data-i="5">stoi("12abc")</button><button data-i="6">stod(" 88.5x")</button></div>
+  <div class="g2" style="grid-template-columns:1fr 430px;margin-top:16px">
+    <div data-a>
+      <div class="res"><small>Lanza</small><b id="se-t" class="tipo"></b></div>
+      <div class="res gap8"><small id="se-wl">e.what()</small><b id="se-w"></b></div>
+      <p class="msg gap12" id="se-m" aria-live="polite"></p>
+    </div>
+    <div data-a>
+      <div class="arbol" id="se-a"><div data-n="exception">exception</div><div class="lv1" data-n="logic_error">logic_error</div><div class="lv2" data-n="invalid_argument">invalid_argument</div><div class="lv2" data-n="out_of_range">out_of_range</div><div class="lv1" data-n="runtime_error">runtime_error</div><div class="lv2 dim" data-n="propia">ArchivoNoEncontrado (la suya)</div></div>
+      <p class="small gap8" style="font-size:18px">Todas heredan de <code>exception</code> (<code>&lt;stdexcept&gt;</code>). Por eso <code>catch (const exception&amp; e)</code> las atrapa todas.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Varios catch: el orden importa">
+  <h2 class="mask"><span>Varios catch: gana el primero que acepta</span></h2>
+  <div class="g2" style="grid-template-columns:620px 1fr;margin-top:18px">
+    <div data-a>
+      <pre class="code c18" id="or-ok">try {
+    int n = stoi(texto);
+    if (n &lt; 0 || n &gt; 100)
+        throw out_of_range("nota fuera de 0-100");
+    cout &lt;&lt; "Nota: " &lt;&lt; n &lt;&lt; endl;
+} catch (const invalid_argument&amp; e) {
+    cout &lt;&lt; "No es un numero: " &lt;&lt; e.what() &lt;&lt; endl;
+} catch (const out_of_range&amp; e) {
+    cout &lt;&lt; "Fuera de rango: " &lt;&lt; e.what() &lt;&lt; endl;
+} catch (const exception&amp; e) {
+    cout &lt;&lt; "Otro error: " &lt;&lt; e.what() &lt;&lt; endl;
+}</pre>
+      <pre class="code c18" id="or-mal" hidden>try {
+    int n = stoi(texto);
+    if (n &lt; 0 || n &gt; 100)
+        throw out_of_range("nota fuera de 0-100");
+    cout &lt;&lt; "Nota: " &lt;&lt; n &lt;&lt; endl;
+} catch (const exception&amp; e) {
+    cout &lt;&lt; "Otro error: " &lt;&lt; e.what() &lt;&lt; endl;
+} catch (const invalid_argument&amp; e) {
+    cout &lt;&lt; "No es un numero: " &lt;&lt; e.what() &lt;&lt; endl;
+} catch (const out_of_range&amp; e) {
+    cout &lt;&lt; "Fuera de rango: " &lt;&lt; e.what() &lt;&lt; endl;
+}</pre>
+      <div class="term t18 gap8" id="or-w" hidden><span class="w">warning: exception of type 'std::invalid_argument' will be caught by earlier handler [-Wexceptions]
+note: for type 'std::exception'</span></div>
+    </div>
+    <div data-a>
+      <div class="row"><span class="etq">texto</span><div class="ops" id="or-b"><button data-t="85">"85"</button><button data-t="ochenta">"ochenta"</button><button data-t="105">"105"</button><button data-t="99999999999">"99999999999"</button></div></div>
+      <div class="row gap8"><button id="or-tg" aria-pressed="false" class="sans">Poner catch (exception) primero</button></div>
+      <div class="vents gap12" id="or-v"></div>
+      <div class="term t18 gap12" id="or-out" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="El viaje de una excepción por la pila">
+  <h2 class="mask"><span>La excepción baja por la pila</span></h2>
+  <div data-step="pila" class="g2" style="grid-template-columns:600px 1fr;margin-top:14px" data-a>
+    <div>
+      <pre class="code c18" style="line-height:1.34">double leerNota(const string&amp; texto) {
+    Gaveta g("gaveta de notas");
+    return stod(texto);            // lanza
+}
+double buscarExpediente() {
+    Gaveta g("gaveta de expedientes");
+    double nota = leerNota("ochenta");
+    cout &lt;&lt; "Nunca llega aqui" &lt;&lt; endl;
+    return nota;
+}
+int main() {
+    try {
+        buscarExpediente();
+    } catch (const invalid_argument&amp; e) {
+        cout &lt;&lt; "Ventanilla: " &lt;&lt; e.what() &lt;&lt; endl;
+    }
+    cout &lt;&lt; "Fin" &lt;&lt; endl;
+}</pre>
+    </div>
+    <div>
+      <div class="row"><button class="go" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="small stepn" aria-live="polite"></span></div>
+      <div class="ws">
+        <p class="msg gap8" data-id="msg" aria-live="polite" style="min-height:82px">Cada <code>Gaveta</code> imprime «Abre…» en su constructor y «Cierra…» en su destructor.</p>
+        <div class="pila">
+          <div class="marco main"><b>main()</b><span class="loc" style="background:var(--accent);color:#fff">try … catch</span></div>
+          <div class="marco nace" data-id="fb" hidden><b>buscarExpediente()</b><span class="loc" data-id="gb" hidden>g: expedientes</span></div>
+          <div class="marco nace" data-id="fl" hidden><b>leerNota("ochenta")</b><span class="loc" data-id="gl" hidden>g: notas</span><span class="exped" data-id="ex" hidden>invalid_argument</span></div>
+        </div>
+        <div class="term t18 gap12" data-id="out" style="min-height:62px"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Una excepción propia">
+  <h2 class="mask"><span>Una excepción propia</span></h2>
+  <div class="g2" style="grid-template-columns:640px 1fr;margin-top:16px">
+    <div data-a>
+      <pre class="code c18" style="line-height:1.36">class ArchivoNoEncontrado : public runtime_error {
+public:
+    ArchivoNoEncontrado(const string&amp; nombre)
+        : runtime_error("no se encontro el archivo "
+                        + nombre) {}
+};
+void abrir(ifstream&amp; f, const string&amp; nombre) {
+    f.open(nombre);
+    if (!f.is_open())
+        throw ArchivoNoEncontrado(nombre);
+}
+// en main, con nombre leido de cin:
+try {
+    abrir(f, nombre);
+    cout &lt;&lt; "Abierto: " &lt;&lt; nombre &lt;&lt; endl;
+} catch (const ArchivoNoEncontrado&amp; e) {
+    cout &lt;&lt; "Registro: " &lt;&lt; e.what() &lt;&lt; endl;
+}</pre>
+    </div>
+    <div data-a>
+      <div class="ops" id="ap-b"><button data-f="expediente.txt">expediente.txt</button><button data-f="notas.txt">notas.txt</button><button data-f="seccion9.txt">seccion9.txt</button></div>
+      <div class="carp" style="margin-top:44px"><span class="pest" id="ap-p"></span><div class="hoja h18" id="ap-h" style="min-height:62px"></div><span class="sello" id="ap-s" hidden>NO APARECE</span></div>
+      <div class="term t18" id="ap-out" aria-live="polite" style="margin-top:28px;min-height:72px"></div>
+      <p class="msg gap12">Hereda de <code>runtime_error</code> y le pasa el mensaje en la lista de inicialización: <code>what()</code> ya lo tiene. Como también es una <code>exception</code>, la atrapa <code>catch (const exception&amp; e)</code>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Errores típicos con archivos y excepciones">
+  <h2 class="mask"><span>Seis errores y lo que dice g++</span></h2>
+  <div data-tabs="r1" data-a style="margin-top:20px">
+    <div class="row"><button data-tab="r1">Falta &lt;fstream&gt;</button><button data-tab="r2">Escribir en un ifstream</button><button data-tab="r3">catch por valor</button><button data-tab="r4">La base sin mensaje</button><button data-tab="r5">Nadie la atrapa</button><button data-tab="r6">noexcept que lanza</button></div>
+    <div class="g2" style="grid-template-columns:600px 1fr;margin-top:20px">
+      <div data-panel="r1"><pre class="code c19">#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    ofstream f("registro.txt");
+    f &lt;&lt; "84231" &lt;&lt; endl;</pre><div class="term t18 gap8"><span class="e">error: variable 'std::ofstream f' has initializer but incomplete type</span></div></div>
+      <div data-panel="r1"><p class="lead" style="font-size:28px">«Tipo incompleto» quiere decir que g++ oyó el nombre pero no vio la clase.</p><p class="body sub" style="font-size:22px">Falta <code>#include &lt;fstream&gt;</code>. Con <code>stringstream</code> falta <code>&lt;sstream&gt;</code>, y con <code>runtime_error</code>, <code>&lt;stdexcept&gt;</code>.</p></div>
+      <div data-panel="r2" hidden><pre class="code c19">ifstream f("registro.txt");
+f &lt;&lt; "84231" &lt;&lt; endl;</pre><div class="term t18 gap8"><span class="e">error: no match for 'operator&lt;&lt;' (operand types are 'std::ifstream' {aka 'std::basic_ifstream&lt;char&gt;'} and 'const char [6]')</span></div></div>
+      <div data-panel="r2" hidden><p class="lead" style="font-size:28px">Un <code>ifstream</code> solo lee.</p><p class="body sub" style="font-size:22px">Para escribir, <code>ofstream</code>; para las dos cosas, <code>fstream</code> con <code>ios::in | ios::out</code>. Después del error vienen decenas de líneas de «candidate»: lea la primera.</p></div>
+      <div data-panel="r3" hidden><pre class="code c19">try {
+    cout &lt;&lt; stoi("abc") &lt;&lt; endl;
+} catch (exception e) {
+    cout &lt;&lt; e.what() &lt;&lt; endl;
+}</pre><div class="term t18 gap8"><span class="w">warning: catching polymorphic type 'class std::exception' by value [-Wcatch-value=]</span>
+std::exception</div></div>
+      <div data-panel="r3" hidden><p class="lead" style="font-size:28px">Compila, pero el mensaje se pierde: imprime <code>std::exception</code> y no <code>stoi</code>.</p><p class="body sub" style="font-size:22px">La copia se queda solo con la parte <code>exception</code> del objeto. Atrape siempre por referencia: <code>catch (const exception&amp; e)</code>.</p></div>
+      <div data-panel="r4" hidden><pre class="code c19">class ArchivoNoEncontrado : public runtime_error {
+public:
+    ArchivoNoEncontrado(const string&amp; nombre) {
+        mensaje = nombre;
+    }
+    string mensaje;
+};</pre><div class="term t18 gap8"><span class="e">error: no matching function for call to 'std::runtime_error::runtime_error()'</span></div></div>
+      <div data-panel="r4" hidden><p class="lead" style="font-size:28px">La clase base no tiene un constructor sin mensaje.</p><p class="body sub" style="font-size:22px">La base se construye primero, en la lista de inicialización:</p><pre class="code c18 gap8">: runtime_error("no se encontro el archivo "
+                + nombre) {}</pre></div>
+      <div data-panel="r5" hidden><pre class="code c19">string nota = "ochenta";
+int n = stoi(nota);
+cout &lt;&lt; n &lt;&lt; endl;</pre><div class="term t18 gap8"><span class="e">terminate called after throwing an instance of 'std::invalid_argument'
+  what():  stoi</span>
+<span class="p">Aborted</span></div></div>
+      <div data-panel="r5" hidden><p class="lead" style="font-size:28px">Compila sin avisos y se cae al correr.</p><p class="body sub" style="font-size:22px">Si ninguna función de la pila tiene un <code>catch</code> que la acepte, el programa termina con <code>terminate</code>. La terminal añade «Aborted».</p></div>
+      <div data-panel="r6" hidden><pre class="code c19">double promedio(double suma, int n) noexcept {
+    if (n == 0) throw runtime_error("sin notas");
+    return suma / n;
+}</pre><div class="term t18 gap8"><span class="w">warning: 'throw' will always call 'terminate' [-Wterminate]</span></div><p class="cap" style="margin-top:10px">Y si se llama con <code>promedio(0, 0)</code>:</p><div class="term t18"><span class="e">terminate called after throwing an instance of 'std::runtime_error'
+  what():  sin notas</span>
+<span class="p">Aborted</span></div></div>
+      <div data-panel="r6" hidden><p class="lead" style="font-size:28px"><code>noexcept</code> promete que la función no lanza.</p><p class="body sub" style="font-size:22px">Si lanza de todos modos, no hay <code>catch</code> que valga: el programa termina. Póngalo solo donde de verdad nada puede fallar, como en un destructor.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: dónde poner el try">
+  <p class="q mask"><span>La línea 4 del archivo está dañada. ¿Dónde va el try?</span></p>
+  <p class="body gap" data-a style="max-width:1040px;font-size:27px">El programa lee 200 expedientes con <code>while (getline(f, linea))</code> y convierte cada línea con <code>stoi</code> y <code>stod</code>.</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a data-rv-box><div><b>Alrededor del while</b><span>un solo try para todo el archivo</span></div><div class="ok"><b>Dentro del while</b><span>un try para cada línea</span><button data-rv="Ocultar" class="pbtn">Respuesta</button></div><div class="reveal resp">Dentro del while. Alrededor, la primera línea mala saca al programa del ciclo y se pierden las 196 que faltaban. Dentro, se rechaza esa línea, se informa y el ciclo sigue. Así trabaja el Laboratorio K.</div></div></div>
+</section>
+
+<section class="slide" data-title="Lo esencial de la unidad">
+  <h2 class="mask"><span>Lo que se lleva de esta unidad</span></h2>
+  <div class="dir" data-a>
+    <div><h3>Abrir y comprobar</h3><p><code>ofstream</code> escribe, <code>ifstream</code> lee, <code>fstream</code> hace las dos cosas. Después de abrir, siempre <code>is_open()</code>.</p></div>
+    <div><h3>Modos</h3><p><code>ios::out</code> (el de omisión) vacía el archivo; <code>ios::app</code> añade al final.</p></div>
+    <div><h3>Leer</h3><p>La lectura es la condición: <code>while (getline(f, linea))</code>. Nunca <code>while (!f.eof())</code>. CSV: <code>stringstream</code> y <code>getline</code> con <code>','</code>.</p></div>
+    <div><h3>Cerrar</h3><p><code>close()</code> pasa el búfer al disco. Si se olvida, el destructor lo hace al salir del bloque.</p></div>
+    <div><h3>try, throw, catch</h3><p>La excepción baja por la pila, cerrando lo que encuentra, hasta el primer <code>catch</code> que la acepte. Del más específico al más general.</p></div>
+    <div><h3>Las suyas</h3><p>Herede de <code>runtime_error</code>, pásele el mensaje y atrape por referencia: <code>catch (const exception&amp; e)</code>.</p></div>
+  </div>
+</section>
+
+<!-- LABORATORIO -->
+<section class="slide chapter" data-title="Laboratorio K: el expediente académico" data-topic="3">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask" style="font-size:86px"><span>Laboratorio&nbsp;K</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:620px">El expediente académico: leer el archivo de la Oficina de Registro, rechazar las líneas dañadas sin detenerse y escribir el informe de promedios.</p>
+    <div class="ext" data-a></div></div>
+    <div data-a style="align-self:center">
+      <div class="carp" style="margin-top:30px"><span class="pest">LabK_estudiantes.txt</span><div class="hoja h18" style="font-size:18px"><span class="lnf">84231,Ana Rivera,90,85,92</span><span class="lnf">70112,Luis Ortiz,78,81,70</span><span class="lnf malo">90517,Marta Colon,ochenta,…</span><span class="lnf">65020,Yadiel Cruz,65,72,60</span></div><span class="sello">RECHAZADA</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Laboratorio K: la misión">
+  <h2 class="mask"><span>La misión: seis partes del expediente</span></h2>
+  <p class="body sub" data-a style="max-width:1130px;font-size:21px">El tipo <code>Estudiante</code>, <code>convertirNota</code>, <code>mostrarResumen</code> y <code>main</code> ya están hechos. El código base compila desde el principio, con avisos <code>unused parameter</code>.</p>
+  <ol class="todo" data-a style="margin-top:14px">
+    <li><b class="nm">1</b><span>Excepción propia: <code>ArchivoNoEncontrado</code> le pasa su mensaje a <code>runtime_error</code>.</span></li>
+    <li><b class="nm">2</b><span><code>abrirDatos</code>: abre, comprueba <code>is_open()</code> y, si falla, lanza la excepción propia.</span></li>
+    <li><b class="nm">3</b><span><code>separarCampos</code>: <code>stringstream</code> y <code>getline</code> con <code>','</code>.</span></li>
+    <li><b class="nm">4</b><span><code>convertir</code>: revisa que haya 5 campos y convierte con <code>stoi</code> y <code>convertirNota</code>.</span></li>
+    <li><b class="nm">5</b><span><code>leerExpedientes</code>: un <code>try</code> por línea, dos <code>catch</code>, y <code>close()</code>.</span></li>
+    <li><b class="nm">6</b><span><code>escribirInforme</code>: crea <code>informe.txt</code> con un <code>ofstream</code> y lo cierra.</span></li>
+  </ol>
+  <div class="row" data-a style="margin-top:14px;gap:8px">
+    <a class="dl" href="laboratorios/LabK_Expediente.cpp" download>Descargar LabK_Expediente.cpp</a>
+    <a class="dl dat" href="laboratorios/LabK_estudiantes.txt" download>LabK_estudiantes.txt</a>
+    <a class="dl dat" href="laboratorios/LabK_seccion2.txt" download>LabK_seccion2.txt</a>
+    <a class="dl dat" href="laboratorios/LabK_seccion3.txt" download>LabK_seccion3.txt</a>
+  </div>
+  <pre class="code c18 gap12" data-raw data-a style="padding:10px 0"><span class="ln">g++ -std=c++17 -Wall -Wextra -o expediente LabK_Expediente.cpp</span></pre>
+  <p class="small" data-a style="margin-top:8px;font-size:19px">Guarde los tres archivos de datos en la misma carpeta donde ejecuta el programa. Ruta sugerida: partes 1 y 2 → Caso 4; partes 3 a 5 → Casos 1 a 3; parte 6 → revise <code>informe.txt</code>.</p>
+</section>
+
+<section class="slide" data-title="Laboratorio K: los archivos de datos">
+  <h2 class="mask"><span>Antes de programar: lea los archivos</span></h2>
+  <p class="body sub" data-a style="font-size:21px;max-width:1130px">Toque cada línea y vea qué debe hacer su programa con ella. La línea 1 es el encabezado.</p>
+  <div data-tabs="d1" data-a style="margin-top:14px">
+    <div class="row"><button data-tab="d1">LabK_estudiantes.txt</button><button data-tab="d2">LabK_seccion2.txt</button><button data-tab="d3">LabK_seccion3.txt</button></div>
+    <div class="g2" style="grid-template-columns:620px 1fr;margin-top:6px">
+      <div id="dt-panels"></div>
+      <div>
+        <div class="res" style="margin-top:30px"><small id="dt-l">Línea</small><b id="dt-r" style="font-size:20px"></b></div>
+        <p class="msg gap12" id="dt-m" aria-live="polite"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Laboratorio K: las pruebas">
+  <h2 class="mask"><span>Cuatro pruebas del programa</span></h2>
+  <div style="display:grid;grid-template-columns:720px 1fr;gap:26px;margin-top:16px">
+    <div class="cases" data-tabs="c1" data-a>
+      <div class="row"><button data-tab="c1" id="tb-c1">Caso 1</button><button data-tab="c2" id="tb-c2">Caso 2</button><button data-tab="c3" id="tb-c3">Caso 3</button><button data-tab="c4" id="tb-c4">Caso 4</button></div>
+      <div id="cases-panels" style="margin-top:12px"></div>
+    </div>
+    <div data-a>
+      <label for="vf-in" style="font-size:20px;font-weight:600;display:block;margin-bottom:6px">Pegue aquí lo que imprimió su programa con el <span id="vf-name">Caso 1</span></label>
+      <textarea class="paste" id="vf-in" spellcheck="false" placeholder="Copie todo el texto de la terminal y péguelo aquí"></textarea>
+      <div class="row" style="margin-top:8px"><button class="go" id="vf-go">Comprobar</button><span class="score" id="vf-score" aria-live="polite"></span></div>
+      <ul class="checks" id="vf-checks" aria-label="Resultado de la comprobación"></ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Laboratorio K: rúbrica y entrega">
+  <h2 class="mask"><span>Rúbrica y entrega</span></h2>
+  <div style="display:grid;grid-template-columns:520px 1fr;gap:40px;margin-top:16px;align-items:start">
+    <table class="t rub" data-a>
+      <tr><th>Criterio</th><th>Puntos</th></tr>
+      <tr><td>1. Excepción propia</td><td>10</td></tr>
+      <tr><td>2. <code>abrirDatos</code></td><td>10</td></tr>
+      <tr><td>3. <code>separarCampos</code></td><td>15</td></tr>
+      <tr><td>4. <code>convertir</code></td><td>15</td></tr>
+      <tr><td>5. <code>leerExpedientes</code></td><td>20</td></tr>
+      <tr><td>6. <code>escribirInforme</code></td><td>10</td></tr>
+      <tr><td>Compila sin avisos con -Wall -Wextra</td><td>10</td></tr>
+      <tr><td>Nombre, fecha y sangría correcta</td><td>10</td></tr>
+      <tr><th>Total</th><th>100</th></tr>
+    </table>
+    <div data-a>
+      <h3 style="font-size:28px">Qué se entrega</h3>
+      <p class="body" style="margin-top:8px;font-size:21px">Por OrbundSIS, en un .zip llamado <code>Apellido_Nombre_TESI2105_LabK.zip</code>:</p>
+      <ul style="font-size:21px;line-height:1.45;margin:10px 0 0;padding-left:26px"><li>El archivo <code>LabK_Expediente.cpp</code> completo.</li><li>El <code>informe.txt</code> que escribió su programa con el Caso 1.</li><li>Cuatro capturas de la terminal: una por prueba.</li></ul>
+      <p class="body" style="margin-top:12px;font-size:21px">La fecha de entrega se anuncia en OrbundSIS.</p>
+      <div class="tone" style="margin-top:16px;padding:16px 22px"><b style="font-size:23px">Reto (+10)</b><p style="font-size:20px;margin-top:6px">Al final, pregunte si desea añadir un estudiante. Lea número, nombre y tres notas, valídelos con <code>convertir</code> dentro de un <code>try</code> y, solo si pasan, añádalos al archivo de datos con <code>ios::app</code>. Aquí sí puede modificar <code>main</code>.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Referencias">
+  <h2 class="mask"><span>Referencias</span></h2>
+  <div class="gap16" data-a style="font-size:19px;line-height:1.42;max-width:1110px;margin-top:20px">
+    <p style="font-size:19px;padding-left:36px;text-indent:-36px;margin-bottom:8px">cppreference.com. (s. f.). <i>Standard library header &lt;fstream&gt;</i>. https://en.cppreference.com/w/cpp/header/fstream</p>
+    <p style="font-size:19px;padding-left:36px;text-indent:-36px;margin-bottom:8px">cppreference.com. (s. f.). <i>std::getline</i>. https://en.cppreference.com/w/cpp/string/basic_string/getline</p>
+    <p style="font-size:19px;padding-left:36px;text-indent:-36px;margin-bottom:8px">cppreference.com. (s. f.). <i>std::stoi, std::stol, std::stoll</i>. https://en.cppreference.com/w/cpp/string/basic_string/stol</p>
+    <p style="font-size:19px;padding-left:36px;text-indent:-36px;margin-bottom:8px">cppreference.com. (s. f.). <i>Exceptions</i>. https://en.cppreference.com/w/cpp/language/exceptions</p>
+    <p style="font-size:19px;padding-left:36px;text-indent:-36px;margin-bottom:8px">cppreference.com. (s. f.). <i>std::runtime_error</i>. https://en.cppreference.com/w/cpp/error/runtime_error</p>
+    <p style="font-size:19px;padding-left:36px;text-indent:-36px;margin-bottom:8px">cppreference.com. (s. f.). <i>noexcept specifier</i>. https://en.cppreference.com/w/cpp/language/noexcept_spec</p>
+    <p style="font-size:19px;padding-left:36px;text-indent:-36px;margin-bottom:8px">Kumar, A. (2024). <i>Hands-on object-oriented programming: Mastering OOP features for real-world software systems development</i>. Apress.</p>
+    <p style="font-size:19px;padding-left:36px;text-indent:-36px;margin-bottom:8px">Lutz, M. (2025). <i>Learning Python: Powerful object-oriented programming</i>. O’Reilly Media.</p>
+  </div>
+  <p class="body" data-a style="font-size:20px;margin-top:14px">Kumar (2024) y Lutz (2025) son los textos oficiales del prontuario. Los programas, salidas y mensajes se verificaron con g++ 13.3 en Linux.</p>
+</section>
+
+</div></div>
+
+<script>
+(function(){
+function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+/* Casos del Laboratorio K: salidas de la clave, compilada con g++ 13.3 */
+var B='===== EXPEDIENTE ACADEMICO - OFICINA DE REGISTRO =====';
+window.__CASES={
+ c1:{titulo:'Archivo principal',teclee:'LabK_estudiantes.txt',
+  out:'Linea 4 rechazada [invalid_argument]: stod\nLinea 7 rechazada [invalid_argument]: se esperaban 5 campos y hay 4\n----- Resumen -----\n84231 Ana Rivera: 89.00\n70112 Luis Ortiz: 76.33\n65020 Yadiel Cruz: 65.67\n88140 Sofia Medina: 97.67\n91002 Camila Vega: 84.33\nEstudiantes leidos: 5\nLineas rechazadas: 2\nPromedio del grupo: 82.60\nMejor promedio: 88140 Sofia Medina (97.67)\nInforme guardado en informe.txt (5 estudiantes)\nFin del programa',
+  chk:[B,'Linea 4 rechazada [invalid_argument]: stod','Linea 7 rechazada [invalid_argument]: se esperaban 5 campos y hay 4','----- Resumen -----','84231 Ana Rivera: 89.00','70112 Luis Ortiz: 76.33','65020 Yadiel Cruz: 65.67','88140 Sofia Medina: 97.67','91002 Camila Vega: 84.33','Estudiantes leidos: 5','Lineas rechazadas: 2','Promedio del grupo: 82.60','Mejor promedio: 88140 Sofia Medina (97.67)','Informe guardado en informe.txt (5 estudiantes)','Fin del programa']},
+ c2:{titulo:'Números fuera de rango',teclee:'LabK_seccion2.txt',
+  out:'Linea 3 rechazada [out_of_range]: stoi\nLinea 4 rechazada [out_of_range]: nota fuera de rango: 105\n----- Resumen -----\n50211 Pedro Santiago: 88.33\n62930 Jose Rosado: 76.00\nEstudiantes leidos: 2\nLineas rechazadas: 2\nPromedio del grupo: 82.17\nMejor promedio: 50211 Pedro Santiago (88.33)\nInforme guardado en informe.txt (2 estudiantes)\nFin del programa',
+  chk:[B,'Linea 3 rechazada [out_of_range]: stoi','Linea 4 rechazada [out_of_range]: nota fuera de rango: 105','----- Resumen -----','50211 Pedro Santiago: 88.33','62930 Jose Rosado: 76.00','Estudiantes leidos: 2','Lineas rechazadas: 2','Promedio del grupo: 82.17','Mejor promedio: 50211 Pedro Santiago (88.33)','Informe guardado en informe.txt (2 estudiantes)','Fin del programa']},
+ c3:{titulo:'Línea vacía, campos de más y una nota negativa',teclee:'LabK_seccion3.txt',
+  out:'Linea 4 rechazada [invalid_argument]: stoi\nLinea 5 rechazada [invalid_argument]: se esperaban 5 campos y hay 6\nLinea 6 rechazada [out_of_range]: nota fuera de rango: -5\n----- Resumen -----\n40125 Gabriel Ortiz: 85.00\n40550 Ivan Morales: 97.67\nEstudiantes leidos: 2\nLineas rechazadas: 3\nPromedio del grupo: 91.33\nMejor promedio: 40550 Ivan Morales (97.67)\nInforme guardado en informe.txt (2 estudiantes)\nFin del programa',
+  chk:[B,'Linea 4 rechazada [invalid_argument]: stoi','Linea 5 rechazada [invalid_argument]: se esperaban 5 campos y hay 6','Linea 6 rechazada [out_of_range]: nota fuera de rango: -5','----- Resumen -----','40125 Gabriel Ortiz: 85.00','40550 Ivan Morales: 97.67','Estudiantes leidos: 2','Lineas rechazadas: 3','Promedio del grupo: 91.33','Mejor promedio: 40550 Ivan Morales (97.67)','Informe guardado en informe.txt (2 estudiantes)','Fin del programa']},
+ c4:{titulo:'El archivo no existe',teclee:'LabK_seccion9.txt',
+  out:'Error: no se encontro el archivo LabK_seccion9.txt\nFin del programa',
+  chk:[B,'Error: no se encontro el archivo LabK_seccion9.txt','Fin del programa']}
+};
+var C=window.__CASES,ph='';
+Object.keys(C).forEach(function(k){
+ ph+='<div data-panel="'+k+'"'+(k==='c1'?'':' hidden')+'><h3 class="ct">Caso '+k.slice(1)+': '+esc(C[k].titulo)+'</h3><div class="cc"><div><p class="cl">Cuando pida el archivo, teclee:</p><kbd class="arch-k">'+esc(C[k].teclee)+'</kbd><p class="cl nota">y Enter.'+(k==='c4'?' Ese archivo no existe a propósito.':'')+'</p></div><div><p class="cl">Debe ver, después del encabezado:</p><div class="term">'+esc(C[k].out)+'</div></div></div></div>'});
+document.getElementById('cases-panels').innerHTML=ph;
+
+/* Archivos de datos del laboratorio (los mismos de laboratorios/) */
+window.__DATOS={
+ d1:'numero,nombre,nota1,nota2,nota3\n84231,Ana Rivera,90,85,92\n70112,Luis Ortiz,78,81,70\n90517,Marta Colon,ochenta,88,91\n65020,Yadiel Cruz,65,72,60\n88140,Sofia Medina,95,98,100\n73355,Kevin Torres,70,68\n91002,Camila Vega,84,90,79',
+ d2:'numero,nombre,nota1,nota2,nota3\n50211,Pedro Santiago,88,92,85\n99999999999,Laura Diaz,90,90,90\n61844,Andrea Nieves,105,80,75\n62930,Jose Rosado,72,75,81',
+ d3:'numero,nombre,nota1,nota2,nota3\n40125,Gabriel Ortiz,80,85,90\n\n,Valeria Rios,90,91,92\n40388,Diego Marrero,70,75,80,85\n40412,Natalia Burgos,-5,60,70\n40550,Ivan Morales,100,95,98'};
+var nom={d1:'LabK_estudiantes.txt',d2:'LabK_seccion2.txt',d3:'LabK_seccion3.txt'},dp='';
+Object.keys(window.__DATOS).forEach(function(k){
+ var ls=window.__DATOS[k].split('\n');
+ dp+='<div data-panel="'+k+'"'+(k==='d1'?'':' hidden')+'><div class="carp" style="margin-top:30px"><span class="pest">'+nom[k]+'</span><div class="hoja h18 lineas">'+ls.map(function(l,i){return '<span class="lnf" tabindex="0" role="button" data-d="'+k+'" data-i="'+i+'"><b>'+(i+1)+'</b>'+(l?esc(l):'<span class="vacio">(línea vacía)</span>')+'</span>'}).join('')+'</div></div></div>'});
+document.getElementById('dt-panels').innerHTML=dp;
+})();
+</script>
+<script src="assets/deck.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id)};
+function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function grupo(caja,attr,fn,inicial){var bs=[].slice.call(caja.querySelectorAll('['+attr+']'));
+  function sel(v){bs.forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute(attr)===v)});fn(v)}
+  bs.forEach(function(b){b.onclick=function(){sel(b.getAttribute(attr))}});if(inicial!==undefined)sel(inicial);return sel}
+
+/* capítulos */
+var EX=['Ficheros','Excepciones','Laboratorio'];
+[].forEach.call(document.querySelectorAll('[data-topic]'),function(sl){var t=+sl.dataset.topic,e=sl.querySelector('.ext');
+  if(e)e.innerHTML=EX.map(function(w,i){return '<span class="'+(i+1===t?'on':'')+'">'+(i+1===t?'→ ':'')+w+'</span>'}).join('')});
+
+/* portada: el archivero */
+var GN=['expedientes_A-G.txt','expedientes_H-O.txt','expedientes_P-Z.txt'];
+[].forEach.call(document.querySelectorAll('#pt-arch .frente'),function(b){b.setAttribute('aria-pressed','false');b.onclick=function(){
+  var g=b.parentNode,on=!g.classList.contains('abierta');
+  [].forEach.call(document.querySelectorAll('#pt-arch .gav'),function(x){x.classList.remove('abierta');x.querySelector('.frente').setAttribute('aria-pressed','false')});
+  if(on){g.classList.add('abierta');b.setAttribute('aria-pressed','true')}
+  $('pt-est').innerHTML=on?'ifstream f("'+GN[+b.dataset.g]+'");<br>f.is_open() → <b>true</b>':'f.close();  // gaveta cerrada'}});
+document.querySelectorAll('#pt-arch .gav')[2].classList.add('abierta');
+$('pt-est').innerHTML='ifstream f("'+GN[2]+'");<br>f.is_open() → <b>true</b>';
+
+/* contador */
+var ctN=0,ctL=[];
+function ctDraw(){$('ct-file').innerHTML=ctN?'<span class="lnf nace">'+ctN+'</span>':'<span class="vacio">(no existe)</span>';$('ct-out').textContent=ctL.join('\n')}
+$('ct-run').onclick=function(){ctN++;ctL.push('En memoria: 1  En el archivo: '+ctN);if(ctL.length>5)ctL.shift();ctDraw();
+  $('ct-msg').textContent=ctN===1?'Primera corrida: el archivo no existía, así que guardado empieza en 0.':'enMemoria vuelve a empezar en 0 cada vez; guardado sigue donde se quedó.'};
+$('ct-del').onclick=function(){ctN=0;ctL=[];ctDraw();$('ct-msg').textContent='Sin contador.txt, el programa empieza otra vez desde 1.'};
+ctDraw();
+
+/* tres clases */
+var TC={o:{d:1,r:0,f:[['Dirección','programa → archivo'],['Operador','<code>esc &lt;&lt; dato</code>'],['Modo por omisión','<code>ios::out</code>: crea el archivo o lo vacía'],['Si no existe','lo crea']],l:[0,1,2]},
+ i:{d:0,r:1,f:[['Dirección','archivo → programa'],['Operador','<code>lee &gt;&gt; s</code>, <code>getline(lee, s)</code>'],['Modo por omisión','<code>ios::in</code>'],['Si no existe','no abre: <code>is_open()</code> es false']],l:[3,4,5,6,7]},
+ f:{d:1,r:1,f:[['Dirección','en los dos sentidos'],['Operador','<code>&lt;&lt;</code> y <code>&gt;&gt;</code>'],['Modo','hay que darlo: <code>ios::in | ios::out</code>'],['Si no existe','con ese modo, no abre']],l:[8,9,10]}};
+grupo($('tc-b'),'data-c',function(c){var t=TC[c];$('tc-d').classList.toggle('off',!t.d);$('tc-r').classList.toggle('off',!t.r);
+  $('tc-f').innerHTML=t.f.map(function(x){return '<span>'+x[0]+'</span><div>'+x[1]+'</div>'}).join('');
+  [].forEach.call($('tc-code').querySelectorAll('.ln'),function(l,i){l.classList.toggle('cur',t.l.indexOf(i)>=0)})},'o');
+
+/* escribir paso a paso */
+Deck.steps.esc=[
+ {l:0,add:[['gav','abierta']],set:{gest:'abierta',vac:'(vacío)'},msg:'Abre la gaveta: crea registro.txt. Si ya existía, lo vacía.'},
+ {l:1,msg:'is_open() es true: la gaveta abrió. No entra al if.'},
+ {l:5,show:['l1'],hide:['vac'],flash:['l1'],msg:'f << escribe igual que cout <<, pero en el archivo.'},
+ {l:6,show:['l2'],flash:['l2'],msg:'endl añade el salto de línea al final de cada expediente.'},
+ {l:7,rem:[['gav','abierta']],set:{gest:'cerrada'},show:['sello'],msg:'close() pasa todo al disco y cierra la gaveta.'},
+ {l:8,out:'Se guardaron 2 expedientes',msg:'En la pantalla sale solo lo que va a cout. Lo demás quedó en registro.txt.'}];
+
+/* modos */
+var mdN='Ana',mdM='app',mdF=null,mdL=[];
+grupo($('md-n'),'data-n',function(v){mdN=v},'Ana');
+grupo($('md-m'),'data-m',function(v){mdM=v},'app');
+$('md-run').onclick=function(){var nuevo=mdF===null;if(mdM==='out'||mdF===null)mdF=[];mdF.push('Visita: '+mdN);
+  $('md-out').innerHTML='<span class="p">entrada: '+mdN+' '+mdM+'</span>\n'+esc(mdF.join('\n'));
+  $('md-msg').textContent=mdM==='app'?(nuevo?'ios::app crea el archivo si no existe y escribe al final.':'ios::app conserva lo que había y añade al final: '+mdF.length+' líneas.'):'ios::out vacía el archivo al abrirlo: solo queda la última visita.'};
+$('md-del').onclick=function(){mdF=null;$('md-out').innerHTML='';$('md-msg').textContent='visitas.txt ya no existe.'};
+
+/* lector */
+var TXT='numero,nombre,nota1,nota2,nota3\n84231,Ana Rivera,90,85,92\n70112,Luis Ortiz,78,81,70\n',LC;
+function lcInit(){LC={pos:0,eof:false,fail:lcNx,val:null,n:0,out:[],fin:false,ult:null}}
+var lcMode='l',lcNx=false;
+function esWs(c){return c===' '||c==='\n'||c==='\t'}
+function lcLeer(){var s=LC,len=TXT.length;
+  if(s.fail){if(lcMode==='l')s.val='';return false}
+  if(lcMode==='l'){if(s.pos>=len){s.eof=s.fail=true;s.val='';return false}
+    var i=TXT.indexOf('\n',s.pos),a=s.pos;if(i<0){s.val=TXT.slice(a);s.pos=len;s.eof=true}else{s.val=TXT.slice(a,i);s.pos=i+1}s.ult=[a,s.pos];return true}
+  while(s.pos<len&&esWs(TXT[s.pos]))s.pos++;
+  if(s.pos>=len){s.eof=s.fail=true;return false}
+  var b=s.pos;while(s.pos<len&&!esWs(TXT[s.pos]))s.pos++;s.val=TXT.slice(b,s.pos);if(s.pos>=len)s.eof=true;s.ult=[b,s.pos];return true}
+function lcDraw(){var s=LC,h='',v=lcMode==='l'?'linea':'palabra';
+  if(lcNx){h='<span class="vacio">(no existe: la gaveta no abre)</span>'}
+  else{var lines=TXT.split('\n');lines.pop();var off=0;
+    lines.forEach(function(l){var seg='';for(var j=0;j<=l.length;j++){var p=off+j,ch=j<l.length?esc(l[j]):'<span class="nl">↵</span>';var cls=[];if(p<s.pos)cls.push('leido');if(p===s.pos-1)cls.push('tras');seg+=cls.length?'<span class="'+cls.join(' ')+'">'+ch+'</span>':ch}h+='<span class="lnf">'+seg+'</span>';off+=l.length+1});
+    h+='<span class="lnf"><span class="fin">fin del archivo</span></span>'}
+  $('lc-h').innerHTML=h;$('lc-p').textContent=lcNx?'expediente.txt (no existe)':'expediente.txt';
+  var cond=s.fin?'false':(s.n?'true':'—');
+  $('lc-fl').innerHTML='<span class="'+(lcNx?'f':'t')+'">is_open(): '+(!lcNx)+'</span><span class="'+(s.eof?'t':'f')+'">eof(): '+s.eof+'</span><span class="'+(s.fail?'t':'f')+'">fail(): '+s.fail+'</span><span>while: '+cond+'</span>';
+  $('lc-v').innerHTML='<span>'+v+'</span><b>'+(s.val===null?'""':'"'+esc(s.val)+'"')+'</b><span>n</span><b>'+s.n+'</b>';
+  $('lc-out').textContent=s.out.join('\n');$('lc-go').disabled=s.fin}
+function lcMsg(t){$('lc-msg').textContent=t}
+$('lc-go').onclick=function(){var s=LC;if(s.fin)return;var ok=lcLeer();
+  if(ok){s.n++;s.out.push(s.n+': '+s.val);
+    lcMsg(lcMode==='l'?'getline leyó hasta el salto de línea y lo descartó. La lectura salió bien: el while entra.':'>> saltó los espacios y leyó hasta el próximo espacio o salto de línea: «'+s.val+'».')}
+  else{s.fin=true;lcMsg(lcNx?'El archivo no abrió: la primera lectura falla, el while no entra y el programa no imprime nada.':(lcMode==='l'?'No quedaba nada: getline falla, eof() y fail() quedan en true y el while termina. Fueron '+s.n+' vueltas, una por línea.':'No quedaba nada: >> falla y el while termina. Fueron '+s.n+' vueltas: «Ana Rivera» se partió en dos.'))}
+  lcDraw()};
+$('lc-rs').onclick=function(){lcInit();lcDraw();lcMsg('Archivo abierto al principio. Pulse «Leer una vuelta».')};
+$('lc-nx').onclick=function(){lcNx=!lcNx;this.setAttribute('aria-pressed',lcNx);lcInit();lcDraw();lcMsg(lcNx?'Ahora expediente.txt no existe. Pulse «Leer una vuelta».':'Archivo abierto al principio. Pulse «Leer una vuelta».')};
+grupo($('lc-m'),'data-m',function(m){lcMode=m;$('lc-cl').hidden=m!=='l';$('lc-cp').hidden=m!=='p';lcInit();lcDraw();lcMsg(m==='l'?'Una vuelta por línea, con espacios y todo.':'Una vuelta por palabra: >> se detiene en cada espacio.')},'l');
+
+/* csv: emula getline(ss, campo, ','), stoi y stod */
+function separar(s){if(s==='')return[];var p=s.split(',');if(p[p.length-1]==='')p.pop();return p}
+function xStoi(t){var m=/^[ \t\n\v\f\r]*([+-]?\d+)/.exec(t);if(!m)throw['invalid_argument','stoi'];var d=m[1].replace(/^[+-]?0*/,'');var neg=m[1][0]==='-';
+  if(d.length>10)throw['out_of_range','stoi'];var v=Number((neg?'-':'')+(d||'0'));if(v>2147483647||v<-2147483648)throw['out_of_range','stoi'];return v}
+function xStod(t){var q=/^[ \t\n\v\f\r]*([+-]?)(inf(?:inity)?|nan)/i.exec(t);if(q)return /^n/i.test(q[2])?NaN:(q[1]==='-'?-Infinity:Infinity);var m=/^[ \t\n\v\f\r]*([+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)/.exec(t);if(!m)throw['invalid_argument','stod'];return Number(m[1])}
+function fmt(n){return isNaN(n)?'nan':(n===Infinity?'inf':(n===-Infinity?'-inf':String(n)))}
+function nota(t){var n=xStod(t);if(n<0||n>100)throw['out_of_range','nota fuera de rango: '+t];return n}
+function convertir(c){if(c.length!==5)throw['invalid_argument','se esperaban 5 campos y hay '+c.length];return{numero:xStoi(c[0]),nombre:c[1],n:[nota(c[2]),nota(c[3]),nota(c[4])]}}
+function cvShow(){var s=$('cv-in').value,c=separar(s);
+  $('cv-ch').innerHTML=c.length?c.map(function(x,i){return '<div'+(x===''?' class="vacio"':'')+'><small>campos['+i+']</small>'+(x===''?'""':esc(x))+'</div>'}).join(''):'<div class="vacio"><small>campos</small>(ninguno)</div>';
+  var h='<tr><td>campos.size()</td><td class="'+(c.length===5?'si':'no')+'">'+c.length+'</td></tr>';
+  if(c.length===5){var et=['stoi(campos[0])','','stod(campos[2])','stod(campos[3])','stod(campos[4])'];
+    [0,2,3,4].forEach(function(i){var r;try{r=i===0?xStoi(c[i]):fmt(xStod(c[i]));h+='<tr><td>'+et[i]+'</td><td class="si">'+r+'</td></tr>'}catch(e){h+='<tr><td>'+et[i]+'</td><td class="no">lanza '+e[0]+' ('+e[1]+')</td></tr>'}})}
+  else h+='<tr><td></td><td style="color:var(--soft)">campos[4] no existe: no convierta sin revisar size()</td></tr>';
+  $('cv-t').innerHTML=h;
+  [].forEach.call(document.querySelectorAll('#cv-b button'),function(b){b.setAttribute('aria-pressed',b.dataset.v===s)})}
+$('cv-in').addEventListener('input',cvShow);
+[].forEach.call(document.querySelectorAll('#cv-b button'),function(b){b.onclick=function(){$('cv-in').value=b.dataset.v;cvShow()}});
+cvShow();
+
+/* eof paso a paso */
+Deck.steps.eof=[
+ {l:4,msg:'Vuelta 1: eof() es false porque no se ha leído nada. Entra.'},
+ {l:5,add:[['s1','leido'],['s1','tras']],set:{vnum:'84231',vnom:'"Ana"'},msg:'Lee la primera línea. Se detiene antes del salto de línea.'},
+ {l:7,set:{vv:'1'},out:'1: 84231 Ana'},
+ {l:4,msg:'eof() sigue false: todavía queda texto. Entra.'},
+ {l:5,rem:[['s1','tras']],add:[['n1','leido'],['s2','leido'],['s2','tras']],set:{vnum:'70112',vnom:'"Luis"'},msg:'Lee la segunda línea. Otra vez se detiene antes del último salto de línea.'},
+ {l:7,set:{vv:'2'},out:'2: 70112 Luis'},
+ {l:4,msg:'¿eof()? Todavía false: queda el último ↵ y nadie ha intentado leer más allá. Entra una tercera vez.'},
+ {l:5,rem:[['s2','tras'],['feof','f'],['ffail','f']],add:[['n2','leido'],['n2','tras'],['feof','t'],['ffail','t']],set:{feof:'eof(): true',ffail:'fail(): true'},flash:['feof','ffail'],msg:'>> salta el ↵, choca con el fin y falla. numero y nombre no cambian: guardan lo de la vuelta anterior.'},
+ {l:7,set:{vv:'3'},out:'3: 70112 Luis',msg:'Imprime los datos viejos: la última línea sale repetida. Con g++ 13.3 la salida es exactamente esta.'},
+ {l:4,msg:'Ahora sí eof() es true y el ciclo termina. Se preguntó una vuelta tarde.'}];
+
+/* throw paso a paso */
+Deck.steps.thr=[
+ {l:8,msg:'main llama a promedio(267, 3) dentro del try.'},
+ {l:1,set:{vs:'267',vc:'3'},msg:'cantidad no es 0: no lanza.'},
+ {l:3,msg:'return 267 / 3: devuelve 89 de la manera normal.'},
+ {l:8,out:'89'},
+ {l:9,msg:'Ahora promedio(0, 0).'},
+ {l:2,set:{vs:'0',vc:'0'},show:['exc'],flash:['exc'],msg:'throw: la función se interrumpe aquí. No hay return; el expediente sale a buscar una ventanilla.'},
+ {l:10,msg:'El resto del try se salta: esta línea nunca se ejecuta.'},
+ {l:11,add:[['vent','lit']],msg:'runtime_error es una exception: esta ventanilla la acepta.'},
+ {l:12,out:'Error: el expediente no tiene notas',msg:'e.what() devuelve el mensaje que se le dio al lanzarla.'},
+ {l:14,out:'El programa sigue',msg:'Después del catch, el programa continúa normalmente.'}];
+
+/* estándar */
+var SE=[
+ {t:'std::out_of_range',n:'out_of_range',w:"vector::_M_range_check: __n (which is 5) >= this->size() (which is 3)",m:'at() revisa la posición. Con notas[5] no hay revisión ni excepción: es comportamiento indefinido.'},
+ {t:'std::out_of_range',n:'out_of_range',w:"basic_string::at: __n (which is 10) >= this->size() (which is 3)",m:'Un string también tiene at(), con su propio mensaje.'},
+ {t:'std::invalid_argument',n:'invalid_argument',w:'stoi',m:'No hay ni un dígito al principio. El what() es corto: solo el nombre de la función.'},
+ {t:'std::out_of_range',n:'out_of_range',w:'stoi',m:'Son dígitos, pero el número no cabe en un int. El mismo what(), otra excepción.'},
+ {t:'std::invalid_argument',n:'invalid_argument',w:'stod',m:'Un campo vacío del CSV: stod no tiene nada que convertir.'},
+ {t:'nada',n:null,w:'devuelve 12',m:'¡Cuidado! stoi convierte lo que puede al principio y se detiene en la «a». No lanza.'},
+ {t:'nada',n:null,w:'devuelve 88.5',m:'stod salta el espacio inicial y se detiene en la «x». Tampoco lanza.'}];
+grupo($('se-b'),'data-i',function(i){var s=SE[+i];$('se-t').textContent=s.t;$('se-t').className=s.n?'tipo':'ok';
+  $('se-wl').textContent=s.n?'e.what()':'Resultado';$('se-w').textContent=s.w;$('se-m').textContent=s.m;
+  [].forEach.call($('se-a').children,function(d){d.classList.toggle('lit',!!s.n&&(d.dataset.n===s.n||d.dataset.n==='exception'||(d.dataset.n==='logic_error')))})},'0');
+
+/* orden de los catch */
+var orT='ochenta',orMal=false;
+var OR={'85':{ex:null,ok:'Nota: 85'},'ochenta':{ex:'invalid_argument',w:'stoi'},'105':{ex:'out_of_range',w:'nota fuera de 0-100'},'99999999999':{ex:'out_of_range',w:'stoi'}};
+var VB={invalid_argument:['catch (const invalid_argument& e)','No es un numero: '],out_of_range:['catch (const out_of_range& e)','Fuera de rango: '],exception:['catch (const exception& e)','Otro error: ']};
+function orDraw(){var orden=orMal?['exception','invalid_argument','out_of_range']:['invalid_argument','out_of_range','exception'],r=OR[orT],quien=null;
+  if(r.ex){for(var i=0;i<orden.length;i++){if(orden[i]===r.ex||orden[i]==='exception'){quien=orden[i];break}}}
+  $('or-v').innerHTML=orden.map(function(k,i){var muerta=orMal&&i>0;return '<div class="vent'+(k===quien?' lit':'')+(muerta?' muerta':'')+'"><b>'+esc(VB[k][0])+'</b><small>'+(k===quien?'atiende: '+r.ex:(muerta?'nunca recibe nada':'ventanilla '+(i+1)))+'</small></div>'}).join('');
+  $('or-out').textContent=r.ex?VB[quien][1]+r.w:r.ok;
+  $('or-ok').hidden=orMal;$('or-mal').hidden=!orMal;$('or-w').hidden=!orMal}
+grupo($('or-b'),'data-t',function(t){orT=t;orDraw()},'ochenta');
+$('or-tg').onclick=function(){orMal=!orMal;this.setAttribute('aria-pressed',orMal);orDraw()};
+
+/* pila */
+Deck.steps.pila=[
+ {l:12,show:['fb'],msg:'main llama a buscarExpediente: se abre un marco nuevo encima de main.'},
+ {l:5,show:['gb'],out:'Abre gaveta de expedientes',msg:'Se construye la Gaveta local de buscarExpediente.'},
+ {l:6,show:['fl'],msg:'buscarExpediente llama a leerNota("ochenta"): otro marco encima.'},
+ {l:1,show:['gl'],out:'Abre gaveta de notas',msg:'Se construye la Gaveta de leerNota.'},
+ {l:2,show:['ex'],flash:['ex'],msg:'stod("ochenta") lanza invalid_argument. leerNota no tiene catch: la excepción baja.'},
+ {l:3,add:[['gl','cerrada'],['fl','sale']],out:'Cierra gaveta de notas',msg:'Antes de salir de leerNota se destruye su Gaveta. Nada queda abierto.'},
+ {l:7,hide:['ex'],add:[['gb','cerrada'],['fb','sale']],out:'Cierra gaveta de expedientes',msg:'buscarExpediente tampoco tiene catch: se salta «Nunca llega aqui» y se destruye su Gaveta.'},
+ {l:13,hide:['fl','fb'],msg:'En main, el catch acepta invalid_argument.'},
+ {l:14,out:'Ventanilla: stod',msg:'La ventanilla atiende el expediente.'},
+ {l:16,out:'Fin',msg:'La pila se desenrolló en orden inverso, con cada destructor. Es la salida real con g++ 13.3.'}];
+
+/* excepción propia */
+var AP={'expediente.txt':['numero,nombre,nota1,nota2,nota3','84231,Ana Rivera,90,85,92'],'notas.txt':['84231 Ana 90 85 92','70112 Luis 78 81 70'],'seccion9.txt':null};
+grupo($('ap-b'),'data-f',function(f){var c=AP[f];$('ap-p').textContent=f;
+  $('ap-h').innerHTML=c?c.map(function(l){return '<span class="lnf">'+esc(l)+'</span>'}).join(''):'<span class="vacio">(la gaveta está vacía)</span>';
+  $('ap-s').hidden=!!c;
+  $('ap-out').textContent=c?'Abierto: '+f:'Registro: no se encontro el archivo '+f},'seccion9.txt');
+
+/* bandeja: close() */
+var rc;function rcInit(){rc={tray:false,file:false,closed:false,out:[]}}
+function rcDraw(){$('rc-tray').innerHTML=rc.tray?'<span class="papelito nace">Recibido: 84231</span>':'';
+  $('rc-file').innerHTML=rc.file?'<span class="lnf nace">Recibido: 84231</span>':'<span class="vacio">(vacío)</span>';
+  if(rc.closed&&rc.file)$('rc-file').insertAdjacentHTML('beforeend','<span class="sello si" style="position:absolute;right:8px;top:6px;font-size:17px">RECIBIDO</span>');
+  $('rc-out').textContent=rc.out.join('\n');$('rc-w').disabled=rc.closed||rc.tray;$('rc-c').disabled=rc.closed}
+$('rc-w').onclick=function(){rc.tray=true;rcDraw();$('rc-msg').textContent='El texto queda en el búfer, todavía no en el disco.'};
+$('rc-r').onclick=function(){rc.out.push((rc.file?'Recibido: 84231':'(vacio)'));if(rc.out.length>2)rc.out.shift();rcDraw();
+  $('rc-msg').textContent=rc.file?'Ya está en el disco: otro ifstream lo puede leer.':(rc.tray?'Otro ifstream mira el archivo y no lo encuentra: sigue en el búfer.':'El archivo existe, pero no tiene nada.')};
+$('rc-c').onclick=function(){if(rc.tray){rc.tray=false;rc.file=true}rc.closed=true;rcDraw();$('rc-msg').textContent='close() vacía el búfer en el archivo y lo cierra. endl y flush() también vacían el búfer, sin cerrar.'};
+$('rc-x').onclick=function(){rcInit();rcDraw();$('rc-msg').textContent='El archivo existe desde que se abre, pero está vacío.'};
+rcInit();rcDraw();
+
+/* laboratorio: los archivos de datos */
+var DATOS=window.__DATOS;
+function dtShow(el){[].forEach.call(document.querySelectorAll('#dt-panels .lnf'),function(x){x.classList.toggle('lit',x===el)});
+  var l=DATOS[el.dataset.d].split('\n')[+el.dataset.i],n=+el.dataset.i+1;$('dt-l').textContent='Línea '+n;
+  if(n===1){$('dt-r').textContent='encabezado: se lee y no se usa';$('dt-r').style.color='var(--soft)';$('dt-m').textContent='Si se procesa, stoi("numero") lanza invalid_argument y aparece una línea rechazada de más.';return}
+  if(l===''){$('dt-r').textContent='vacía: se salta sin mensaje';$('dt-r').style.color='var(--soft)';$('dt-m').textContent='Se cuenta como línea (los números de las siguientes no cambian), pero no se rechaza.';return}
+  var c=separar(l);
+  try{var e=convertir(c),p=(e.n[0]+e.n[1]+e.n[2])/3;$('dt-r').textContent='aceptada: '+e.numero+' '+e.nombre+': '+p.toFixed(2);$('dt-r').style.color='var(--si)';$('dt-m').textContent='separarCampos da '+c.length+' campos y convertir no lanza nada.'}
+  catch(x){$('dt-r').textContent='Linea '+n+' rechazada ['+x[0]+']: '+x[1];$('dt-r').style.color='var(--sello)';
+    $('dt-m').textContent=x[1].indexOf('campos')>=0?'convertir revisa size() antes de convertir y lanza invalid_argument.':(x[1]==='stoi'||x[1]==='stod'?'La lanza '+x[1]+' por su cuenta; el try de leerExpedientes la atrapa.':'convertirNota la lanza; usted la atrapa con el catch de out_of_range.')}}
+[].forEach.call(document.querySelectorAll('#dt-panels .lnf'),function(el){el.onclick=function(){dtShow(el)};el.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();dtShow(el)}}});
+dtShow(document.querySelector('#dt-panels .lnf[data-d="d1"][data-i="3"]'));
+[].forEach.call(document.querySelectorAll('[data-tab^="d"]'),function(b){b.addEventListener('click',function(){dtShow(document.querySelector('#dt-panels .lnf[data-d="'+b.dataset.tab+'"][data-i="1"]'))})});
+
+/* laboratorio: verificador */
+function norm(x){return x.replace(/\r/g,'').replace(/[ \t   ]+/g,' ').toLowerCase()}
+function comprobar(chk,raw){var lines=norm(raw).split('\n').map(function(x){return x.trim()}),ln=0,col=0;
+  return chk.map(function(c){var t=norm(c).trim();for(var i=ln;i<lines.length;i++){var p=lines[i].indexOf(t,i===ln?col:0);if(p>=0){ln=i;col=p+t.length;return true}}return false})}
+var CASES=window.__CASES,PASS={},cur='c1';
+try{var g=JSON.parse(localStorage.getItem('tesi2105-labK')||'{}');if(g&&typeof g==='object'&&!Array.isArray(g))Object.keys(CASES).forEach(function(k){if(g[k]===1)PASS[k]=1})}catch(e){PASS={}}
+function marcar(){Object.keys(CASES).forEach(function(k){$('tb-'+k).classList.toggle('pass',!!PASS[k])})}
+function vfLista(html,enf){var L=$('vf-checks');L.innerHTML=html;L.scrollTop=0;if(enf)L.setAttribute('tabindex','0');else L.removeAttribute('tabindex')}
+function vfGuardar(){try{if(Object.keys(PASS).length)localStorage.setItem('tesi2105-labK',JSON.stringify(PASS));else localStorage.removeItem('tesi2105-labK')}catch(e){}}
+Object.keys(CASES).forEach(function(k){$('tb-'+k).addEventListener('click',function(){cur=k;$('vf-name').textContent='Caso '+k.slice(1);vfLista('',false);$('vf-score').textContent='';$('vf-in').value=''})});
+$('vf-checks').addEventListener('keydown',function(e){if([' ','PageDown','PageUp','Home','End','ArrowDown','ArrowUp'].indexOf(e.key)>=0)e.stopPropagation()});
+['vf-checks','vf-in','cv-in'].forEach(function(id){['touchstart','touchend'].forEach(function(ev){$(id).addEventListener(ev,function(e){e.stopPropagation()},{passive:true})})});
+$('vf-go').onclick=function(){var C=CASES[cur],raw=$('vf-in').value,h='';
+  if(!raw.trim()){$('vf-score').textContent='';vfLista('<li class="no">Pegue primero la salida de su programa.</li>',false);return}
+  var r=comprobar(C.chk,raw),ok=r.filter(Boolean).length,todo=ok===C.chk.length;
+  C.chk.forEach(function(c,i){h+=r[i]?'<li class="ok">'+esc(c)+'</li>':'<li class="no">Falta, o sale en otro orden: '+esc(c)+'</li>'});
+  vfLista(h,true);$('vf-score').textContent=todo?'Prueba superada':ok+' de '+C.chk.length;
+  var antes=!!PASS[cur];if(todo)PASS[cur]=1;else delete PASS[cur];if(antes!==todo)vfGuardar();marcar()};
+marcar();
+
+Deck.start();
+})();
+</script>
+</body>
+</html>

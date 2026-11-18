@@ -1,0 +1,1286 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unidad O: Tecnologías emergentes y ética en POO · TESI 2105</title>
+<meta name="description" content="TESI 2105 Programación Orientada a Objetos. Unidad O: inteligencia artificial, aprendizaje automático y ética, contados con el robot del laboratorio que aprende a separar chinas y limones. Incluye la actividad Auditoría ética de un sistema.">
+<link rel="preload" href="assets/fonts/schibsted-grotesk-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* Tema de la Unidad O: el robot del laboratorio. Un robot educativo de bloques, de plástico gris y anaranjado,
+   con ojos LED turquesa, un tablero de sensores y un foco que se enciende mientras aprende. */
+:root{--ground:#F1F4F2;--tone:#E1E8E4;--tone2:#CCD8D1;--ink:#14242C;--soft:#47585F;--accent:#B83D0F;--accent-ink:#fff;--field:#123A44;--field-ink:#F1FAF7;--hi:#FFC425;--code-bg:#14242C;--code-ink:#E9F1EE;--c-kw:#8FD8F0;--c-str:#FFC98A;--c-num:#FFE39A;--c-cmt:#93A9A6;--led:#3FE0C5;--limon:#A3C93A;--china:#EE8A2B;--verde:#2F8F4E;--si:#17694A;--no:#B3261E;--papel:#FFFFFF}
+[hidden]{display:none!important}
+pre.code .ln.cur{background:rgba(255,196,37,.24)}
+.term{background:#0D1B20}
+#map{gap:2px}
+#map button{width:12px}
+#map button.ch{width:16px;box-shadow:inset 0 0 0 3px var(--led);background:transparent}
+#map button.ch.seen{background:var(--led)}
+#map button.cur,#map button.ch.cur{background:var(--hi);box-shadow:none}
+.field-hi button:focus-visible,.field-hi a:focus-visible{outline-color:var(--ink)}
+pre.c18{font-size:18px;line-height:1.5;padding:12px 0}
+pre.c18 .ln{padding:0 18px}
+pre.c20{font-size:20px;line-height:1.5;padding:12px 0}
+.term.t18{font-size:18px;line-height:1.45;padding:12px 16px;min-height:0}
+.gap10{margin-top:10px}.gap14{margin-top:14px}.gap18{margin-top:18px}
+pre.code.gap10{margin-top:10px}pre.code.gap14{margin-top:14px}
+.cap{font-size:19px;line-height:1.3;font-weight:600;color:var(--soft);margin:0 0 6px}
+.msg{background:var(--tone);padding:12px 16px;font-size:20px;line-height:1.4;min-height:56px}
+.mono{font-family:var(--mono)}
+code{font-size:max(.9em,18px)}
+.g2{display:grid;gap:30px}
+
+/* capítulos */
+.chwrap{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:48px;height:100%}
+.chwrap .left{display:flex;flex-direction:column;min-width:0}
+.chapter h1{font-size:88px}
+.chapter h1.long{font-size:50px;line-height:1.04;letter-spacing:-.025em}
+.chapter .kick{font:700 22px var(--mono);color:var(--led);margin-bottom:14px;letter-spacing:.04em}
+.chapter .ext{display:flex;flex-wrap:wrap;gap:12px 26px;margin-top:auto;font-size:22px;font-weight:700}
+.chapter .ext span{opacity:.5;white-space:nowrap}
+.chapter .ext span.on{opacity:1}
+.chapter .ext span.on::after{content:"";display:block;height:5px;background:var(--hi);margin-top:6px}
+.chapter button{background:rgba(255,255,255,.12);color:var(--field-ink)}
+.chapter button:hover,.chapter button[aria-pressed=true]{background:var(--field-ink);color:var(--ink)}
+
+/* el robot */
+svg.robot{display:block;width:100%;height:auto;overflow:visible}
+.robot .pz{stroke:#0B171C;stroke-width:4;stroke-linejoin:round}
+.robot .hd{fill:#DDE6E2}.robot .bd{fill:#C2410C}.robot .bd2{fill:#9AA9A3}.robot .dk{fill:#22343B}
+.robot .eye{fill:var(--led);transition:all .3s}
+.robot.think .eye{fill:#FFD66B}
+.robot.bad .eye{fill:#FF6B5E}
+.robot .mo{fill:#2C434B}.robot .mo.on{fill:var(--led)}
+.robot .foco{fill:#4A5E66;stroke:#0B171C;stroke-width:4}
+.robot.learn .foco{fill:var(--hi)}
+.robot .halo{fill:var(--hi);opacity:0}
+.robot.learn .halo{opacity:.35}
+.robot .scr{fill:#0B171C}
+.robot .scr-t{fill:var(--led);font:600 22px var(--mono);text-anchor:middle}
+.robot .sn{fill:#33474E;transition:fill .3s}.robot .sn.on{fill:var(--hi)}
+.robot .sn-t{fill:#F1FAF7;font:700 24px var(--sans);text-anchor:middle;pointer-events:none}
+.robot .sn.on+.sn-t{fill:#0B171C}
+.robot .wh{fill:#1B2B31;stroke:#0B171C;stroke-width:4}.robot .hub{fill:#9AA9A3}
+@media (prefers-reduced-motion:no-preference){
+  .robot.learn .halo{animation:pulso 1.4s ease-in-out infinite}
+  .robot .eye{transform-box:fill-box;transform-origin:center}
+  .robot.blink .eye{animation:parpadeo .5s ease}
+}
+@keyframes pulso{0%,100%{opacity:.15;transform:scale(.9)}50%{opacity:.5;transform:scale(1.15)}}
+.robot .halo{transform-box:fill-box;transform-origin:center}
+@keyframes parpadeo{0%,100%{transform:none}50%{transform:scaleY(.15)}}
+
+/* plano del vecino más cercano */
+svg.plano{display:block;background:#fff}
+.plano .ax{stroke:var(--ink);stroke-width:2}
+.plano .gr{stroke:var(--tone2);stroke-width:1}
+.plano .tk{font:500 18px var(--mono);fill:var(--soft)}
+.plano .al{font:600 18px var(--sans);fill:var(--ink)}
+.plano .p-limon{fill:var(--limon);stroke:var(--ink);stroke-width:2.5}
+.plano .p-china{fill:var(--china);stroke:var(--ink);stroke-width:2.5}
+.plano .p-local{fill:var(--verde);stroke:var(--ink);stroke-width:2.5}
+.plano .t{stroke-width:4}
+.plano .mal{stroke:var(--no);stroke-width:4;stroke-linecap:round}
+.plano .q{fill:var(--hi);stroke:var(--ink);stroke-width:3}
+.plano .ln-q{stroke:var(--ink);stroke-width:3;stroke-dasharray:7 6}
+.plano .cen{stroke:var(--ink);stroke-width:4;stroke-linecap:round}
+.plano rect.cl{shape-rendering:crispEdges}
+.leg{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:18px;margin-top:8px;align-items:center}
+.leg i{display:inline-block;width:16px;height:16px;border:2px solid var(--ink);margin-right:6px;vertical-align:-2px}
+.leg i.c{border-radius:50%;background:var(--limon)}.leg i.s{background:var(--china)}.leg i.v{background:var(--verde)}.leg i.y{background:var(--hi);border-radius:50%}
+.res{background:#fff;padding:14px 20px}
+.res small{display:block;font:600 19px var(--sans);color:var(--soft)}
+.res b{display:block;font:700 40px var(--mono);margin-top:2px;color:var(--accent)}
+.ctl{font:600 19px var(--sans);color:var(--soft);margin:14px 0 6px}
+.ctl:first-child{margin-top:0}
+.qb button{font:600 19px var(--mono);padding:10px 12px}
+
+/* círculos IA ML AP */
+.rings button{display:block;width:100%;text-align:left}
+svg.anillos text{font:700 22px var(--sans);fill:var(--ink);pointer-events:none}
+svg.anillos .rg{cursor:pointer;stroke:var(--ink);stroke-width:3;transition:fill .25s}
+svg.anillos .rg.on{stroke-width:6}
+
+/* tabla de ejemplos */
+table.t.ej td,table.t.ej th{padding:7px 14px;font-size:20px}
+table.t.ej td{font-family:var(--mono);transition:background .25s}
+table.t.ej td.lit,table.t.ej th.lit{background:var(--hi);color:var(--ink)}
+table.t.ej tr.sep td{border-bottom:4px solid var(--ink)}
+table.t.ej td.bad{color:var(--no);font-weight:700}
+
+/* anatomía */
+.anat .pa{transition:background .2s,color .2s;border-radius:2px}
+.ops{display:flex;flex-wrap:wrap;gap:8px}
+.ops button{font:600 19px var(--mono);padding:10px 12px}
+
+/* paso a paso */
+.ws table.t td,.ws table.t th{padding:5px 12px;font-size:19px}
+.ws table.t td{font-family:var(--mono)}
+.ws tr.lit td{background:var(--hi)}
+.ws .vars{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.ws .vars div{background:#fff;padding:8px 14px}
+.ws .vars small{display:block;font:600 18px var(--sans);color:var(--soft)}
+.ws .vars b{font:700 28px var(--mono)}
+.flash{border-radius:2px}
+
+/* barras de sesgo */
+.bars{display:grid;gap:10px}
+.bar{display:grid;grid-template-columns:220px 1fr 70px;align-items:center;gap:12px;font-size:19px}
+.bar .tr{height:30px;background:var(--tone2);position:relative}
+.bar .fl{position:absolute;left:0;top:0;bottom:0;background:var(--si);transition:width .45s var(--ease-out)}
+.bar .fl.low{background:var(--no)}
+.bar b{font:700 20px var(--mono);text-align:right}
+.linea{font:600 18px var(--mono);background:#0D1B20;color:var(--ok);padding:10px 14px;line-height:1.4}
+
+/* privacidad */
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chips button{font:600 19px var(--sans);padding:10px 14px;background:#fff;border:3px solid var(--tone2)}
+.chips button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chips button.ok{border-color:var(--si);box-shadow:inset 0 -6px 0 var(--si)}
+.chips button.sobra{border-color:var(--no);box-shadow:inset 0 -6px 0 var(--no)}
+.box{background:#fff;padding:16px 20px;border-left:8px solid var(--led)}
+.box h3{font-size:22px}
+.box p{font-size:20px;margin-top:6px;line-height:1.4}
+ul.pl{margin:0;padding-left:24px;font-size:21px;line-height:1.4}
+ul.pl li{margin-bottom:6px}
+
+/* pirámide y niveles */
+.pir{display:grid;gap:6px;justify-items:center}
+.pir button{font:700 20px var(--sans);padding:12px 10px;color:#fff}
+.pir button[aria-pressed=true]{outline:5px solid var(--hi);outline-offset:-5px}
+.lvl{display:grid;gap:8px}
+.lvl button{text-align:left;font-size:20px}
+.nist{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.nist span{background:#fff;padding:8px 12px;font-size:19px;font-weight:600;border-left:6px solid var(--led)}
+
+/* diagramas de clases */
+svg.uml .bx{fill:#fff;stroke:var(--ink);stroke-width:2.5}
+svg.uml .bh{fill:var(--tone)}
+svg.uml .bh.ab{fill:#D7F5EF}
+svg.uml text{font:500 18px var(--mono);fill:var(--ink)}
+svg.uml text.tt{font:700 19px var(--mono)}
+svg.uml text.it{font-style:italic}
+svg.uml .ed{stroke:var(--ink);stroke-width:2.5;fill:none}
+svg.uml .tri{fill:#fff;stroke:var(--ink);stroke-width:2.5}
+svg.uml .dia{fill:var(--ink)}
+svg.uml text.el{font:600 18px var(--sans);fill:var(--soft)}
+
+/* cadena de bloques */
+.cadena{display:grid;gap:0}
+.blk{display:grid;grid-template-columns:44px 380px 130px 130px 130px 1fr;gap:10px;align-items:center;background:#fff;padding:8px 12px;border-left:8px solid var(--si)}
+.blk.roto{border-left-color:var(--no)}
+.blk .ix{font:800 26px var(--sans);color:var(--soft)}
+.blk input{font:500 19px var(--mono);padding:8px 10px;border:2px solid var(--tone2);width:100%;background:var(--ground);color:var(--ink)}
+.blk .hx{font:600 19px var(--mono)}
+.blk .hx.no{color:var(--no);text-decoration:underline wavy}
+.blk button{font-size:18px;padding:8px 10px}
+.eslabon{height:26px;margin-left:200px;display:flex;align-items:center;gap:10px;font:600 18px var(--sans);color:var(--si)}
+.eslabon::before{content:"";width:6px;height:26px;background:currentColor}
+.eslabon.no{color:var(--no)}
+.cab{display:grid;grid-template-columns:44px 380px 130px 130px 130px 1fr;gap:10px;padding:0 20px 6px;font:600 18px var(--sans);color:var(--soft)}
+
+/* discusiones */
+.field-hi .q{font-size:56px;line-height:1.05;letter-spacing:-.03em;font-weight:800;max-width:1120px}
+.prop2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.prop2>div{background:var(--ink);color:#fff;padding:18px 22px;min-height:170px}
+.prop2>div.ok{background:var(--accent)}
+.prop2 b{display:block;font:700 22px var(--sans)}
+.prop2 span{display:block;font-size:21px;margin-top:8px;line-height:1.35}
+.prop2 .pbtn{margin-top:12px;background:#fff;color:var(--ink);font-size:18px;padding:8px 12px}
+.prop2 span.reveal{display:none}.prop2 .shown span.reveal{display:block}
+.discrow{position:absolute;left:72px;right:72px;bottom:32px}
+
+/* actividad */
+.caso{background:#fff;padding:18px 24px;border-top:8px solid var(--accent)}
+.caso h3{font-size:30px}
+.caso dl{display:grid;grid-template-columns:150px 1fr;gap:8px 18px;margin:12px 0 0;font-size:21px;line-height:1.35}
+.caso dt{font-weight:700;color:var(--soft)}
+.caso dd{margin:0}
+.casos [data-tab]{font-size:19px}
+.audit{display:grid;gap:6px}
+.audit .fila{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:#fff;padding:7px 12px}
+.audit .fila p{font-size:20px;line-height:1.3}
+.audit .fila p small{display:block;font-size:18px;color:var(--soft)}
+.sem{display:flex;gap:6px}
+.sem button{font-size:18px;padding:8px 12px;min-width:92px}
+.sem button.v[aria-pressed=true]{background:var(--si);color:#fff}
+.sem button.a[aria-pressed=true]{background:var(--hi);color:var(--ink)}
+.sem button.r[aria-pressed=true]{background:var(--no);color:#fff}
+.pasos{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.pasos li{background:#fff;padding:10px 16px;font-size:20px;line-height:1.35;display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:baseline}
+.pasos li b.nm{font:800 26px var(--sans);color:var(--accent)}
+.pasos li em{font-style:normal;font:600 18px var(--mono);color:var(--soft)}
+.timer.mini{margin-top:0;gap:18px}
+.timer.mini .t-num{font-size:72px;min-width:200px}
+.reflex{background:var(--field);color:var(--field-ink);padding:18px 22px}
+.reflex h3{font-size:22px;color:var(--led)}
+.reflex p{font-size:21px;margin-top:6px;line-height:1.4}
+.rub td,.rub th{padding:8px 14px!important;font-size:20px!important}
+.rub td:last-child,.rub th:last-child{text-align:right;width:90px}
+.rub td small{display:block;font-size:18px;color:var(--soft)}
+.dir{display:grid;grid-template-columns:repeat(2,1fr);gap:22px 48px;margin-top:28px}
+.dir h3{font-size:28px}
+.dir p{font-size:22px;margin-top:6px}
+a.dl{display:inline-block;background:var(--accent);color:#fff;font-weight:600;font-size:19px;padding:11px 16px;text-decoration:none}a.dl:hover{background:var(--ink)}
+.refs p{font-size:19px;line-height:1.42;padding-left:36px;text-indent:-36px;margin-bottom:9px}
+.refs p a{color:inherit;overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage" data-name="Unidad O · IA y ética" role="region" aria-roledescription="presentación" aria-label="Unidad O: Tecnologías emergentes y ética en POO">
+
+<!-- PORTADA -->
+<section class="slide chapter" data-title="Portada">
+  <div class="chwrap">
+    <div class="left">
+      <h1 class="mask" style="font-size:80px"><span>Tecnologías emergentes y ética en POO</span></h1>
+      <p class="lead" data-a style="margin-top:22px;max-width:660px">El robot del laboratorio aprende a separar chinas y limones. Es un objeto de C++… y también una decisión que alguien tiene que poder explicar.</p>
+      <div class="ext" data-a><span class="on">IA y ML</span><span class="on">Ética</span><span class="on">Aplicaciones</span><span class="on">Actividad</span></div>
+      <p class="body" data-a style="margin-top:18px;font-size:20px">TESI 2105, Unidad O<br>Prof. Eduardo O. De Jesús Arroyo · ITPR, Recinto de Manatí</p>
+    </div>
+    <div data-a style="align-self:center">
+      <div id="pt-robot"></div>
+      <div class="row" style="margin-top:14px;justify-content:center"><button class="go" id="pt-go">Mostrarle una fruta</button></div>
+      <p class="small" id="pt-msg" style="margin-top:8px;text-align:center;min-height:26px" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Reglas escritas o ejemplos">
+  <h2 class="mask" style="max-width:640px"><span>¿Escribir la regla o aprenderla de ejemplos?</span></h2>
+  <p class="body sub" data-a style="max-width:1120px;font-size:22px">Las dos versiones aciertan 6 de 10 frutas de prueba. Pulse el botón: llegan chinas del país, maduras pero verdes.</p>
+  <div style="display:grid;grid-template-columns:600px 1fr;gap:26px;margin-top:12px">
+    <div data-a>
+      <p class="cap">Una regla escrita a mano (reglas.cpp)</p>
+      <pre class="code c18">string reglaManual(double diametro, double color) {
+    // grande y anaranjada: china
+    if (diametro &gt; 6 &amp;&amp; color &gt; 5)
+        return "china";
+    return "limon";
+}</pre>
+      <div class="term t18 gap10">Regla manual: 6 de 10</div>
+      <p class="msg gap10" id="rg-a" aria-live="polite">La persona que programa decide el criterio.</p>
+    </div>
+    <div data-a>
+      <p class="cap">Un modelo que aprende (modelo.cpp)</p>
+      <pre class="code c18">vecino.entrenar(catalogo);  // 8 ejemplos
+vecino.predecir(6.5, 3.0);  // "limon"
+vecino.entrenar(mejorado);  // + 3 verdes
+vecino.predecir(6.5, 3.0);  // "china"</pre>
+      <div class="term t18 gap10" id="rg-t">Vecino mas cercano: 6 de 10 (60%) en prueba; 0 de 4 chinas verdes</div>
+      <p class="msg gap10" id="rg-b" aria-live="polite">Los ejemplos deciden el criterio.</p>
+    </div>
+  </div>
+  <div class="row" data-a style="position:absolute;right:72px;top:62px"><button class="go" id="rg-go">Llegan chinas verdes del país</button><button id="rg-rs">Reiniciar</button></div>
+</section>
+
+<!-- TEMA 1 -->
+<section class="slide chapter" data-title="Tema 1: IA, ML y su relación con POO" data-topic="1">
+  <div class="chwrap"><div class="left">
+    <p class="kick" data-a>TEMA 1</p>
+    <h1 class="mask long"><span>Introducción a la inteligencia artificial (IA) y aprendizaje automático (ML) y su relación con POO</span></h1>
+    <p class="lead" data-a style="margin-top:20px;max-width:640px;font-size:28px">Un modelo que aprende es una clase con dos métodos: entrenar() y predecir().</p>
+    <div class="ext" data-a></div></div>
+    <div data-a style="align-self:center" class="ch-robot" data-scr="entrenar()" data-st="learn"></div>
+  </div>
+</section>
+
+<section class="slide" data-title="IA, ML y aprendizaje profundo">
+  <h2 class="mask"><span>Tres palabras, una dentro de la otra</span></h2>
+  <div style="display:grid;grid-template-columns:520px 1fr;gap:40px;margin-top:22px">
+    <div data-a><svg class="anillos" id="an-svg" viewBox="0 0 520 440" width="520" height="440" role="group" aria-label="Diagrama: el aprendizaje profundo está dentro del aprendizaje automático, que está dentro de la inteligencia artificial"></svg></div>
+    <div data-a>
+      <div class="row" id="an-b"><button data-r="ia">Inteligencia artificial</button><button data-r="ml">Aprendizaje automático</button><button data-r="ap">Aprendizaje profundo</button></div>
+      <h3 id="an-h" style="font-size:32px;margin-top:22px"></h3>
+      <p class="body" id="an-p" style="margin-top:10px;font-size:24px" aria-live="polite"></p>
+      <div class="box gap18"><h3>En el robot</h3><p id="an-r"></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Aprender de ejemplos">
+  <h2 class="mask"><span>Aprender de ejemplos: el vocabulario</span></h2>
+  <p class="body sub" data-a>Pulse cada palabra y vea qué parte de los datos del robot nombra.</p>
+  <div style="display:grid;grid-template-columns:600px 1fr;gap:34px;margin-top:16px">
+    <table class="t ej" id="ej" data-a></table>
+    <div data-a>
+      <div class="ops" id="ej-b"><button data-w="rasgo">Rasgos</button><button data-w="etiq">Etiqueta</button><button data-w="ent">Entrenamiento</button><button data-w="pru">Prueba</button><button data-w="err">Error y exactitud</button></div>
+      <p class="lead" id="ej-m" style="margin-top:20px;font-size:26px;min-height:200px" aria-live="polite"></p>
+      <p class="small" style="font-size:19px">Datos ficticios. Se muestran 4 de los 8 ejemplos de entrenamiento y 6 de las 10 frutas de prueba.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Un modelo es un objeto">
+  <h2 class="mask"><span>Un modelo es un objeto con una interfaz</span></h2>
+  <p class="body sub" data-a>Pulse cada parte de la clase abstracta <code>Modelo</code>.</p>
+  <div style="display:grid;grid-template-columns:800px 1fr;gap:30px;margin-top:16px">
+    <pre class="code c18 anat" data-raw data-a id="mo-code"><span class="ln"><span class="k">struct</span> <span class="pa" data-p="ej">Ejemplo</span> {</span><span class="ln">    <span class="pa" data-p="ej"><span class="k">double</span> diametro;</span>   <span class="c">// en cm</span></span><span class="ln">    <span class="pa" data-p="ej"><span class="k">double</span> color;</span>      <span class="c">// 0 = verde ... 10 = anaranjado</span></span><span class="ln">    <span class="pa" data-p="et"><span class="k">string</span> etiqueta;</span>   <span class="c">// "china" o "limon"</span></span><span class="ln">};</span><span class="ln"> </span><span class="ln"><span class="k">class</span> Modelo {                       <span class="c">// interfaz abstracta</span></span><span class="ln"><span class="k">public</span>:</span><span class="ln">    <span class="pa" data-p="vd">virtual ~Modelo() = default;</span></span><span class="ln">    <span class="pa" data-p="en">virtual <span class="k">void</span> entrenar(<span class="k">const</span> vector&lt;Ejemplo&gt;&amp; datos)</span> <span class="pa" data-p="pv">= 0</span>;</span><span class="ln">    <span class="pa" data-p="pr">virtual <span class="k">string</span> predecir(<span class="k">double</span> diametro, <span class="k">double</span> color) <span class="k">const</span></span> <span class="pa" data-p="pv">= 0</span>;</span><span class="ln">    virtual <span class="k">string</span> nombre() <span class="k">const</span> <span class="pa" data-p="pv">= 0</span>;</span><span class="ln">};</span></pre>
+    <div data-a>
+      <div class="ops" id="mo-b" style="flex-direction:column;align-items:stretch"><button data-pt="ej">Rasgos</button><button data-pt="et">Etiqueta</button><button data-pt="en">entrenar()</button><button data-pt="pr">predecir()</button><button data-pt="pv">= 0</button><button data-pt="vd">Destructor virtual</button></div>
+    </div>
+  </div>
+  <p class="lead" id="mo-msg" data-a style="margin-top:16px;font-size:25px;min-height:70px;max-width:1130px" aria-live="polite"></p>
+</section>
+
+<section class="slide" data-title="VecinoCercano paso a paso">
+  <h2 class="mask"><span>predecir(6.5, 3.0), paso a paso</span></h2>
+  <div data-step="vc" style="display:grid;grid-template-columns:720px 1fr;gap:26px;margin-top:16px">
+    <div data-a>
+      <pre class="code c18">string predecir(double diametro, double color) const override {
+    double mejor = 1e9;
+    string respuesta = "?";
+    for (const Ejemplo&amp; e : memoria) {
+        double dx = e.diametro - diametro;
+        double dy = e.color - color;
+        double distancia = sqrt(dx * dx + dy * dy);
+        if (distancia &lt; mejor) {
+            mejor = distancia;
+            respuesta = e.etiqueta;
+        }
+    }
+    return respuesta;
+}</pre>
+      <div class="row gap10"><button class="go" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="stepn"></span></div>
+    </div>
+    <div class="ws" data-a>
+      <table class="t"><tr><th>memoria</th><th>etiqueta</th><th>distancia</th></tr>
+        <tr data-id="r0"><td>(4.5, 1.0)</td><td>limon</td><td data-id="d0"></td></tr>
+        <tr data-id="r1"><td>(5.0, 2.0)</td><td>limon</td><td data-id="d1"></td></tr>
+        <tr data-id="r2"><td>(5.5, 1.5)</td><td>limon</td><td data-id="d2"></td></tr>
+        <tr data-id="r3"><td>(5.0, 3.0)</td><td>limon</td><td data-id="d3"></td></tr>
+        <tr data-id="r4"><td>(7.5, 8.0)</td><td>china</td><td data-id="d4"></td></tr>
+        <tr data-id="r5"><td>(8.0, 7.0)</td><td>china</td><td data-id="d5"></td></tr>
+        <tr data-id="r6"><td>(8.5, 9.0)</td><td>china</td><td data-id="d6"></td></tr>
+        <tr data-id="r7"><td>(7.0, 7.5)</td><td>china</td><td data-id="d7"></td></tr></table>
+      <div class="vars"><div><small>mejor</small><b data-id="mejor">—</b></div><div><small>respuesta</small><b data-id="resp">—</b></div></div>
+      <p class="msg gap10" data-id="msg" style="font-size:19px">Pulse «Siguiente paso».</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="El vecino más cercano en el plano">
+  <h2 class="mask"><span>Coloque una fruta nueva en el plano</span></h2>
+  <div style="display:grid;grid-template-columns:640px 1fr;gap:28px;margin-top:14px">
+    <div data-a>
+      <svg class="plano" id="pl1" width="640" height="440" viewBox="0 0 640 440" role="img" aria-label="Plano con los ejemplos de entrenamiento. Pulse para colocar una fruta nueva."></svg>
+      <div class="leg"><span><i class="c"></i>limón</span><span><i class="s"></i>china (catálogo)</span><span><i class="v"></i>china del país</span><span><i class="y"></i>fruta nueva</span></div>
+    </div>
+    <div data-a>
+      <p class="ctl">Datos de entrenamiento</p>
+      <div class="row" id="pl1-d"><button data-d="cat" aria-pressed="true">Catálogo (8)</button><button data-d="mej">+ 3 chinas del país</button></div>
+      <p class="ctl">Las consultas de modelo.cpp</p>
+      <div class="row qb" id="pl1-q"></div>
+      <div class="res gap14"><small id="pl1-s">Pulse en el plano o escoja una consulta</small><b id="pl1-r">—</b></div>
+      <p class="msg gap10" id="pl1-m" aria-live="polite" style="font-size:19px">La predicción es la etiqueta del ejemplo más cercano. El fondo pinta lo que predeciría en cada punto.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Dos modelos, una interfaz">
+  <h2 class="mask"><span>Dos modelos, una interfaz: polimorfismo</span></h2>
+  <div data-tabs="dm1" data-a style="margin-top:18px">
+    <div class="row"><button data-tab="dm1">Centroide</button><button data-tab="dm2">El ciclo polimórfico</button><button data-tab="dm3">La salida real</button></div>
+    <div style="margin-top:16px">
+      <div data-panel="dm1" style="display:grid;grid-template-columns:760px 1fr;gap:26px">
+        <pre class="code c18">class Centroide : public Modelo {
+    double dChina = 0, cChina = 0, dLimon = 0, cLimon = 0;
+public:
+    void entrenar(const vector&lt;Ejemplo&gt;&amp; datos) override {
+        // (12 lineas: promedia diametro y color de cada etiqueta)
+    }
+    string predecir(double diametro, double color) const override {
+        double aChina = hypot(dChina - diametro, cChina - color);
+        double aLimon = hypot(dLimon - diametro, cLimon - color);
+        return aChina &lt; aLimon ? "china" : "limon";
+    }
+    string nombre() const override { return "Centroide"; }
+};</pre>
+        <div><p class="lead" style="font-size:27px">Otra forma de aprender: resumir cada etiqueta en su punto promedio.</p><p class="body sub" style="font-size:22px">No guarda los ejemplos: guarda dos puntos. Predice la etiqueta del promedio más cercano. Misma interfaz, otro algoritmo por dentro.</p></div>
+      </div>
+      <div data-panel="dm2" hidden style="display:grid;grid-template-columns:790px 1fr;gap:26px">
+        <div><pre class="code c18">int aciertos(const Modelo&amp; m, const vector&lt;Ejemplo&gt;&amp; prueba) {
+    int bien = 0;
+    for (const Ejemplo&amp; e : prueba)
+        if (m.predecir(e.diametro, e.color) == e.etiqueta) bien++;
+    return bien;
+}</pre>
+        <p class="cap gap10">En main</p>
+        <pre class="code c18">vector&lt;Modelo*&gt; modelos = {&amp;vecino, &amp;centro};
+for (Modelo* m : modelos) {
+    m-&gt;entrenar(catalogo);
+    informe(*m, prueba, verdes);
+}</pre></div>
+        <div><p class="lead" style="font-size:27px">aciertos() no sabe qué modelo recibe.</p><p class="body sub" style="font-size:22px">Recibe un <code>const Modelo&amp;</code> y llama <code>predecir()</code>: el enlace dinámico de la Unidad I escoge la versión de cada clase. <b>Exactitud</b> = aciertos ÷ total de prueba.</p></div>
+      </div>
+      <div data-panel="dm3" hidden style="display:grid;grid-template-columns:780px 1fr;gap:26px">
+        <div class="term t18">== Entrenado con el catalogo (8 ejemplos) ==
+Vecino mas cercano: 6 de 10 (60%) en prueba; 0 de 4 chinas verdes
+Centroide: 6 de 10 (60%) en prueba; 0 de 4 chinas verdes
+Consultas al vecino mas cercano:
+  (6.5, 3) -&gt; limon
+  (5, 5) -&gt; limon
+  (7, 5.5) -&gt; china
+  (6, 6) -&gt; china
+  (8, 3) -&gt; limon
+== Entrenado con catalogo + 3 chinas locales ==
+Vecino mas cercano: 10 de 10 (100%) en prueba; 4 de 4 chinas verdes
+Centroide: 7 de 10 (70%) en prueba; 1 de 4 chinas verdes
+Consultas al vecino mas cercano: …</div>
+        <div><p class="body" style="font-size:22px">Salida de <code>modelo.cpp</code>, compilado con <code>-Wall -Wextra</code> sin avisos.</p>
+          <a class="dl gap14" id="dl-modelo" href="#" download="modelo.cpp">Descargar modelo.cpp</a>
+          <div class="term t18 gap14">g++ -std=c++17 -Wall -Wextra -o modelo modelo.cpp</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Las bibliotecas reales">
+  <h2 class="mask"><span>Las bibliotecas de IA también son clases</span></h2>
+  <div data-tabs="lb1" data-a style="margin-top:18px">
+    <div class="row"><button data-tab="lb1">scikit-learn: el mismo vecino</button><button data-tab="lb2">Cinco bibliotecas, la misma idea</button></div>
+    <div style="margin-top:16px">
+      <div data-panel="lb1" style="display:grid;grid-template-columns:620px 1fr;gap:28px">
+        <div><pre class="code c18" data-hash>from sklearn.neighbors import KNeighborsClassifier
+
+X = [[4.5, 1.0], [5.0, 2.0], [5.5, 1.5], [5.0, 3.0],
+     [7.5, 8.0], [8.0, 7.0], [8.5, 9.0], [7.0, 7.5]]
+y = ["limon"] * 4 + ["china"] * 4
+
+modelo = KNeighborsClassifier(n_neighbors=1)
+modelo.fit(X, y)
+print(modelo.predict([[6.5, 3.0], [7.0, 5.5]]))</pre>
+        <div class="term t18 gap10">['limon' 'china']</div></div>
+        <div><p class="lead" style="font-size:27px">En Python, el modelo también es un objeto.</p><p class="body sub" style="font-size:22px"><code>fit()</code> es nuestro <code>entrenar()</code> y <code>predict()</code>, nuestro <code>predecir()</code>. Con los mismos 8 ejemplos da las mismas predicciones que <code>vecino.predecir()</code> en C++.</p><p class="small gap14">Verificado con scikit-learn 1.9.</p></div>
+      </div>
+      <div data-panel="lb2" hidden>
+        <table class="t" style="font-size:21px">
+          <tr><th>Biblioteca</th><th>Clase base del modelo</th><th>Entrenar · predecir</th></tr>
+          <tr><td>Nuestro programa (C++)</td><td><code>Modelo</code>, abstracta</td><td><code>entrenar()</code> · <code>predecir()</code></td></tr>
+          <tr><td>scikit-learn (Python)</td><td><code>KNeighborsClassifier</code> y los demás estimadores</td><td><code>fit()</code> · <code>predict()</code></td></tr>
+          <tr><td>PyTorch (Python)</td><td>cada red hereda de <code>nn.Module</code></td><td>se redefine <code>forward()</code></td></tr>
+          <tr><td>Keras (TensorFlow)</td><td>hereda de <code>keras.Model</code>; capas en <code>__init__()</code></td><td><code>fit()</code> · <code>predict()</code>; el pase en <code>call()</code></td></tr>
+          <tr><td>OpenCV (C++)</td><td><code>cv::ml::KNearest</code> hereda de <code>cv::ml::StatModel</code></td><td><code>train()</code> · <code>predict()</code></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Errores típicos con interfaces">
+  <h2 class="mask"><span>Cinco errores con la interfaz Modelo</span></h2>
+  <div data-tabs="e1" data-a style="margin-top:20px">
+    <div class="row"><button data-tab="e1">Crear un Modelo</button><button data-tab="e2">Falta const</button><button data-tab="e3">Falta un método</button><button data-tab="e4">Pasar por valor</button><button data-tab="e5">Predecir sin entrenar</button></div>
+    <div style="display:grid;grid-template-columns:740px 1fr;gap:28px;margin-top:20px">
+      <div data-panel="e1"><pre class="code c20">Modelo m;</pre><div class="term t18 gap10"><span class="e">error: cannot declare variable 'm' to be of abstract type 'Modelo'</span>
+<span class="p">note:   because the following virtual functions are pure within 'Modelo':</span></div></div>
+      <div data-panel="e1"><p class="lead">Una clase abstracta es un contrato, no un objeto.</p><p class="body sub">Se crean objetos de las clases hijas: <code>VecinoCercano vecino;</code></p></div>
+      <div data-panel="e2" hidden><pre class="code c18">class Adivino : public Modelo {
+    ...
+    string predecir(double, double) override { return "china"; }
+};</pre><div class="term t18 gap10"><span class="e">error: 'std::string Adivino::predecir(double, double)' marked 'override', but does not override</span></div></div>
+      <div data-panel="e2" hidden><p class="lead">La firma debe ser idéntica, incluido el <code>const</code>.</p><p class="body sub"><code>override</code> es el que avisa: sin él, sería otra función y el error saldría más tarde.</p></div>
+      <div data-panel="e3" hidden><pre class="code c18">class Adivino : public Modelo {
+public:
+    void entrenar(const vector&lt;Ejemplo&gt;&amp;) override {}
+};
+Adivino a;</pre><div class="term t18 gap10"><span class="e">error: cannot declare variable 'a' to be of abstract type 'Adivino'</span>
+<span class="p">note:     'virtual std::string Modelo::predecir(double, double) const'</span></div></div>
+      <div data-panel="e3" hidden><p class="lead">Si falta un método puro, la hija también queda abstracta.</p><p class="body sub">g++ lista los métodos que faltan en las notas.</p></div>
+      <div data-panel="e4" hidden><pre class="code c18">int aciertos(Modelo m, const vector&lt;Ejemplo&gt;&amp; prueba);</pre><div class="term t18 gap10"><span class="e">error: cannot declare parameter 'm' to be of abstract type 'Modelo'</span></div></div>
+      <div data-panel="e4" hidden><p class="lead">El polimorfismo pide referencia o puntero.</p><p class="body sub"><code>const Modelo&amp; m</code> o <code>Modelo* m</code>.</p></div>
+      <div data-panel="e5" hidden><pre class="code c18">VecinoCercano vecino;
+cout &lt;&lt; vecino.predecir(6.5, 3.0) &lt;&lt; "\n";   // olvido entrenar()</pre><div class="term t18 gap10">?</div></div>
+      <div data-panel="e5" hidden><p class="lead">Compila y corre, pero la memoria está vacía.</p><p class="body sub">Es un error de lógica: <code>predecir()</code> devuelve el valor inicial <code>"?"</code>. Un buen diseño lo detecta y avisa.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: ¿100 % es suficiente?">
+  <p class="q mask"><span>Con sus propios datos de entrenamiento, el vecino más cercano acierta el 100 %. ¿Ya está listo el robot?</span></p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:26px">Piensen en qué pasa si se le pregunta por un ejemplo que ya tiene en su memoria.</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b>Sí</b><span>si acierta todo lo que vio, aprendió</span></div><div class="ok" data-rv-box><b>No</b><span>hay que medir con datos nuevos</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">No: cada ejemplo está a distancia 0 de sí mismo, así que siempre acierta. Se mide con datos de prueba que nunca vio: ahí dio 6 de 10.</span></div></div></div>
+</section>
+
+<!-- TEMA 2 -->
+<section class="slide chapter" data-title="Tema 2: Consideraciones éticas" data-topic="2">
+  <div class="chwrap"><div class="left">
+    <p class="kick" data-a>TEMA 2</p>
+    <h1 class="mask long"><span>Consideraciones éticas en el desarrollo de software y sistemas de IA (privacidad, sesgos, transparencia)</span></h1>
+    <p class="lead" data-a style="margin-top:20px;max-width:640px;font-size:28px">Que un programa compile no dice si es justo con todas las personas a las que afecta.</p>
+    <div class="ext" data-a></div></div>
+    <div data-a style="align-self:center" class="ch-robot" data-scr="¿es justo?" data-st="think"></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Sesgo: lo que el robot nunca vio">
+  <h2 class="mask"><span>Sesgo: el robot nunca vio una china verde</span></h2>
+  <div style="display:grid;grid-template-columns:600px 1fr;gap:28px;margin-top:14px">
+    <div data-a>
+      <svg class="plano" id="pl2" width="600" height="420" viewBox="0 0 600 420" role="img" aria-label="Frutas de prueba en el plano; las que el modelo falla tienen una equis roja."></svg>
+      <div class="leg"><span><i class="c"></i>limón</span><span><i class="s"></i>china anaranjada</span><span><i class="v"></i>china verde</span><span style="color:var(--no);font-weight:700">✗ = la falla</span></div>
+    </div>
+    <div data-a>
+      <p class="ctl">Datos de entrenamiento</p>
+      <div class="row" id="pl2-d"><button data-d="cat" aria-pressed="true">Catálogo</button><button data-d="mej">+ 3 chinas del país</button></div>
+      <p class="ctl">Modelo</p>
+      <div class="row" id="pl2-m"><button data-m="v" aria-pressed="true">Vecino</button><button data-m="c">Centroide</button></div>
+      <div class="bars gap14" id="pl2-b"></div>
+      <p class="linea gap14" id="pl2-l"></p>
+      <p class="body gap10" style="font-size:20px">El catálogo era de fruta importada: todas las chinas, anaranjadas. Con quien no está en los datos, el modelo falla más.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Privacidad: solo los datos necesarios">
+  <h2 class="mask"><span>Privacidad: pedir solo lo necesario</span></h2>
+  <div style="display:grid;grid-template-columns:1fr 560px;gap:34px;margin-top:18px">
+    <div data-a>
+      <p class="body" style="font-size:22px">El formulario para prestar el robot del laboratorio. Marque los datos que de verdad necesita.</p>
+      <div class="chips gap14" id="pv-c"></div>
+      <div class="row gap14"><button class="go" id="pv-go">Comparar con una propuesta</button><button id="pv-rs">Limpiar</button></div>
+      <p class="msg gap10" id="pv-m" aria-live="polite">Cada dato que se guarda es un dato que se puede filtrar, perder o usar para otra cosa.</p>
+    </div>
+    <div data-a>
+      <ul class="pl">
+        <li><b>Minimización:</b> se recoge solo lo que el propósito necesita.</li>
+        <li><b>Propósito y aviso:</b> la persona sabe qué se recoge y para qué; si hace falta, da su consentimiento.</li>
+        <li><b>Seguridad y tiempo:</b> se protege y se borra cuando ya no hace falta.</li>
+      </ul>
+      <div class="box gap14"><h3>FERPA</h3><p>Ley federal de los Estados Unidos que protege los expedientes educativos. Da derecho a verlos, a pedir correcciones y a cierto control sobre su divulgación. En la universidad esos derechos son del estudiante.</p><p class="small" style="margin-top:6px">Información general, no asesoría legal.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Privacidad desde el diseño de la clase">
+  <h2 class="mask"><span>La encapsulación también protege personas</span></h2>
+  <div style="display:grid;grid-template-columns:760px 1fr;gap:28px;margin-top:18px">
+    <div data-a>
+      <pre class="code c18">class RegistroAsistencia {
+    string numEstudiante;          // dato personal: nunca sale
+    string nombre;                 // dato personal: nunca sale
+    int presentes = 0;
+public:
+    RegistroAsistencia(string num, string nom)
+        : numEstudiante(num), nombre(nom) {}
+    void marcar() { presentes++; }
+    string seudonimo() const {     // lo unico que va al analisis
+        return "E-" + to_string(resumen(numEstudiante) % 10000);
+    }
+    int getPresentes() const { return presentes; }
+};</pre>
+      <div class="term t18 gap10"><span class="p">r("840-11-2233", "Ana Rivera") y 12 veces r.marcar()</span>
+E-103 asistio 12 veces</div>
+    </div>
+    <div data-a>
+      <p class="lead" style="font-size:26px">Los datos personales son <code>private</code>; el análisis recibe un seudónimo.</p>
+      <p class="body gap14" style="font-size:21px">Si alguien intenta leer el nombre desde afuera:</p>
+      <pre class="code c18 gap10">cout &lt;&lt; r.nombre;</pre>
+      <div class="term t18 gap10"><span class="e">error: 'std::string RegistroAsistencia::nombre' is private within this context</span></div>
+      <p class="small gap10" style="font-size:18px">Un seudónimo reduce el riesgo, pero no es anonimato total. Datos ficticios.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Transparencia y explicabilidad">
+  <h2 class="mask"><span>Transparencia: que el modelo diga por qué</span></h2>
+  <div style="display:grid;grid-template-columns:720px 1fr;gap:26px;margin-top:16px">
+    <div data-a>
+      <pre class="code c18">string explicar(double d, double c) const {
+    double mejor = 1e9;
+    Ejemplo cercano{0, 0, "?"};
+    for (const Ejemplo&amp; e : memoria) {
+        double dist = hypot(e.diametro - d, e.color - c);
+        if (dist &lt; mejor) { mejor = dist; cercano = e; }
+    }
+    ostringstream s;
+    s &lt;&lt; fixed &lt;&lt; setprecision(2) &lt;&lt; cercano.etiqueta
+      &lt;&lt; ": el ejemplo mas parecido es (" &lt;&lt; cercano.diametro
+      &lt;&lt; ", " &lt;&lt; cercano.color &lt;&lt; "), a " &lt;&lt; mejor;
+    return s.str();
+}</pre>
+      <div class="term t18 gap10">limon: el ejemplo mas parecido es (5.00, 3.00), a 1.50
+china: el ejemplo mas parecido es (8.00, 7.00), a 1.80</div>
+    </div>
+    <div data-a>
+      <div class="row" id="tx-b"><button data-x="n" aria-pressed="true">Caja negra</button><button data-x="s">Con explicación</button></div>
+      <div class="res gap14" style="min-height:190px"><small>Lo que ve la persona afectada</small><p id="tx-r" style="font:600 23px/1.35 var(--mono);margin-top:8px;color:var(--accent)"></p></div>
+      <p class="small gap10">explicar() es un método más de VecinoCercano (explica.cpp).</p><p class="body gap14" style="font-size:21px"><b>Transparencia:</b> se sabe que hay un modelo, qué datos usa y para qué. <b>Explicabilidad:</b> se puede justificar cada respuesta.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Responsabilidad humana">
+  <h2 class="mask"><span>El robot recomienda; una persona responde</span></h2>
+  <div style="display:grid;grid-template-columns:520px 1fr;gap:34px;margin-top:18px">
+    <div data-a>
+      <p class="ctl">¿Quién toma la decisión final?</p>
+      <div class="lvl" id="rh-b"><button data-l="0">1. El sistema recomienda; una persona decide</button><button data-l="1">2. El sistema decide; una persona revisa y puede revertir</button><button data-l="2">3. El sistema decide solo</button></div>
+      <p class="msg gap14" id="rh-m" style="min-height:150px;font-size:21px" aria-live="polite"></p>
+    </div>
+    <div data-a>
+      <p class="body" style="font-size:22px">El marco de gestión de riesgos de IA del NIST (AI RMF 1.0) describe así un sistema de IA confiable:</p>
+      <div class="nist"><span>válido y confiable</span><span>seguro</span><span>protegido y resiliente</span><span>responsable y transparente</span><span>explicable e interpretable</span><span>con privacidad reforzada</span><span>justo, con sus sesgos dañinos bajo control</span></div>
+      <p class="body gap18" style="font-size:22px">Ninguna de esas cualidades la pone el robot: las ponen quienes lo diseñan, lo entrenan, lo prueban y lo usan.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Cómo lo regula la Unión Europea">
+  <h2 class="mask"><span>Un ejemplo de regulación: la Ley de IA de la UE</span></h2>
+  <p class="body sub" data-a style="max-width:1120px">El Reglamento (UE) 2024/1689 clasifica los sistemas de IA por nivel de riesgo. Rige en la Unión Europea, no en Puerto Rico, pero muestra cómo se piensa el problema. Pulse cada nivel.</p>
+  <div style="display:grid;grid-template-columns:560px 1fr;gap:34px;margin-top:18px">
+    <div class="pir" data-a id="ue-b">
+      <button data-u="0" style="width:46%;background:#8E1B14">Inaceptable</button>
+      <button data-u="1" style="width:64%;background:#B83D0F">Alto</button>
+      <button data-u="2" style="width:82%;background:#8A6A00">Limitado</button>
+      <button data-u="3" style="width:100%;background:#17694A">Mínimo</button>
+    </div>
+    <div data-a>
+      <h3 id="ue-h" style="font-size:30px"></h3>
+      <p class="body" id="ue-p" style="margin-top:10px;font-size:22px" aria-live="polite"></p>
+      <p class="small gap14" style="font-size:18px">Sus obligaciones entran en vigor por etapas y se enmendaron en 2026. Panorama general, no asesoría legal.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: ¿bastan más datos?">
+  <p class="q mask"><span>Con 3 chinas del país, el vecino pasó de 0 a 4 de 4. ¿Bastan más datos para corregir un sesgo?</span></p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:26px">Miren lo que hizo el Centroide con los mismos datos nuevos.</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b>Sí</b><span>el vecino lo demostró: 4 de 4</span></div><div class="ok" data-rv-box><b>No siempre</b><span>el Centroide quedó en 1 de 4</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">Ayudan, pero no bastan: el tipo de modelo también importa. Hay que medir la exactitud por grupo, no solo el total.</span></div></div></div>
+</section>
+
+<!-- TEMA 3 -->
+<section class="slide chapter" data-title="Tema 3: Aplicaciones de POO" data-topic="3">
+  <div class="chwrap"><div class="left">
+    <p class="kick" data-a>TEMA 3</p>
+    <h1 class="mask long" style="font-size:60px"><span>Aplicaciones de POO en el contexto de tecnologías emergentes</span></h1>
+    <p class="lead" data-a style="margin-top:20px;max-width:640px;font-size:28px">Sensores, robots, juegos, aplicaciones móviles, la nube y las cadenas de bloques se modelan con clases.</p>
+    <div class="ext" data-a></div></div>
+    <div data-a style="align-self:center" class="ch-robot" data-scr="R-1" data-st="sens"></div>
+  </div>
+</section>
+
+<section class="slide" data-title="El robot es una composición">
+  <h2 class="mask"><span>El robot TIENE motores y sensores</span></h2>
+  <div style="display:grid;grid-template-columns:600px 1fr;gap:30px;margin-top:16px">
+    <div data-a>
+      <pre class="code c18">class Robot {   // TIENE motores y sensores
+    string id;
+    Motor izquierdo{"izq"}, derecho{"der"};
+    vector&lt;unique_ptr&lt;Sensor&gt;&gt; sensores;
+public:
+    ...
+    void avanzar() {
+        double d = sensores.at(0)-&gt;leer();
+        // obstaculo a menos de 20 cm: se detiene
+        int v = d &lt; 20 ? 0 : 60;
+        izquierdo.girar(v);
+        derecho.girar(v);
+        cout &lt;&lt; id &lt;&lt; " motores a " &lt;&lt; v &lt;&lt; "%\n";
+    }
+};</pre>
+    </div>
+    <div data-a style="display:grid;grid-template-columns:250px 1fr;gap:14px 22px;align-content:start">
+      <div id="rb-robot"></div>
+      <div>
+        <p class="ctl"><label for="rb-sl">Sensor de distancia: <b id="rb-v" class="mono">14.5</b> cm</label></p>
+        <input type="range" id="rb-sl" min="5" max="60" step="0.5" value="14.5" style="width:100%;accent-color:var(--accent)">
+        <p class="body gap10" style="font-size:20px">Mueva el obstáculo. La «D» del tablero es el sensor de distancia; la «L», el de luz.</p>
+      </div>
+      <div class="term t18" id="rb-t" style="grid-column:1/3;padding:8px 16px"></div>
+      <p class="small" style="grid-column:1/3;font-size:18px">robot.cpp, con <code>SensorDistancia(14.5)</code> y <code>SensorLuz(72)</code>. Su diagrama de clases está en la pestaña Robótica de la próxima lámina.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Un mapa de clases por tecnología">
+  <h2 class="mask"><span>La misma idea en cinco tecnologías</span></h2>
+  <div data-tabs="mp-iot" data-a style="margin-top:18px">
+    <div class="row" id="mp-tabs"><button data-tab="mp-iot">Internet de las cosas</button><button data-tab="mp-rob">Robótica</button><button data-tab="mp-jue">Juegos</button><button data-tab="mp-mov">Móviles</button><button data-tab="mp-nub">Nube</button></div>
+    <div id="mp-panels" style="margin-top:16px"></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Una cadena de bloques de juguete">
+  <h2 class="mask"><span>Blockchain como concepto: bloques encadenados</span></h2>
+  <div style="display:grid;grid-template-columns:680px 1fr;gap:28px;margin-top:16px">
+    <div data-a>
+      <pre class="code c18">// djb2: un resumen de juguete, NO es seguro
+uint32_t resumen(const string&amp; texto) {
+    uint32_t h = 5381;
+    for (unsigned char c : texto)
+        h = h * 33 + c;
+    return h;
+}</pre>
+      <p class="cap gap10">Un método de la clase Bloque (bloque.cpp)</p>
+      <pre class="code c18">    uint32_t calcular() const {
+        string t = to_string(indice) + "|" + datos + "|";
+        return resumen(t + to_string(hashPrevio));
+    }</pre>
+    </div>
+    <div data-a>
+      <p class="body" style="font-size:21px">Cada <code>Bloque</code> guarda sus datos, el <b>hash</b> (resumen numérico) del bloque anterior y el suyo. Si alguien cambia un bloque viejo, los resúmenes dejan de cuadrar.</p>
+      <div class="term t18 gap14">0 inicio          00000000 5a9edd38
+1 R-1 al equipo 3 5a9edd38 60f1246f
+2 R-1 devuelto    60f1246f 9f603b0f
+3 R-2 al equipo 5 9f603b0f 9f87dece
+Primer bloque roto: -1
+Primer bloque roto: 1</div>
+      <p class="small gap10" style="font-size:18px">La última línea sale después de <code>registro.en(1).alterar("R-1 al equipo 4")</code>. Sin criptografía real.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Alterar un bloque">
+  <h2 class="mask"><span>Intente alterar el registro sin que se note</span></h2>
+  <p class="body sub" data-a style="max-width:1130px">Cambie el texto de un bloque. Luego pulse «Recalcular su hash», como haría quien quiere esconder el cambio, y mire qué pasa con el siguiente.</p>
+  <div data-a style="margin-top:16px">
+    <div class="cab"><span>#</span><span>datos</span><span>hash previo</span><span>guardado</span><span>calculado</span><span></span></div>
+    <div class="cadena" id="bc"></div>
+  </div>
+  <div class="row" data-a style="margin-top:14px;gap:22px"><button id="bc-rs">Restaurar el registro</button><span class="res" style="padding:8px 16px"><span class="mono" style="font-size:22px;font-weight:700" id="bc-r"></span></span></div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: herencia o composición">
+  <p class="q mask"><span>¿Robot hereda de Motor, o Robot tiene motores?</span></p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:26px">Usen la prueba de la Unidad I: lean la frase «un robot <b>es un</b> motor» y «un robot <b>tiene un</b> motor».</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b>Herencia</b><span class="mono">Robot : public Motor</span></div><div class="ok" data-rv-box><b>Composición</b><span class="mono">Motor izquierdo, derecho;</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">Composición: un robot tiene dos motores y varios sensores. La herencia queda para SensorLuz, que sí es un Sensor.</span></div></div></div>
+</section>
+
+<!-- ACTIVIDAD -->
+<section class="slide chapter" data-title="Actividad: Auditoría ética de un sistema" data-topic="4">
+  <div class="chwrap"><div class="left">
+    <p class="kick" data-a>ACTIVIDAD DE CLASE</p>
+    <h1 class="mask" style="font-size:76px"><span>Auditoría ética de un sistema</span></h1>
+    <p class="lead" data-a style="margin-top:20px;max-width:640px;font-size:28px">En equipos, revisen un sistema ficticio del recinto con una lista de verificación y propongan un cambio de diseño.</p>
+    <div class="ext" data-a></div></div>
+    <div data-a style="align-self:center" class="ch-robot" data-scr="auditoría" data-st="think"></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Actividad: los casos">
+  <h2 class="mask"><span>Cuatro sistemas ficticios del recinto</span></h2>
+  <div class="casos" data-tabs="ca" data-a style="margin-top:18px">
+    <div class="row"><button data-tab="ca">A. Alerta Temprana</button><button data-tab="cb">B. CuentaClase</button><button data-tab="cc">C. Asistente de Ayuda Económica</button><button data-tab="cd">D. Turnos de Tutoría</button></div>
+    <div style="margin-top:16px">
+      <div class="caso" data-panel="ca"><h3>Alerta Temprana</h3><dl><dt>Qué hace</dt><dd>Predice qué estudiantes podrían abandonar un curso y envía una lista de «riesgo alto» a Consejería.</dd><dt>Datos</dt><dd>Asistencia, notas parciales, entregas tardías, horario de trabajo que el estudiante declaró y pueblo de residencia.</dd><dt>Cómo aprendió</dt><dd>Con los expedientes de estudiantes de años anteriores que se dieron de baja o terminaron.</dd><dt>Quién lo usa</dt><dd>Consejería y la dirección académica.</dd></dl></div>
+      <div class="caso" data-panel="cb" hidden><h3>CuentaClase</h3><dl><dt>Qué hace</dt><dd>Una cámara en el salón reconoce rostros y marca presente o ausente en el registro de asistencia.</dd><dt>Datos</dt><dd>Video del salón durante toda la clase y la foto de la tarjeta de identificación de cada estudiante.</dd><dt>Cómo aprendió</dt><dd>Un modelo de reconocimiento facial comprado a un proveedor; no se sabe con qué fotos se entrenó.</dd><dt>Quién lo usa</dt><dd>El profesor y Registraduría.</dd></dl></div>
+      <div class="caso" data-panel="cc" hidden><h3>Asistente de Ayuda Económica</h3><dl><dt>Qué hace</dt><dd>Un chatbot contesta preguntas sobre becas y documentos, y a veces responde «usted no cualifica».</dd><dt>Datos</dt><dd>Lo que el estudiante escribe en el chat, su número de estudiante y la información de ingresos que comparta.</dd><dt>Cómo aprendió</dt><dd>Con las preguntas y respuestas de la oficina de semestres anteriores.</dd><dt>Quién lo usa</dt><dd>Estudiantes, a cualquier hora; la oficina revisa las conversaciones una vez al mes.</dd></dl></div>
+      <div class="caso" data-panel="cd" hidden><h3>Turnos de Tutoría</h3><dl><dt>Qué hace</dt><dd>Reparte los pocos turnos de tutoría entre quienes, según el modelo, «más los aprovecharían».</dd><dt>Datos</dt><dd>Notas, uso previo de tutorías, sección y turno (diurno o nocturno).</dd><dt>Cómo aprendió</dt><dd>Con datos de semestres en los que casi todos los que iban a tutoría eran del turno diurno.</dd><dt>Quién lo usa</dt><dd>El Centro de Tutorías asigna los turnos sin revisar la lista.</dd></dl></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Actividad: la lista de verificación">
+  <h2 class="mask"><span>La lista de verificación del equipo</span></h2>
+  <div style="display:grid;grid-template-columns:1fr 330px;gap:24px;margin-top:16px">
+    <div data-a>
+      <div class="row" id="au-c" style="margin-bottom:10px"><button data-c="A" aria-pressed="true">Caso A</button><button data-c="B">Caso B</button><button data-c="C">Caso C</button><button data-c="D">Caso D</button></div>
+      <div class="audit" id="au-q"></div>
+    </div>
+    <div data-a>
+      <div class="res"><small>Resumen del caso <span id="au-n">A</span></small><b id="au-s" style="font-size:30px">—</b></div>
+      <p class="msg gap10" id="au-m" style="font-size:19px" aria-live="polite">Marquen cada pregunta según lo que discuta el equipo.</p>
+      <p class="small gap10" style="font-size:18px">Lo que marquen se recuerda solo en este navegador. La hoja que se entrega la escribe el equipo.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Actividad: trabajo en equipos">
+  <h2 class="mask"><span>Cómo trabaja cada equipo</span></h2>
+  <div style="display:grid;grid-template-columns:1fr 460px;gap:28px;margin-top:16px">
+    <div data-a>
+      <ol class="pasos">
+        <li><b class="nm">1</b><span>Formen equipos de 3 o 4 y repartan roles: moderador, relator, portavoz y quien lleva la contraria.</span><em></em></li>
+        <li><b class="nm">2</b><span>Lean su caso y contesten las cinco preguntas de la lista, con evidencia del caso.</span><em>15 min</em></li>
+        <li><b class="nm">3</b><span>Propongan un cambio de diseño concreto en POO: un dato que sobra, un método como <code>explicar()</code> o <code>revisar()</code>, un control humano.</span><em>10 min</em></li>
+        <li><b class="nm">4</b><span>El portavoz presenta el caso, el mayor riesgo y el cambio propuesto.</span><em>2 min</em></li>
+      </ol>
+      <div class="timer mini gap14" data-timer="900"></div>
+    </div>
+    <div class="reflex" data-a>
+      <h3>Reflexión escrita (individual)</h3>
+      <p>Escoja uno de los cuatro casos. Si usted programara la clase que toma la decisión, ¿qué cambiaría en su diseño (datos, métodos o control humano) para que sea más justa y transparente?</p>
+      <p>Explíquelo en un párrafo de 150 a 200 palabras y diga a quién protege su cambio.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Actividad: rúbrica y entrega">
+  <h2 class="mask"><span>Rúbrica y entrega de la actividad</span></h2>
+  <div style="display:grid;grid-template-columns:720px 1fr;gap:30px;margin-top:16px">
+    <table class="t rub" data-a>
+      <tr><th>Criterio</th><th>Puntos</th></tr>
+      <tr><td>Datos y privacidad<small>Identifica qué datos usa, cuáles sobran y cómo se protegen</small></td><td>20</td></tr>
+      <tr><td>Beneficios y perjuicios<small>Quién gana, quién puede salir perjudicado y por qué (sesgo)</small></td><td>20</td></tr>
+      <tr><td>Explicación<small>Cómo el sistema justifica una decisión a la persona afectada</small></td><td>15</td></tr>
+      <tr><td>Control humano<small>Quién revisa, cómo se corrige o se apela</small></td><td>15</td></tr>
+      <tr><td>Cambio de diseño en POO<small>Concreto: una clase, un método o un dato que se elimina</small></td><td>15</td></tr>
+      <tr><td>Reflexión escrita individual</td><td>15</td></tr>
+      <tr><th>Total</th><th>100</th></tr>
+    </table>
+    <div data-a>
+      <h3 style="font-size:28px">Qué se entrega</h3>
+      <ul class="pl gap10" style="font-size:21px"><li>La hoja de auditoría del equipo (una por equipo), con las cinco respuestas y el cambio propuesto.</li><li>La reflexión escrita de cada estudiante.</li></ul>
+      <p class="body gap14" style="font-size:21px">Por OrbundSIS. La fecha de entrega se anuncia en OrbundSIS.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Lo esencial de la unidad">
+  <h2 class="mask"><span>Lo que se lleva de esta unidad</span></h2>
+  <div class="dir" data-a>
+    <div><h3>IA, ML y aprendizaje profundo</h3><p>Uno dentro del otro. ML aprende reglas de ejemplos: rasgos, etiquetas, entrenamiento y prueba.</p></div>
+    <div><h3>Un modelo es un objeto</h3><p>Una interfaz abstracta con <code>entrenar()</code> y <code>predecir()</code>; cada algoritmo es una clase hija. Así lo hacen las bibliotecas reales.</p></div>
+    <div><h3>Ética desde el diseño</h3><p>Pedir solo los datos necesarios, medir por grupo para hallar sesgos, poder explicar cada respuesta y dejar a una persona a cargo.</p></div>
+    <div><h3>Aplicaciones</h3><p>Composición (el robot tiene sensores), interfaces (sensores, pantallas, servicios en la nube) y objetos encadenados (bloques).</p></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Referencias: C++ y bibliotecas">
+  <h2 class="mask"><span>Referencias: C++ y bibliotecas</span></h2>
+  <div class="refs gap" data-a style="max-width:1120px">
+    <p>cppreference.com. (s. f.). <i>Abstract class</i>. https://en.cppreference.com/w/cpp/language/abstract_class</p>
+    <p>cppreference.com. (s. f.). <i>override specifier</i>. https://en.cppreference.com/w/cpp/language/override</p>
+    <p>cppreference.com. (s. f.). <i>std::unique_ptr</i>. https://en.cppreference.com/w/cpp/memory/unique_ptr</p>
+    <p>Keras. (s. f.). <i>The Model class</i>. https://keras.io/api/models/model/</p>
+    <p>Kumar, A. (2024). <i>Hands-on object-oriented programming: Mastering OOP features for real-world software systems development</i>. Apress.</p>
+    <p>Lutz, M. (2025). <i>Learning Python: Powerful object-oriented programming</i>. O’Reilly Media.</p>
+    <p>OpenCV. (s. f.). <i>cv::ml::KNearest class reference</i>. https://docs.opencv.org/3.4.4/dd/de1/classcv_1_1ml_1_1KNearest.html</p>
+    <p>PyTorch. (s. f.). <i>Module</i>. https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html</p>
+    <p>scikit-learn. (s. f.). <i>KNeighborsClassifier</i>. https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html</p>
+  </div>
+  <p class="body gap14" data-a style="font-size:19px">Kumar (2024) y Lutz (2025) son los textos oficiales del prontuario. Los programas, salidas y mensajes se verificaron con g++&nbsp;13.3 en Linux; el ejemplo de Python, con scikit-learn 1.9.</p>
+</section>
+
+<section class="slide" data-title="Referencias: ética y regulación">
+  <h2 class="mask"><span>Referencias: ética y regulación</span></h2>
+  <div class="refs gap" data-a style="max-width:1120px">
+    <p>Future of Life Institute. (s. f.). <i>High-level summary of the AI Act</i>. https://artificialintelligenceact.eu/high-level-summary/</p>
+    <p>National Institute of Standards and Technology. (2023). <i>Artificial Intelligence Risk Management Framework (AI RMF 1.0)</i>. https://airc.nist.gov/airmf-resources/airmf/0-ai-rmf-1-0</p>
+    <p>Reglamento (UE) 2024/1689 del Parlamento Europeo y del Consejo, por el que se establecen normas armonizadas en materia de inteligencia artificial. (2024). <i>Diario Oficial de la Unión Europea</i>. https://eur-lex.europa.eu/eli/reg/2024/1689/oj</p>
+    <p>U.S. Department of Education, Student Privacy Policy Office. (s. f.). <i>What is FERPA?</i> https://studentprivacy.ed.gov/faq/what-ferpa</p>
+    <p>White &amp; Case. (2026). <i>EU AI Omnibus enters into force, amending the AI Act</i>. https://www.whitecase.com/insight-alert/eu-ai-omnibus-enters-force-amending-ai-act</p>
+  </div>
+  <p class="body gap14" data-a style="font-size:19px">Los casos, las personas y los datos de esta unidad son ficticios. Las referencias legales son información general, no asesoría legal.</p>
+</section>
+
+</div></div>
+
+<script type="text/plain" id="src-modelo">// Unidad O - El robot del laboratorio aprende a separar chinas y limones
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+using namespace std;
+
+struct Ejemplo {
+    double diametro;   // en cm
+    double color;      // 0 = verde ... 10 = anaranjado
+    string etiqueta;   // "china" o "limon"
+};
+
+class Modelo {                       // interfaz abstracta
+public:
+    virtual ~Modelo() = default;
+    virtual void entrenar(const vector<Ejemplo>& datos) = 0;
+    virtual string predecir(double diametro, double color) const = 0;
+    virtual string nombre() const = 0;
+};
+
+class VecinoCercano : public Modelo {
+    vector<Ejemplo> memoria;
+public:
+    void entrenar(const vector<Ejemplo>& datos) override {
+        memoria = datos;             // aprender = recordar los ejemplos
+    }
+    string predecir(double diametro, double color) const override {
+        double mejor = 1e9;
+        string respuesta = "?";
+        for (const Ejemplo& e : memoria) {
+            double dx = e.diametro - diametro;
+            double dy = e.color - color;
+            double distancia = sqrt(dx * dx + dy * dy);
+            if (distancia < mejor) {
+                mejor = distancia;
+                respuesta = e.etiqueta;
+            }
+        }
+        return respuesta;
+    }
+    string nombre() const override { return "Vecino mas cercano"; }
+};
+
+class Centroide : public Modelo {
+    double dChina = 0, cChina = 0, dLimon = 0, cLimon = 0;
+public:
+    void entrenar(const vector<Ejemplo>& datos) override {
+        int nChina = 0, nLimon = 0;
+        dChina = cChina = dLimon = cLimon = 0;
+        for (const Ejemplo& e : datos) {
+            if (e.etiqueta == "china") {
+                dChina += e.diametro; cChina += e.color; nChina++;
+            } else {
+                dLimon += e.diametro; cLimon += e.color; nLimon++;
+            }
+        }
+        if (nChina > 0) { dChina /= nChina; cChina /= nChina; }
+        if (nLimon > 0) { dLimon /= nLimon; cLimon /= nLimon; }
+    }
+    string predecir(double diametro, double color) const override {
+        double aChina = hypot(dChina - diametro, cChina - color);
+        double aLimon = hypot(dLimon - diametro, cLimon - color);
+        return aChina < aLimon ? "china" : "limon";
+    }
+    string nombre() const override { return "Centroide"; }
+};
+
+int aciertos(const Modelo& m, const vector<Ejemplo>& prueba) {
+    int bien = 0;
+    for (const Ejemplo& e : prueba)
+        if (m.predecir(e.diametro, e.color) == e.etiqueta) bien++;
+    return bien;
+}
+
+void informe(const Modelo& m, const vector<Ejemplo>& prueba,
+             const vector<Ejemplo>& verdes) {
+    int a = aciertos(m, prueba), v = aciertos(m, verdes);
+    cout << m.nombre() << ": " << a << " de " << prueba.size()
+         << " (" << 100 * a / (int)prueba.size() << "%) en prueba; "
+         << v << " de " << verdes.size() << " chinas verdes\n";
+}
+
+int main() {
+    // Entrenamiento: fotos de un catalogo de fruta importada
+    vector<Ejemplo> catalogo = {
+        {4.5, 1.0, "limon"}, {5.0, 2.0, "limon"}, {5.5, 1.5, "limon"}, {5.0, 3.0, "limon"},
+        {7.5, 8.0, "china"}, {8.0, 7.0, "china"}, {8.5, 9.0, "china"}, {7.0, 7.5, "china"}};
+    // Chinas del pais: maduras, pero verdes
+    vector<Ejemplo> locales = {{7.0, 3.0, "china"}, {7.5, 2.0, "china"}, {6.8, 4.0, "china"}};
+    // Prueba: fruta que el robot nunca ha visto
+    vector<Ejemplo> verdes = {
+        {6.8, 3.0, "china"}, {7.2, 2.5, "china"}, {6.5, 3.5, "china"}, {7.6, 4.0, "china"}};
+    vector<Ejemplo> prueba = {
+        {4.8, 2.0, "limon"}, {5.3, 1.0, "limon"}, {5.8, 2.5, "limon"},
+        {7.8, 8.5, "china"}, {7.2, 7.0, "china"}, {8.2, 6.5, "china"}};
+    prueba.insert(prueba.end(), verdes.begin(), verdes.end());
+
+    VecinoCercano vecino;
+    Centroide centro;
+    vector<Modelo*> modelos = {&vecino, &centro};
+
+    cout << "== Entrenado con el catalogo (8 ejemplos) ==\n";
+    for (Modelo* m : modelos) {
+        m->entrenar(catalogo);
+        informe(*m, prueba, verdes);
+    }
+
+    cout << "Consultas al vecino mas cercano:\n";
+    double consultas[5][2] = {{6.5, 3.0}, {5.0, 5.0}, {7.0, 5.5}, {6.0, 6.0}, {8.0, 3.0}};
+    for (auto& q : consultas)
+        cout << "  (" << q[0] << ", " << q[1] << ") -> " << vecino.predecir(q[0], q[1]) << "\n";
+
+    vector<Ejemplo> mejorado = catalogo;
+    mejorado.insert(mejorado.end(), locales.begin(), locales.end());
+    cout << "== Entrenado con catalogo + 3 chinas locales ==\n";
+    for (Modelo* m : modelos) {
+        m->entrenar(mejorado);
+        informe(*m, prueba, verdes);
+    }
+    cout << "Consultas al vecino mas cercano:\n";
+    for (auto& q : consultas)
+        cout << "  (" << q[0] << ", " << q[1] << ") -> " << vecino.predecir(q[0], q[1]) << "\n";
+    return 0;
+}
+</script>
+
+<script>
+/* paneles de pestañas generados antes del motor (deck.js los necesita en el DOM) */
+(function(){
+var MAPAS={
+ 'mp-iot':{t:'Cada dispositivo es un objeto con la misma interfaz.',p:'La estación recorre sus sensores con polimorfismo: leer() y unidad() funcionan igual para la temperatura que para la humedad. Añadir un sensor nuevo es añadir una clase hija.',
+   c:'Estacion',cm:['enviar()'],b:'Sensor',bm:['leer() = 0','unidad() = 0'],h:['SensorTemp','SensorHumedad'],n:'*'},
+ 'mp-rob':{t:'Un robot es la composición de sus piezas.',p:'Robot tiene motores y sensores; cada sensor concreto hereda de Sensor. Es el diseño del ejemplo robot.cpp.',
+   c:'Robot',cm:['avanzar()'],b:'Sensor',bm:['leer() = 0'],h:['SensorDistancia','SensorLuz'],n:'*',x:'Motor',xm:['girar(v)']},
+ 'mp-jue':{t:'Un juego es una escena llena de entidades.',p:'En cada cuadro, la escena recorre sus entidades y llama actualizar() y dibujar(). Jugador y Enemigo responden distinto al mismo mensaje.',
+   c:'Escena',cm:['cuadro()'],b:'Entidad',bm:['actualizar() = 0','dibujar() = 0'],h:['Jugador','Enemigo'],n:'*'},
+ 'mp-mov':{t:'Una aplicación móvil es un conjunto de pantallas.',p:'Los marcos para aplicaciones móviles representan pantallas y botones como objetos: el sistema llama sus métodos cuando la persona toca la pantalla.',
+   c:'App',cm:['navegar(p)'],b:'Pantalla',bm:['mostrar() = 0','alTocar(x, y)'],h:['PantallaInicio','PantallaPerfil'],n:'*'},
+ 'mp-nub':{t:'La nube se usa a través de una interfaz.',p:'El programa depende de Almacen, no de dónde se guardan los datos. Cambiar del disco local a un servicio en la nube es cambiar la clase hija, no el resto del programa.',
+   c:'Programa',cm:['guardarTodo()'],b:'Almacen',bm:['guardar(k, v) = 0','leer(k) = 0'],h:['AlmacenLocal','AlmacenNube'],n:'1'}};
+window.__MAPAS=MAPAS;
+var h='';
+Object.keys(MAPAS).forEach(function(k,i){var m=MAPAS[k];
+  h+='<div data-panel="'+k+'"'+(i?' hidden':'')+' style="display:grid;grid-template-columns:660px 1fr;gap:30px"><svg class="uml" data-mapa="'+k+'" width="660" height="380" viewBox="0 0 660 380" role="img" aria-label="Diagrama de clases: '+m.c+' tiene objetos '+m.b+'; '+m.h.join(' y ')+' heredan de '+m.b+'."></svg><div><p class="lead" style="font-size:28px">'+m.t+'</p><p class="body sub" style="font-size:22px">'+m.p+'</p></div></div>'});
+document.getElementById('mp-panels').innerHTML=h;
+})();
+</script>
+<script src="assets/deck.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id)};
+var all=function(sel,root){return [].slice.call((root||document).querySelectorAll(sel))};
+function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function press(btns,on){btns.forEach(function(b){b.setAttribute('aria-pressed',b===on)})}
+
+/* ---------- datos: los mismos de modelo.cpp ---------- */
+var CAT=[[4.5,1.0,'limon'],[5.0,2.0,'limon'],[5.5,1.5,'limon'],[5.0,3.0,'limon'],[7.5,8.0,'china'],[8.0,7.0,'china'],[8.5,9.0,'china'],[7.0,7.5,'china']];
+var LOC=[[7.0,3.0,'china'],[7.5,2.0,'china'],[6.8,4.0,'china']];
+var MEJ=CAT.concat(LOC);
+var VERDES=[[6.8,3.0,'china'],[7.2,2.5,'china'],[6.5,3.5,'china'],[7.6,4.0,'china']];
+var PRUEBA=[[4.8,2.0,'limon'],[5.3,1.0,'limon'],[5.8,2.5,'limon'],[7.8,8.5,'china'],[7.2,7.0,'china'],[8.2,6.5,'china']].concat(VERDES);
+var CONSULTAS=[[6.5,3.0],[5.0,5.0],[7.0,5.5],[6.0,6.0],[8.0,3.0]];
+
+/* VecinoCercano::predecir, la misma cuenta que en C++ */
+function vecino(train,d,c){var mejor=1e9,resp='?',ej=null;
+  train.forEach(function(e){var dx=e[0]-d,dy=e[1]-c,dist=Math.sqrt(dx*dx+dy*dy);if(dist<mejor){mejor=dist;resp=e[2];ej=e}});
+  return {et:resp,dist:mejor,ej:ej}}
+/* Centroide::entrenar y predecir */
+function centroide(train){var dC=0,cC=0,dL=0,cL=0,nC=0,nL=0;
+  train.forEach(function(e){if(e[2]==='china'){dC+=e[0];cC+=e[1];nC++}else{dL+=e[0];cL+=e[1];nL++}});
+  if(nC>0){dC/=nC;cC/=nC}if(nL>0){dL/=nL;cL/=nL}
+  return {china:[dC,cC],limon:[dL,cL],pred:function(d,c){return Math.hypot(dC-d,cC-c)<Math.hypot(dL-d,cL-c)?'china':'limon'}}}
+function predictor(train,m){if(m==='c'){var k=centroide(train);return k.pred}return function(d,c){return vecino(train,d,c).et}}
+function aciertos(pred,set){var b=0;set.forEach(function(e){if(pred(e[0],e[1])===e[2])b++});return b}
+function nombreModelo(m){return m==='c'?'Centroide':'Vecino mas cercano'}
+function informe(m,train){var p=predictor(train,m),a=aciertos(p,PRUEBA),v=aciertos(p,VERDES);
+  return {a:a,v:v,txt:nombreModelo(m)+': '+a+' de '+PRUEBA.length+' ('+Math.floor(100*a/PRUEBA.length)+'%) en prueba; '+v+' de '+VERDES.length+' chinas verdes'}}
+function fmt(x){return (Math.round(x*10)/10).toString()}
+window.__O={vecino:vecino,centroide:centroide,informe:informe,CAT:CAT,MEJ:MEJ,CONSULTAS:CONSULTAS};
+
+/* ---------- el robot ---------- */
+function robot(o){o=o||{};
+  var studs=function(y,xs,cls){return xs.map(function(x){return '<rect class="pz '+cls+'" x="'+x+'" y="'+y+'" width="28" height="12" rx="2"/>'}).join('')};
+  var mouth='';for(var i=0;i<5;i++)mouth+='<rect class="mo'+((o.mouth||[]).indexOf(i)>=0?' on':'')+'" x="'+(108+i*18)+'" y="146" width="12" height="8"/>';
+  var sn=['D','L','C'].map(function(t,i){var x=78+i*52;return '<rect class="pz sn'+((o.sens||[]).indexOf(i)>=0?' on':'')+'" x="'+x+'" y="262" width="40" height="34" rx="3"/><text class="sn-t" x="'+(x+20)+'" y="288">'+t+'</text>'}).join('');
+  return '<svg class="robot'+(o.st?' '+o.st:'')+'" viewBox="0 0 300 380" role="img" aria-label="'+(o.label||'El robot del laboratorio')+'">'+
+   '<circle class="halo" cx="150" cy="26" r="30"/><line x1="150" y1="38" x2="150" y2="66" stroke="#0B171C" stroke-width="6"/><circle class="foco" cx="150" cy="26" r="14"/>'+
+   studs(58,[90,136,182],'hd')+'<rect class="pz hd" x="66" y="68" width="168" height="104" rx="8"/>'+
+   '<rect class="eye" x="98" y="94" width="38" height="32" rx="7"/><rect class="eye" x="164" y="94" width="38" height="32" rx="7"/>'+mouth+
+   '<rect class="pz dk" x="128" y="172" width="44" height="14"/>'+
+   '<rect class="pz bd2" x="18" y="196" width="32" height="80" rx="6"/><rect class="pz bd2" x="250" y="196" width="32" height="80" rx="6"/>'+
+   studs(176,[70,202],'bd')+'<rect class="pz bd" x="50" y="186" width="200" height="126" rx="8"/>'+
+   '<rect class="scr" x="60" y="200" width="180" height="48" rx="4"/><text class="scr-t" x="150" y="232" style="font-size:'+Math.min(22,172/(Math.max(1,(o.scr||'').length)*0.6)).toFixed(1)+'px">'+esc(o.scr||'')+'</text>'+sn+
+   '<circle class="wh" cx="96" cy="336" r="32"/><circle class="hub" cx="96" cy="336" r="10"/><circle class="wh" cx="204" cy="336" r="32"/><circle class="hub" cx="204" cy="336" r="10"/>'+
+   '</svg>'}
+function blink(el){var s=el.querySelector('svg.robot');if(!s)return;s.classList.remove('blink');void s.getBoundingClientRect();s.classList.add('blink')}
+
+/* capítulos */
+var EX=['IA y ML','Ética','Aplicaciones','Actividad'];
+all('[data-topic]').forEach(function(sl){var t=+sl.dataset.topic,e=sl.querySelector('.ext');
+  if(e)e.innerHTML=EX.map(function(w,i){return '<span class="'+(i+1===t?'on':'')+'">'+(i+1===t?'→ ':'')+w+'</span>'}).join('')});
+all('.ch-robot').forEach(function(d){var st=d.dataset.st;
+  d.innerHTML=robot({scr:d.dataset.scr,st:st==='learn'?'learn':st==='think'?'think':'',sens:st==='sens'?[0,1,2]:st==='learn'?[2]:[],mouth:st==='think'?[1,3]:[0,1,2,3,4]})});
+
+/* portada */
+var ptI=-1;
+$('pt-robot').innerHTML=robot({scr:'¿china o limón?',mouth:[2],label:'El robot del laboratorio, con su pantalla y sus ojos LED'});
+$('pt-go').onclick=function(){ptI=(ptI+1)%CONSULTAS.length;var q=CONSULTAS[ptI],r=vecino(CAT,q[0],q[1]);
+  $('pt-robot').innerHTML=robot({scr:'('+fmt(q[0])+', '+fmt(q[1])+') '+r.et,st:'learn',sens:[0,2],mouth:[0,1,2,3,4]});blink($('pt-robot'));
+  $('pt-msg').textContent='Diámetro '+fmt(q[0])+' cm, color '+fmt(q[1])+': el robot dice «'+(r.et==='limon'?'limón':'china')+'».'};
+
+/* reglas o ejemplos */
+$('rg-go').onclick=function(){
+  $('rg-a').innerHTML='La regla sigue en 6 de 10. Para aceptar chinas verdes hay que <b>reescribir el if a mano</b>… y volver a compilar.';
+  $('rg-t').textContent='Vecino mas cercano: 10 de 10 (100%) en prueba; 4 de 4 chinas verdes';
+  $('rg-b').innerHTML='Se añaden 3 ejemplos y se llama <code>entrenar()</code> otra vez: <b>10 de 10</b>. El código no cambió.'};
+$('rg-rs').onclick=function(){$('rg-a').textContent='La persona que programa decide el criterio.';$('rg-b').textContent='Los ejemplos deciden el criterio.';$('rg-t').textContent='Vecino mas cercano: 6 de 10 (60%) en prueba; 0 de 4 chinas verdes'};
+
+/* anillos IA ML AP */
+var AN={ia:['Inteligencia artificial','El campo de la computación que crea sistemas para tareas que asociamos con la inteligencia humana: reconocer, decidir, conversar. Incluye reglas escritas a mano, como los sistemas expertos.','reglaManual(): un if que alguien escribió. Es IA de reglas, sin aprendizaje.'],
+ ml:['Aprendizaje automático (ML)','Una parte de la IA: en vez de escribir la regla, el programa la obtiene de ejemplos. Con más o mejores ejemplos, cambia su comportamiento sin cambiar el código.','VecinoCercano y Centroide: aprenden de 8 ejemplos de frutas con entrenar().'],
+ ap:['Aprendizaje profundo','Una parte del ML que usa redes neuronales de muchas capas. Reconoce imágenes, voz y texto, pero pide muchos datos y mucho cómputo, y es más difícil de explicar.','Reconocer la fruta directamente en la foto de la cámara, sin que nadie mida el diámetro.']};
+var AC={ia:'#CCD8D1',ml:'#9FE3D3',ap:'#3FE0C5'};
+$('an-svg').innerHTML='<rect class="rg" data-r="ia" x="6" y="6" width="508" height="428" rx="40"/><text x="34" y="50">IA</text>'+
+ '<rect class="rg" data-r="ml" x="70" y="90" width="380" height="320" rx="34"/><text x="98" y="132">Aprendizaje automático</text>'+
+ '<rect class="rg" data-r="ap" x="140" y="180" width="240" height="200" rx="28"/><text x="168" y="222">Aprendizaje</text><text x="168" y="250">profundo</text>';
+function anShow(k){var d=AN[k];$('an-h').textContent=d[0];$('an-p').textContent=d[1];$('an-r').textContent=d[2];
+  all('#an-svg .rg').forEach(function(r){var on=r.dataset.r===k;r.style.fill=on?'var(--hi)':AC[r.dataset.r];r.classList.toggle('on',on)});
+  press(all('#an-b button'),document.querySelector('#an-b [data-r="'+k+'"]'))}
+all('#an-b button').forEach(function(b){b.onclick=function(){anShow(b.dataset.r)}});
+all('#an-svg .rg').forEach(function(r){r.onclick=function(){anShow(r.dataset.r)}});
+anShow('ml');
+
+/* vocabulario */
+var EJ=[{d:4.5,c:1.0,e:'limon',g:'ent'},{d:5.0,c:3.0,e:'limon',g:'ent'},{d:7.5,c:8.0,e:'china',g:'ent'},{d:8.0,c:7.0,e:'china',g:'ent',sep:1},
+ {d:4.8,c:2.0,e:'limon',g:'pru',p:'limon'},{d:7.8,c:8.5,e:'china',g:'pru',p:'china'},{d:6.8,c:3.0,e:'china',g:'pru',p:'limon'},{d:7.2,c:2.5,e:'china',g:'pru',p:'limon'},{d:5.3,c:1.0,e:'limon',g:'pru',p:'limon'},{d:6.5,c:3.5,e:'china',g:'pru',p:'limon'}];
+EJ.forEach(function(r){if(r.p){var v=vecino(CAT,r.d,r.c).et;if(v!==r.p)console.error('vocabulario: prediccion distinta',r)}});
+var th='<tr><th>grupo</th><th data-c="d">diámetro</th><th data-c="c">color</th><th data-c="e">etiqueta</th><th data-c="p">predice</th></tr>';
+EJ.forEach(function(r,i){th+='<tr class="'+(r.sep?'sep':'')+'" data-g="'+r.g+'"><td>'+(r.g==='ent'?'entren.':'prueba')+'</td><td data-c="d">'+r.d.toFixed(1)+'</td><td data-c="c">'+r.c.toFixed(1)+'</td><td data-c="e">'+r.e+'</td><td data-c="p" class="'+(r.p&&r.p!==r.e?'bad':'')+'">'+(r.p||'')+'</td></tr>'});
+$('ej').innerHTML=th;
+var EJW={rasgo:['Los <b>rasgos</b> son lo que el robot mide de cada fruta: diámetro y color. Son las entradas de predecir().',function(td){return td.dataset.c==='d'||td.dataset.c==='c'}],
+ etiq:['La <b>etiqueta</b> es la respuesta correcta que alguien anotó: «china» o «limon». El modelo trata de adivinarla.',function(td){return td.dataset.c==='e'}],
+ ent:['Los <b>datos de entrenamiento</b> son los ejemplos que recibe entrenar(). El modelo aprende solo de ellos.',function(td){return td.parentNode.dataset.g==='ent'}],
+ pru:['Los <b>datos de prueba</b> son frutas que el modelo nunca vio. Sirven para medir si generaliza.',function(td){return td.parentNode.dataset.g==='pru'}],
+ err:['Hay <b>error</b> cuando la predicción no coincide con la etiqueta. <b>Exactitud</b> = aciertos ÷ total: en las 10 de prueba, 6 ÷ 10 = 60 %.',function(td){return td.classList.contains('bad')||td.dataset.c==='p'&&td.parentNode.dataset.g==='pru'}]};
+function ejShow(w){all('#ej td,#ej th').forEach(function(td){td.classList.toggle('lit',td.tagName==='TD'&&EJW[w][1](td))});$('ej-m').innerHTML=EJW[w][0];
+  press(all('#ej-b button'),document.querySelector('#ej-b [data-w="'+w+'"]'))}
+all('#ej-b button').forEach(function(b){b.onclick=function(){ejShow(b.dataset.w)}});ejShow('rasgo');
+
+/* anatomía de Modelo */
+var MO={ej:'Los rasgos: dos números por fruta. Una struct de la Unidad G guarda cada ejemplo.',et:'La etiqueta: la respuesta correcta de cada ejemplo de entrenamiento.',
+ en:'entrenar() recibe los ejemplos. Cada clase hija decide qué hacer con ellos: recordarlos, promediarlos…',
+ pr:'predecir() recibe los rasgos de una fruta nueva y devuelve una etiqueta. Es const: predecir no cambia el modelo.',
+ pv:'= 0 hace el método virtual puro: Modelo no lo implementa y no se pueden crear objetos Modelo. Es la clase abstracta de la Unidad I.',
+ vd:'El destructor virtual permite destruir bien un VecinoCercano a través de un Modelo*.'};
+function moShow(k){all('#mo-code .pa').forEach(function(p){var on=p.dataset.p===k;p.style.background=on?'var(--hi)':'';p.style.color=on?'var(--ink)':''});
+  all('#mo-code .pa .k').forEach(function(s){s.style.color=s.parentNode.dataset.p===k?'var(--ink)':''});
+  $('mo-msg').textContent=MO[k];press(all('#mo-b button'),document.querySelector('#mo-b [data-pt="'+k+'"]'))}
+all('#mo-b button').forEach(function(b){b.onclick=function(){moShow(b.dataset.pt)}});moShow('pr');
+
+/* paso a paso */
+(function(){var st=[{l:2,set:{mejor:'1e9',resp:'"?"'},msg:'Antes de mirar los ejemplos: la mejor distancia es enorme y la respuesta es "?".'}],mejor=1e9;
+  CAT.forEach(function(e,i){var dx=e[0]-6.5,dy=e[1]-3.0,d=Math.sqrt(dx*dx+dy*dy),s={set:{},run:(function(i){return function(q){for(var j=0;j<8;j++)q('r'+j).classList.toggle('lit',j===i)}})(i)};
+    s.set['d'+i]=d.toFixed(2);
+    var ej='('+e[0].toFixed(1)+', '+e[1].toFixed(1)+')';
+    if(d<mejor){mejor=d;s.l=9;s.set.mejor=d.toFixed(2);s.set.resp='"'+e[2]+'"';s.flash=['mejor','resp'];s.msg='e = '+ej+' '+e[2]+': distancia '+d.toFixed(2)+' es menor que la mejor. Nueva respuesta: "'+e[2]+'".'}
+    else{s.l=7;s.msg='e = '+ej+': '+d.toFixed(2)+(Math.abs(d-mejor)<1e-12?' no es menor que '+mejor.toFixed(2)+' (empate): se queda el primero.':' no es menor que '+mejor.toFixed(2)+'. No cambia nada.')}
+    st.push(s)});
+  st.push({l:12,run:function(q){for(var j=0;j<8;j++)q('r'+j).classList.toggle('lit',j===3)},msg:'return respuesta: "limon". El ejemplo más parecido es (5.0, 3.0), a 1.50.'});
+  Deck.steps.vc=st})();
+
+/* ---------- el plano ---------- */
+function Plano(svg,o){var W=+svg.getAttribute('width'),H=+svg.getAttribute('height'),L=58,T=12,R=14,B=52,pw=W-L-R,ph=H-T-B;
+  function px(x){return L+(x-3)/7*pw}function py(y){return T+(10-y)/10*ph}
+  function ix(X){return 3+(X-L)/pw*7}function iy(Y){return 10-(Y-T)/ph*10}
+  function mark(e,cls,r){var x=px(e[0]),y=py(e[1]);r=r||9;
+    if(e[2]==='limon')return '<circle class="p-limon '+cls+'" cx="'+x+'" cy="'+y+'" r="'+r+'"/>';
+    return '<rect class="'+(e.local?'p-local':'p-china')+' '+cls+'" x="'+(x-r)+'" y="'+(y-r)+'" width="'+2*r+'" height="'+2*r+'"/>'}
+  function draw(s){var h='',x,y;
+    if(s.pred){var sx=0.2,sy=0.25;for(x=3;x<10-1e-9;x+=sx)for(y=0;y<10-1e-9;y+=sy){var p=s.pred(x+sx/2,y+sy/2);
+      h+='<rect class="cl" x="'+px(x)+'" y="'+py(y+sy)+'" width="'+(pw*sx/7+0.6)+'" height="'+(ph*sy/10+0.6)+'" fill="'+(p==='china'?'rgba(238,138,43,.17)':'rgba(163,201,58,.2)')+'"/>'}}
+    for(x=4;x<=10;x++)h+='<line class="gr" x1="'+px(x)+'" y1="'+T+'" x2="'+px(x)+'" y2="'+(T+ph)+'"/>';
+    for(y=2;y<=10;y+=2)h+='<line class="gr" x1="'+L+'" y1="'+py(y)+'" x2="'+(L+pw)+'" y2="'+py(y)+'"/>';
+    h+='<line class="ax" x1="'+L+'" y1="'+(T+ph)+'" x2="'+(L+pw)+'" y2="'+(T+ph)+'"/><line class="ax" x1="'+L+'" y1="'+T+'" x2="'+L+'" y2="'+(T+ph)+'"/>';
+    for(x=3;x<=10;x++)h+='<text class="tk" x="'+px(x)+'" y="'+(T+ph+22)+'" text-anchor="middle">'+x+'</text>';
+    for(y=0;y<=10;y+=2)h+='<text class="tk" x="'+(L-10)+'" y="'+(py(y)+6)+'" text-anchor="end">'+y+'</text>';
+    h+='<text class="al" x="'+(L+pw/2)+'" y="'+(H-6)+'" text-anchor="middle">diámetro (cm)</text>';
+    h+='<text class="al" transform="translate(18 '+(T+ph/2)+') rotate(-90)" text-anchor="middle">color: 0 verde · 10 anaranjado</text>';
+    (s.train||[]).forEach(function(e){h+=mark(e,'',s.test?6:9)});
+    (s.test||[]).forEach(function(e){h+=mark(e,'t',11);if(s.pred&&s.pred(e[0],e[1])!==e[2]){var cx=px(e[0]),cy=py(e[1]);h+='<line class="mal" x1="'+(cx-12)+'" y1="'+(cy-12)+'" x2="'+(cx+12)+'" y2="'+(cy+12)+'"/><line class="mal" x1="'+(cx-12)+'" y1="'+(cy+12)+'" x2="'+(cx+12)+'" y2="'+(cy-12)+'"/>'}});
+    (s.cen||[]).forEach(function(c){var cx=px(c[0]),cy=py(c[1]);h+='<line class="cen" x1="'+(cx-10)+'" y1="'+(cy-10)+'" x2="'+(cx+10)+'" y2="'+(cy+10)+'"/><line class="cen" x1="'+(cx-10)+'" y1="'+(cy+10)+'" x2="'+(cx+10)+'" y2="'+(cy-10)+'"/>'});
+    if(s.q){if(s.near)h+='<line class="ln-q" x1="'+px(s.q[0])+'" y1="'+py(s.q[1])+'" x2="'+px(s.near[0])+'" y2="'+py(s.near[1])+'"/>';h+='<circle class="q" cx="'+px(s.q[0])+'" cy="'+py(s.q[1])+'" r="11"/>'}
+    svg.innerHTML=h}
+  if(o&&o.onPick)svg.addEventListener('click',function(ev){var pt=svg.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;var p=pt.matrixTransform(svg.getScreenCTM().inverse());
+    var d=Math.round(ix(p.x)*10)/10,c=Math.round(iy(p.y)*10)/10;if(d<3||d>10||c<0||c>10)return;o.onPick(d,c)});
+  return {draw:draw}}
+
+/* plano 1: consultas */
+(function(){var data='cat',q=null,P=Plano($('pl1'),{onPick:function(d,c){q=[d,c];draw()}});
+  function train(){var t=(data==='cat'?CAT:MEJ).map(function(e){var x=e.slice();return x});if(data==='mej')for(var i=8;i<11;i++)t[i].local=1;return t}
+  function draw(){var t=train(),s={train:t,pred:function(d,c){return vecino(t,d,c).et}};
+    if(q){var r=vecino(t,q[0],q[1]);s.q=q;s.near=r.ej;$('pl1-s').textContent='predecir('+fmt(q[0])+', '+fmt(q[1])+')';$('pl1-r').textContent='"'+r.et+'"';
+      $('pl1-m').textContent='El ejemplo más parecido es ('+r.ej[0].toFixed(1)+', '+r.ej[1].toFixed(1)+'), '+(r.ej[2]==='limon'?'limón':'china')+', a '+r.dist.toFixed(2)+'.'}
+    P.draw(s)}
+  window.__pl1=function(d,c,ds){if(ds){data=ds}q=[d,c];draw();return $('pl1-r').textContent};
+  $('pl1-q').innerHTML=CONSULTAS.map(function(c,i){return '<button data-i="'+i+'">('+fmt(c[0])+', '+fmt(c[1])+')</button>'}).join('');
+  all('#pl1-q button').forEach(function(b){b.onclick=function(){q=CONSULTAS[+b.dataset.i];press(all('#pl1-q button'),b);draw()}});
+  all('#pl1-d button').forEach(function(b){b.onclick=function(){data=b.dataset.d;press(all('#pl1-d button'),b);draw()}});
+  draw()})();
+
+/* plano 2: sesgo */
+(function(){var data='cat',m='v',P=Plano($('pl2'));
+  function draw(){var base=data==='cat'?CAT:MEJ,t=base.map(function(e,i){var x=e.slice();if(i>=8)x.local=1;return x});
+    var pred=predictor(base,m),s={train:t,pred:pred,test:PRUEBA.map(function(e,i){var x=e.slice();if(i>=6)x.local=1;return x})};
+    if(m==='c'){var k=centroide(base);s.cen=[k.china,k.limon]}
+    P.draw(s);var inf=informe(m,base);
+    var g=[['Limones',PRUEBA.slice(0,3)],['Chinas anaranjadas',PRUEBA.slice(3,6)],['Chinas verdes',VERDES]];
+    $('pl2-b').innerHTML=g.map(function(x){var a=aciertos(pred,x[1]),n=x[1].length,f=a/n;return '<div class="bar"><span>'+x[0]+'</span><span class="tr"><span class="fl'+(f<.5?' low':'')+'" style="width:'+(100*f)+'%"></span></span><b>'+a+'/'+n+'</b></div>'}).join('');
+    $('pl2-l').textContent=inf.txt}
+  window.__pl2=function(ds,mm){data=ds;m=mm;draw();return $('pl2-l').textContent};
+  all('#pl2-d button').forEach(function(b){b.onclick=function(){data=b.dataset.d;press(all('#pl2-d button'),b);draw()}});
+  all('#pl2-m button').forEach(function(b){b.onclick=function(){m=b.dataset.m;press(all('#pl2-m button'),b);draw()}});
+  draw()})();
+
+/* privacidad */
+var PV=[['Número de estudiante',1],['Nombre',1],['Correo institucional',1],['Sección del curso',1],['Fecha de nacimiento',0],['Dirección residencial',0],['Foto del rostro',0],['Promedio general',0],['Número de teléfono personal',0]];
+$('pv-c').innerHTML=PV.map(function(p,i){return '<button data-i="'+i+'" aria-pressed="false">'+p[0]+'</button>'}).join('');
+all('#pv-c button').forEach(function(b){b.onclick=function(){b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true');b.classList.remove('ok','sobra')}});
+$('pv-go').onclick=function(){var sobra=0,falta=0;all('#pv-c button').forEach(function(b){var need=PV[+b.dataset.i][1],on=b.getAttribute('aria-pressed')==='true';
+  b.classList.toggle('ok',!!need);b.classList.toggle('sobra',!need&&on);if(!need&&on)sobra++;if(need&&!on)falta++});
+  $('pv-m').innerHTML='Propuesta (línea verde): identificarle, contactarle y saber su sección. '+(sobra?'Usted marcó <b>'+sobra+'</b> dato'+(sobra>1?'s':'')+' que sobra'+(sobra>1?'n':'')+' (línea roja). ':'No marcó datos que sobren. ')+(falta?'Le faltó '+falta+'.':'')};
+$('pv-rs').onclick=function(){all('#pv-c button').forEach(function(b){b.setAttribute('aria-pressed','false');b.classList.remove('ok','sobra')});$('pv-m').textContent='Cada dato que se guarda es un dato que se puede filtrar, perder o usar para otra cosa.'};
+
+/* transparencia */
+var TX={n:'Resultado: limón.<br><br>Su fruta fue descartada.',s:'Resultado: limón.<br><br>Porque el ejemplo más parecido es (5.00, 3.00), limón, a 1.50. Si cree que es un error, pida revisión.'};
+all('#tx-b button').forEach(function(b){b.onclick=function(){$('tx-r').innerHTML=TX[b.dataset.x];press(all('#tx-b button'),b)}});$('tx-r').innerHTML=TX.n;
+
+/* responsabilidad */
+var RH=['La persona ve la recomendación y la explicación, y decide. Es lo indicado cuando el error puede afectar a alguien: notas, ayudas, admisiones.',
+ 'El sistema actúa, pero una persona revisa los casos y puede revertir. Hace falta un camino claro para apelar y alguien con autoridad para corregir.',
+ 'Nadie revisa. Solo es razonable si el error cuesta poco y se nota enseguida, como un robot que separa frutas. Aun así, alguien responde por el sistema.'];
+all('#rh-b button').forEach(function(b){b.onclick=function(){$('rh-m').textContent=RH[+b.dataset.l];press(all('#rh-b button'),b)}});all('#rh-b button')[0].click();
+
+/* Unión Europea */
+var UE=[['Riesgo inaceptable: prohibido','Prácticas que la ley prohíbe, como la puntuación social. Entre ellas, usar IA para inferir las emociones de las personas en el lugar de trabajo o en instituciones educativas, salvo por razones médicas o de seguridad.'],
+ ['Alto riesgo: obligaciones estrictas','En educación incluye, entre otros, los sistemas que deciden la admisión, evalúan resultados de aprendizaje o vigilan a estudiantes durante los exámenes. Deben cumplir requisitos de gestión de riesgos, datos y supervisión humana.'],
+ ['Riesgo limitado: transparencia','Obligaciones de transparencia más ligeras: por ejemplo, quien conversa con un chatbot debe saber que habla con una IA.'],
+ ['Riesgo mínimo: sin obligaciones de esta ley','La mayoría de los usos cotidianos, como un filtro de correo no deseado o el robot que separa frutas en el laboratorio.']];
+all('#ue-b button').forEach(function(b){b.onclick=function(){var u=UE[+b.dataset.u];$('ue-h').textContent=u[0];$('ue-p').textContent=u[1];press(all('#ue-b button'),b)}});all('#ue-b button')[1].click();
+
+/* diagramas de clases */
+function caja(x,y,w,t,ms,ab){var hh=34,h='<rect class="bx" x="'+x+'" y="'+y+'" width="'+w+'" height="'+(hh+8+ms.length*26)+'"/><rect class="bh'+(ab?' ab':'')+'" x="'+(x+1.5)+'" y="'+(y+1.5)+'" width="'+(w-3)+'" height="'+(hh-1.5)+'"/>'+
+  '<line class="ed" x1="'+x+'" y1="'+(y+hh)+'" x2="'+(x+w)+'" y2="'+(y+hh)+'"/><text class="tt'+(ab?' it':'')+'" x="'+(x+w/2)+'" y="'+(y+24)+'" text-anchor="middle">'+t+'</text>';
+  ms.forEach(function(m,i){h+='<text x="'+(x+12)+'" y="'+(y+hh+24+i*26)+'">'+esc(m)+'</text>'});return h}
+function hereda(x1,y1,x2,y2){return '<path class="ed" d="M'+x1+' '+y1+' V'+(y2+40)+' H'+x2+' V'+(y2+14)+'"/><path class="tri" d="M'+x2+' '+y2+' l-10 16 h20 z"/>'}
+function tiene(x1,y,x2,lbl){return '<path class="dia" d="M'+x1+' '+y+' l14 -8 l14 8 l-14 8 z"/><line class="ed" x1="'+(x1+28)+'" y1="'+y+'" x2="'+x2+'" y2="'+y+'"/><text class="el" x="'+(x2-8)+'" y="'+(y-8)+'" text-anchor="end">'+lbl+'</text>'}
+function mapa(svg,m){var h='',bw=250,cy=20;
+  h+=caja(10,cy,210,m.c,m.cm,0);h+=caja(390,cy,bw,m.b,m.bm,1);h+=tiene(220,cy+50,390,m.n);
+  var bh=42+m.bm.length*26,y2=cy+bh+90,hw=m.h.map(function(t){return Math.max(180,t.length*11.2+28)});
+  var x1=660-10-hw[1]-hw[0]-24,x2=660-10-hw[1];
+  h+=caja(x1,y2,hw[0],m.h[0],[],0)+caja(x2,y2,hw[1],m.h[1],[],0);
+  var px=390+bw/2,py=cy+bh;
+  h+='<path class="ed" d="M'+(x1+hw[0]/2)+' '+y2+' V'+(py+44)+' H'+(x2+hw[1]/2)+' V'+y2+'"/><line class="ed" x1="'+px+'" y1="'+(py+16)+'" x2="'+px+'" y2="'+(py+44)+'"/><path class="tri" d="M'+px+' '+py+' l-10 16 h20 z"/>';
+  if(m.x){var yb=cy+42+m.cm.length*26;h+=caja(10,cy+200,210,m.x,m.xm,0);h+='<path class="dia" d="M115 '+yb+' l8 14 l-8 14 l-8 -14 z"/><line class="ed" x1="115" y1="'+(yb+28)+'" x2="115" y2="'+(cy+200)+'"/><text class="el" x="126" y="'+(cy+192)+'">2</text>'}
+  svg.innerHTML=h}
+var MAPAS=window.__MAPAS;all('svg[data-mapa]').forEach(function(s){mapa(s,MAPAS[s.dataset.mapa])});
+function rbShow(){var d=+$('rb-sl').value,v=d<20?0:60;$('rb-v').textContent=String(d);
+  $('rb-robot').innerHTML=robot({scr:'motores '+v+'%',st:v?'':'bad',sens:[0,1],mouth:v?[0,1,2,3,4]:[2],label:'El robot con el sensor de distancia y el de luz encendidos'});
+  $('rb-t').textContent='R-1 distancia: '+d+' cm\nR-1 luz: 72 %\nR-1 motores a '+v+'%'}
+$('rb-sl').oninput=rbShow;rbShow();
+
+/* cadena de bloques: el mismo resumen djb2 de bloque.cpp, sobre los bytes UTF-8 */
+var enc=new TextEncoder();
+function resumen(t){var h=5381,b=enc.encode(t);for(var i=0;i<b.length;i++)h=(Math.imul(h,33)+b[i])>>>0;return h}
+function hex(n){return ('00000000'+(n>>>0).toString(16)).slice(-8)}
+var BC0=['inicio','R-1 al equipo 3','R-1 devuelto','R-2 al equipo 5'],BC=[];
+function bcNuevo(){BC=[];BC0.forEach(function(d,i){var prev=i?BC[i-1].hash:0,b={i:i,datos:d,prev:prev};b.hash=calc(b);BC.push(b)})}
+function calc(b){return resumen(b.i+'|'+b.datos+'|'+b.prev)}
+function primerRoto(){for(var i=0;i<BC.length;i++){if(calc(BC[i])!==BC[i].hash)return i;if(i>0&&BC[i].prev!==BC[i-1].hash)return i}return -1}
+window.__bc=function(){bcNuevo();var out=BC.map(function(b){return b.i+' '+hex(b.prev)+' '+hex(b.hash)});out.push(primerRoto());BC[1].datos='R-1 al equipo 4';out.push(primerRoto());bcNuevo();bcDraw();return out};
+function bcDraw(){var h='';BC.forEach(function(b,i){var ok=calc(b)===b.hash,lk=i===0||b.prev===BC[i-1].hash;
+  if(i>0)h+='<div class="eslabon'+(lk?'':' no')+'">'+(lk?'hash previo = guardado del bloque '+(i-1):'el hash previo ya no coincide con el bloque '+(i-1))+'</div>';
+  h+='<div class="blk'+(ok&&lk?'':' roto')+'"><span class="ix">'+i+'</span><input data-i="'+i+'" value="'+esc(b.datos).replace(/"/g,'&quot;')+'" aria-label="Datos del bloque '+i+'" spellcheck="false"'+(i===0?' readonly':'')+'><span class="hx">'+hex(b.prev)+'</span><span class="hx">'+hex(b.hash)+'</span><span class="hx'+(ok?'':' no')+'">'+hex(calc(b))+'</span>'+(i?'<button data-r="'+i+'">Recalcular su hash</button>':'<span></span>')+'</div>'});
+  $('bc').innerHTML=h;var r=primerRoto();$('bc-r').textContent='primerRoto() = '+r;
+  all('#bc input').forEach(function(inp){inp.oninput=function(){var i=+inp.dataset.i;BC[i].datos=inp.value;var pos=inp.selectionStart;bcDraw();var n=document.querySelector('#bc input[data-i="'+i+'"]');n.focus();try{n.setSelectionRange(pos,pos)}catch(e){}}});
+  all('#bc button').forEach(function(b){b.onclick=function(){var i=+b.dataset.r;BC[i].hash=calc(BC[i]);bcDraw()}})}
+$('bc-rs').onclick=function(){bcNuevo();bcDraw()};bcNuevo();bcDraw();
+
+/* auditoría */
+var AQ=[['¿Qué datos usa?','¿Todos hacen falta? ¿Quién los ve y por cuánto tiempo?'],['¿Quién se beneficia?','La institución, el profesor, el estudiante…'],['¿Quién puede salir perjudicado?','¿Hay grupos que no estaban en los datos de entrenamiento?'],['¿Cómo se explica una decisión?','¿Qué le dice a la persona afectada?'],['¿Qué control humano hay?','¿Quién revisa, corrige o atiende una apelación?']];
+var AU={};try{AU=JSON.parse(localStorage.getItem('tesi2105-actO')||'{}')||{}}catch(e){AU={}}
+var auC='A';
+function auSave(){try{localStorage.setItem('tesi2105-actO',JSON.stringify(AU))}catch(e){}}
+function auDraw(){var a=AU[auC]||{};
+  $('au-q').innerHTML=AQ.map(function(q,i){var v=a[i];return '<div class="fila"><p>'+(i+1)+'. '+q[0]+'<small>'+q[1]+'</small></p><div class="sem" data-q="'+i+'"><button class="v" data-v="v" aria-pressed="'+(v==='v')+'">Bien</button><button class="a" data-v="a" aria-pressed="'+(v==='a')+'">Dudas</button><button class="r" data-v="r" aria-pressed="'+(v==='r')+'">Riesgo</button></div></div>'}).join('');
+  all('#au-q .sem button').forEach(function(b){b.onclick=function(){var q=b.parentNode.dataset.q;AU[auC]=AU[auC]||{};AU[auC][q]=AU[auC][q]===b.dataset.v?null:b.dataset.v;auSave();auDraw()}});
+  var n={v:0,a:0,r:0},k=0;Object.keys(a).forEach(function(i){if(a[i]){n[a[i]]++;k++}});
+  $('au-n').textContent=auC;$('au-s').textContent=k?n.r+' riesgo · '+n.a+' dudas · '+n.v+' bien':'—';
+  $('au-m').textContent=k<5?'Faltan '+(5-k)+' pregunta'+(5-k>1?'s':'')+' por marcar.':n.r?'Cada «Riesgo» necesita un cambio de diseño en la hoja del equipo.':'Revisen que cada «Bien» tenga evidencia del caso.'}
+all('#au-c button').forEach(function(b){b.onclick=function(){auC=b.dataset.c;press(all('#au-c button'),b);auDraw()}});auDraw();
+
+/* descarga del ejemplo completo */
+try{var src=$('src-modelo').textContent.replace(/^\n/,'');$('dl-modelo').href=URL.createObjectURL(new Blob([src],{type:'text/x-c++src'}))}catch(e){}
+
+Deck.start();
+})();
+</script>
+</body>
+</html>

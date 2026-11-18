@@ -1,0 +1,5 @@
+numero,nombre,nota1,nota2,nota3
+50211,Pedro Santiago,88,92,85
+99999999999,Laura Diaz,90,90,90
+61844,Andrea Nieves,105,80,75
+62930,Jose Rosado,72,75,81

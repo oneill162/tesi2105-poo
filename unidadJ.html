@@ -1,0 +1,1219 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unidad J: Principios de diseño de software · TESI 2105</title>
+<meta name="description" content="TESI 2105 Programación Orientada a Objetos. Unidad J: principios de diseño de software, contados como los planos de construcción: patrones, SOLID, UML, refactorización y código limpio. Incluye el Laboratorio J.">
+<link rel="preload" href="assets/fonts/schibsted-grotesk-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* Tema de la Unidad J: los planos de construcción. Papel azul con cuadrícula, cotas y sellos de APROBADO.
+   Un patrón es un plano probado; UML es el plano de las clases; refactorizar es remodelar sin cambiar lo que la casa hace. */
+:root{--ground:#EEF3F8;--tone:#DCE6F1;--tone2:#C3D3E4;--ink:#0B2440;--soft:#3B5470;--accent:#1D5FA8;--accent-ink:#fff;--field:#123F6E;--field-ink:#F1F6FC;--hi:#FFD54A;--code-bg:#0B2440;--code-ink:#E6EEF8;--c-kw:#8DC9FF;--c-str:#FFC98A;--c-num:#FFE38A;--c-cmt:#93AAC4;--sello:#C62828;--sello-bp:#FF8A80;--bp:#123F6E;--grid:rgba(29,95,168,.075);--ok-ink:#0B6B47}
+.slide{background-color:var(--ground);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px}
+.slide.chapter{background-color:var(--field);background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.13) 1px,transparent 1px);background-size:32px 32px,32px 32px,160px 160px,160px 160px}
+.slide.field-hi{background-color:var(--hi);background-image:linear-gradient(rgba(11,36,64,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(11,36,64,.06) 1px,transparent 1px);background-size:32px 32px}
+pre.code .ln.cur{background:rgba(255,213,74,.24)}
+.term{background:#06182C}
+#map button.ch{box-shadow:inset 0 0 0 3px #7FB2E5;background:transparent}
+#map button.ch.seen{background:#7FB2E5}
+#map button.cur,#map button.ch.cur{background:var(--hi);box-shadow:none}
+pre.code.c18{font-size:18px;line-height:1.42;padding:12px 0}
+pre.code.c18 .ln{padding:0 18px}
+pre.code.c20{font-size:20px;line-height:1.45;padding:14px 0}
+.t18{font-size:18px!important;line-height:1.4}
+.gap12{margin-top:12px}.gap16{margin-top:16px}.gap20{margin-top:20px}
+code{font-size:.88em}
+
+/* capítulos: la hoja del plano */
+.chwrap{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:44px;height:calc(100% - 96px)}
+.chwrap .left{display:flex;flex-direction:column;justify-content:center}
+.hoja{font:600 20px var(--mono);letter-spacing:.14em;color:#9CC3EA}
+.chapter h1{font-size:76px;margin-top:12px}
+.chapter h1.long{font-size:58px}
+.chapter .lead{margin-top:22px;max-width:640px;font-size:29px}
+.cajetin{position:absolute;left:72px;right:72px;bottom:26px;display:grid;grid-template-columns:repeat(7,1fr);border:2px solid rgba(255,255,255,.55)}
+.cajetin span{display:block;padding:7px 12px 8px;border-left:2px solid rgba(255,255,255,.3);color:rgba(241,246,252,.55);font:600 18px var(--sans);white-space:nowrap}
+.cajetin span:first-child{border-left:0}
+.cajetin span small{display:block;font:600 18px var(--mono);letter-spacing:.06em;opacity:.8}
+.cajetin span.on{color:#fff;background:rgba(255,255,255,.14);box-shadow:inset 0 -5px 0 var(--hi)}
+.sello{display:inline-block;border:4px solid var(--sello);color:var(--sello);font:800 24px var(--sans);letter-spacing:.14em;padding:4px 14px;transform:rotate(-8deg);border-radius:6px;background:rgba(255,255,255,.04)}
+.chapter .sello{border-color:var(--sello-bp);color:var(--sello-bp)}
+.sello.sm{font-size:18px;border-width:3px;padding:2px 10px}
+@media (prefers-reduced-motion:no-preference){
+  .entering .sello.anim{animation:stamp .55s var(--ease-out) both;animation-delay:.75s}
+  .sello.anim.again{animation:stamp .5s var(--ease-out) both}
+}
+@keyframes stamp{0%{opacity:0;transform:rotate(-8deg) scale(1.9)}70%{opacity:1;transform:rotate(-8deg) scale(.94)}100%{opacity:1;transform:rotate(-8deg) scale(1)}}
+svg.bp text{font-family:var(--mono);fill:#F1F6FC}
+svg.bp .stroke{stroke:#F1F6FC;fill:none;stroke-width:2.5}
+svg.bp .thin{stroke:rgba(241,246,252,.7);fill:none;stroke-width:1.5}
+svg.bp .cota{stroke:#9CC3EA;stroke-width:1.5;fill:none}
+svg.bp .cotat{fill:#9CC3EA}
+svg.bp .fillw{fill:#F1F6FC}
+.field-hi .q{font-size:58px;line-height:1.05;letter-spacing:-.03em;font-weight:800;max-width:1120px}
+
+/* panel de plano (sobre fondo claro) */
+.plano{background-color:var(--bp);background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:24px 24px;color:#F1F6FC;padding:14px 16px}
+.plano .tt{font:600 18px var(--mono);letter-spacing:.08em;color:#9CC3EA;display:flex;justify-content:space-between}
+.msg{background:var(--tone);padding:12px 16px;font-size:20px;line-height:1.4;min-height:58px}
+.res{background:#fff;padding:12px 18px}
+.res small{display:block;font:600 18px var(--sans);color:var(--soft)}
+.res b{display:block;font:700 30px var(--mono);margin-top:2px;color:var(--accent)}
+.tag{display:inline-block;font:700 18px var(--mono);letter-spacing:.08em;padding:3px 10px;background:var(--ink);color:#fff}
+.tag.ok{background:var(--accent)}
+.tag.bad{background:#8A2B23}
+.ab{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.ab .hd{display:flex;align-items:center;gap:12px;margin-bottom:6px;height:36px}
+.lbl{font:600 19px var(--sans);color:var(--soft)}
+.ops{display:flex;flex-wrap:wrap;gap:8px}
+.ops button{font-size:18px;padding:9px 13px}
+.mono{font-family:var(--mono)}
+ul.lst{margin:8px 0 0;padding-left:24px;font-size:21px;line-height:1.42}
+.warn{border-left:6px solid var(--sello);background:#fff;padding:12px 16px;font-size:20px;line-height:1.4}
+.warn b{color:var(--sello)}
+
+/* familias de patrones */
+.fam{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.fam>div{background:#fff;padding:12px 14px}
+.fam h3{font-size:22px}
+.fam p{font-size:18px;color:var(--soft);margin:2px 0 8px}
+.fam button{display:block;width:100%;text-align:left;margin-top:6px;font:600 19px var(--mono)}
+.ficha{display:grid;grid-template-columns:190px 1fr;border-top:2px solid rgba(255,255,255,.35)}
+.ficha>*{padding:9px 0;border-bottom:2px solid rgba(255,255,255,.18);font-size:20px;line-height:1.35}
+.ficha dt{font:600 18px var(--mono);color:#9CC3EA;letter-spacing:.06em;padding-top:11px}
+.ficha dd{margin:0}
+
+/* simuladores */
+.sim{background:#fff;padding:14px 16px}
+.sim .row{gap:8px}
+.sim input[type=range]{width:100%;accent-color:var(--accent)}
+.log{background:#06182C;color:var(--ok);font:500 18px/1.42 var(--mono);padding:10px 14px;white-space:pre-wrap;min-height:110px}
+.log .p{color:#9DB4CC}
+.chk{display:flex;gap:10px;align-items:center;font-size:20px;cursor:pointer}
+.chk input{width:22px;height:22px;accent-color:var(--accent)}
+
+/* SOLID y cuestionario */
+.letters [data-tab]{font:800 24px var(--sans);width:58px;padding:8px 0}
+.solid-n{font-size:22px;font-weight:700;margin-left:14px}
+.quiz{background:#fff;padding:18px 22px}
+.quiz .sc{font:600 26px var(--sans);line-height:1.35;min-height:105px}
+.quiz .ltr button{font:800 30px var(--sans);width:76px;padding:10px 0}
+.quiz .ltr button.right{background:#2E8B57;color:#fff}
+.quiz .ltr button.wrong{background:#8A2B23;color:#fff}
+.dots{display:flex;gap:8px}.dots i{width:18px;height:18px;background:var(--tone2);display:block}
+.dots i.ok{background:#2E8B57}.dots i.no{background:#8A2B23}.dots i.cur{outline:3px solid var(--ink)}
+
+/* UML */
+.umlcode .ln{cursor:pointer}
+.umlcode .ln.sel{background:rgba(255,213,74,.3)}
+svg.uml text{font-family:var(--mono)}
+svg .row{cursor:pointer}
+svg .row rect.hit{fill:transparent}
+svg .row.sel rect.hit{fill:rgba(255,213,74,.35)}
+svg .rel{transition:opacity .25s}
+svg.dim .rel{opacity:.28}
+svg.dim .rel.on{opacity:1}
+svg .rel.on .stroke{stroke:var(--hi);stroke-width:4}
+svg .rel.on .fillw{fill:var(--hi)}
+svg .rel.on text{fill:var(--hi)}
+
+/* refactorización */
+.steps-b button{font-size:18px;padding:9px 12px}
+.igual{display:flex;align-items:center;gap:14px;margin-top:12px}
+.diffl .e{color:var(--err)} .diffl .o{color:var(--ok)}
+
+/* clasificador */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:#fff;padding:12px 14px;border-left:6px solid var(--tone2)}
+.card p{font-size:20px;line-height:1.35;min-height:54px}
+.card .row button{font:700 18px var(--mono);padding:6px 10px}
+.card.ok{border-left-color:#2E8B57}.card.no{border-left-color:#8A2B23}
+.card .fb{font-size:18px;margin-top:6px;min-height:25px;color:var(--soft)}
+
+/* cohesión y acoplamiento */
+svg .mod rect.box{fill:rgba(255,255,255,.06);stroke:#F1F6FC;stroke-width:2.5;transition:fill .25s,stroke .25s}
+svg .mod.hit rect.box{fill:rgba(255,138,128,.35);stroke:var(--sello-bp);stroke-width:4}
+.metric{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metric .res b{font-size:34px}
+.bars{display:grid;grid-template-columns:150px 1fr 60px;gap:8px 12px;align-items:center;font-size:20px}
+.bars .bar{height:28px;background:var(--accent);transition:width .35s var(--ease-out)}
+.bars .bar.h{background:#8A2B23}
+.bars b{font:700 24px var(--mono);text-align:right}
+
+/* discusiones, esenciales */
+.prop2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.prop2>div{background:var(--ink);color:#fff;padding:18px 22px;min-height:160px}
+.prop2>div.ok{background:var(--accent)}
+.prop2 b{display:block;font:700 22px var(--sans)}
+.prop2 span{display:block;font-size:21px;margin-top:8px;line-height:1.35}
+.prop2 .pbtn{margin-top:12px;background:#fff;color:var(--ink);font-size:18px;padding:8px 12px}
+.prop2 span.reveal{display:none}.prop2 .shown span.reveal{display:block}
+.discrow{position:absolute;left:72px;right:72px;bottom:32px}
+.dir{display:grid;grid-template-columns:repeat(3,1fr);gap:20px 36px;margin-top:24px}
+.dir h3{font-size:26px}
+.dir p{font-size:20px;margin-top:6px;line-height:1.38}
+
+/* laboratorio */
+a.dl{display:inline-flex;align-items:center;background:var(--accent);color:#fff;font-weight:600;font-size:20px;padding:12px 18px;text-decoration:none;white-space:nowrap}a.dl:hover{background:var(--ink)}
+.todo{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 24px}
+.todo li{background:#fff;padding:9px 14px;font-size:19px;line-height:1.32;display:grid;grid-template-columns:38px 1fr}
+.todo li b.nm{font:800 26px var(--sans);color:var(--accent)}
+.todo code{font-size:18px;white-space:normal}
+.cases [data-tab]{font:600 18px var(--sans);padding:9px 14px}
+.cases [data-tab].pass::after{content:" ✓";color:#2E9E5B}
+.typein{font:600 18px/1.4 var(--mono);background:var(--tone);padding:8px 12px;white-space:pre-wrap}
+.cases .term{font-size:18px;line-height:1.3;white-space:pre;column-count:2;column-gap:18px;padding:10px 14px}
+textarea.paste{width:100%;height:150px;font:500 18px/1.35 var(--mono);padding:10px 12px;border:0;background:#fff;color:var(--ink);resize:none}
+.checks{list-style:none;margin:8px 0 0;padding:0;font-size:19px;line-height:1.45}
+.checks li.ok{color:var(--ok-ink)}.checks li.ok::before{content:"✓  "}
+.checks li.no{color:#B3261E}.checks li.no::before{content:"✗  "}
+.checks code{white-space:normal}
+.score{font:800 34px var(--sans)}
+.rub td:last-child,.rub th:last-child{text-align:right;width:90px}
+.rub td,.rub th{padding:6px 14px!important;font-size:19px}
+.refs p{font-size:19px;padding-left:36px;text-indent:-36px;margin-bottom:8px;line-height:1.4}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage" data-name="Unidad J · Diseño de software" role="region" aria-roledescription="presentación" aria-label="Unidad J: Principios de diseño de software">
+
+<!-- PORTADA -->
+<section class="slide chapter" data-title="Portada">
+  <div class="chwrap" style="height:100%">
+    <div class="left">
+      <p class="hoja" data-a>TESI 2105 · UNIDAD J</p>
+      <h1 class="mask" style="font-size:84px;margin-top:12px"><span>Principios de diseño de software</span></h1>
+      <p class="lead" data-a>Antes de levantar una casa se dibujan los planos. Antes de escribir mil líneas, también.</p>
+      <p class="body" data-a style="margin-top:22px;font-size:20px">Prof. Eduardo O. De Jesús Arroyo<br>Instituto Tecnológico de Puerto Rico, Recinto de Manatí</p>
+    </div>
+    <div data-a style="align-self:center">
+      <svg class="bp" id="pt-svg" viewBox="0 0 440 400" width="440" height="400" role="img" aria-label="Hoja de plano"></svg>
+      <div class="row" id="pt-b" style="margin-top:10px"><button data-i="0">La casa</button><button data-i="1">La clase</button><button data-i="2">El patrón</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Funcionar no es lo mismo que estar bien diseñado">
+  <h2 class="mask"><span>Funciona… hasta que hay que cambiarlo</span></h2>
+  <p class="body sub" data-a style="max-width:1136px;font-size:21px">Dos versiones de la caja de la cafetería imprimen lo mismo. Escoja un pedido de cambio.</p>
+  <div class="ops" id="pc-b" data-a style="margin-top:14px"><button data-k="ivu">Subir el IVU</button><button data-k="est">Cambiar el descuento de estudiante</button><button data-k="cafe">Cambiar el precio del café</button></div>
+  <div style="display:grid;grid-template-columns:600px 1fr;gap:22px;margin-top:14px" data-a>
+    <div><div class="hd row" style="margin-bottom:6px"><span class="tag bad">ORIGINAL</span><span class="lbl">un main largo</span></div>
+      <pre class="code c18" data-raw id="pc-o"></pre></div>
+    <div><div class="hd row" style="margin-bottom:6px"><span class="tag ok">REMODELADO</span><span class="lbl">constantes con nombre</span></div>
+      <pre class="code c18" data-raw id="pc-r"></pre>
+      <div class="metric gap12"><div class="res"><small>Lugares en el original</small><b id="pc-no">2</b></div><div class="res"><small>En el remodelado</small><b id="pc-nr">1</b></div></div>
+      <p class="msg gap12" id="pc-msg" aria-live="polite" style="font-size:19px"></p>
+    </div>
+  </div>
+</section>
+
+<!-- TEMA 1 -->
+<section class="slide chapter" data-title="Tema 1: Patrones de diseño (introducción)" data-topic="1">
+  <div class="chwrap"><div class="left">
+    <p class="hoja">PLANO J-1</p>
+    <h1 class="mask"><span>Patrones de diseño (introducción)</span></h1>
+    <p class="lead" data-a>Un patrón es un plano probado: una solución que ya funcionó muchas veces para un problema que se repite.</p></div>
+    <div data-a style="align-self:center"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
+      <rect class="thin" x="70" y="20" width="320" height="230"/><rect class="thin" x="45" y="45" width="320" height="230"/>
+      <rect x="20" y="70" width="320" height="250" fill="#123F6E" stroke="#F1F6FC" stroke-width="2.5"/>
+      <text x="40" y="102" font-size="20" font-weight="600">STRATEGY</text>
+      <rect class="stroke" x="110" y="125" width="140" height="44"/><text x="180" y="154" font-size="19" text-anchor="middle" font-style="italic">Tarifa</text>
+      <rect class="stroke" x="40" y="240" width="120" height="44"/><text x="100" y="269" font-size="18" text-anchor="middle">PorHora</text>
+      <rect class="stroke" x="200" y="240" width="120" height="44"/><text x="260" y="269" font-size="18" text-anchor="middle">Fija</text>
+      <path class="stroke" d="M100 240 V205 H260 V240 M180 205 V187"/><path class="fillw" d="M180 169 L170 187 L190 187 Z" fill="#123F6E" stroke="#F1F6FC" stroke-width="2.5"/>
+      <path class="cota" d="M20 345 H340 M20 336 V354 M340 336 V354"/><text class="cotat" x="180" y="378" font-size="18" text-anchor="middle">nombre · problema · solución</text>
+    </svg><div style="margin:-150px 0 0 250px"><span class="sello anim">APROBADO</span></div></div>
+  </div>
+  <div class="cajetin"></div>
+</section>
+
+<section class="slide" data-title="Un patrón es un plano probado">
+  <h2 class="mask"><span>Un catálogo de planos que ya funcionaron</span></h2>
+  <p class="body sub" data-a style="max-width:1130px;font-size:22px">En 1994, Gamma, Helm, Johnson y Vlissides publicaron 23 patrones en tres familias. Cada uno tiene un nombre, el problema que resuelve, la solución y sus consecuencias. Escoja uno.</p>
+  <div style="display:grid;grid-template-columns:520px 1fr;gap:24px;margin-top:16px">
+    <div class="fam" data-a id="pf-b" style="grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div><h3>Creación</h3><p>cómo nacen los objetos</p><button data-p="sing">Singleton</button><button data-p="fact">Factory</button></div>
+      <div><h3>Estructura</h3><p>cómo se arman</p><button data-p="adap">Adapter</button><button data-p="comp">Composite</button></div>
+      <div><h3>Conducta</h3><p>cómo se reparten el trabajo</p><button data-p="strat">Strategy</button><button data-p="obs">Observer</button></div>
+    </div>
+    <div class="plano" data-a style="padding:16px 20px">
+      <div class="tt"><span id="pf-fam">PLANO</span><span class="sello sm" id="pf-sello" style="color:var(--sello-bp);border-color:var(--sello-bp)">PROBADO</span></div>
+      <h3 id="pf-n" style="font-size:34px;margin:6px 0 10px;font-family:var(--mono)"></h3>
+      <dl class="ficha" style="margin:0"><dt>PROBLEMA</dt><dd id="pf-p"></dd><dt>SOLUCIÓN</dt><dd id="pf-s"></dd><dt>CONSECUENCIA</dt><dd id="pf-c"></dd></dl>
+    </div>
+  </div>
+  <p class="small" data-a style="margin-top:12px;font-size:19px">Un patrón no es código para copiar: es una idea que se adapta. En esta unidad se escriben tres en C++: Singleton, Strategy y Observer.</p>
+</section>
+
+<section class="slide" data-title="Singleton: una sola instancia">
+  <h2 class="mask"><span>Singleton: un solo objeto para todos</span></h2>
+  <div style="display:grid;grid-template-columns:560px 1fr;gap:26px;margin-top:18px">
+    <div data-a><pre class="code c18">class Config {
+    Config() {}           // privado
+public:
+    static Config&amp; instancia() {
+        static Config unica;  // una vez
+        return unica;
+    }
+    Config(const Config&amp;) = delete;
+    Config&amp; operator=(const Config&amp;) = delete;
+    string recinto = "Manati";
+};</pre>
+      <p class="body" style="font-size:20px;margin-top:10px">El constructor es privado y la copia está borrada: la única manera de llegar al objeto es <code>instancia()</code>.</p></div>
+    <div data-a>
+      <pre class="code c18">int main() {
+    Config&amp; a = Config::instancia();
+    Config&amp; b = Config::instancia();
+    a.recinto = "San Juan";
+    cout &lt;&lt; b.recinto &lt;&lt; endl;
+    cout &lt;&lt; (&amp;a == &amp;b) &lt;&lt; endl;
+    return 0;
+}</pre>
+      <div class="term t18" style="margin-top:8px">San Juan
+1</div>
+      <div class="warn gap12"><b>Úselo con cuidado.</b> Es una variable global disfrazada: <code>a</code> cambió el recinto y <code>b</code> lo vio. Cualquier parte del programa lo cambia y las dependencias quedan ocultas. Casi siempre es mejor crear el objeto en <code>main</code> y pasarlo por referencia.</div>
+      <div class="term t18" style="margin-top:8px"><span class="p">Config c;</span>
+<span class="e">error: 'Config::Config()' is private within this context</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Strategy: cambiar el cálculo sin tocar la clase">
+  <h2 class="mask"><span>Strategy: el cálculo se enchufa</span></h2>
+  <div style="display:grid;grid-template-columns:660px 1fr;gap:22px;margin-top:14px">
+    <div data-tabs="st1" data-a>
+      <div class="row"><button data-tab="st1">1. La interfaz</button><button data-tab="st2">2. Otra tarifa y el contexto</button><button data-tab="st3">3. main</button></div>
+      <div data-panel="st1" style="margin-top:10px"><pre class="code c18">const double PRECIO_HORA = 1.50;
+const double PRECIO_DIA  = 5.00;
+
+class Tarifa {                         // la interfaz
+public:
+    virtual double cobrar(int horas) const = 0;
+    virtual ~Tarifa() = default;
+};
+
+class TarifaPorHora : public Tarifa {  // estrategia 1
+public:
+    double cobrar(int horas) const override {
+        return PRECIO_HORA * horas;
+    }
+};</pre></div>
+      <div data-panel="st2" hidden style="margin-top:10px"><pre class="code c18">class TarifaFija : public Tarifa {     // estrategia 2
+public:
+    double cobrar(int) const override {
+        return PRECIO_DIA;
+    }
+};
+
+class Estacionamiento {                // el contexto
+    const Tarifa* tarifa;
+public:
+    Estacionamiento(const Tarifa&amp; t) : tarifa(&amp;t) {}
+    void cambiarTarifa(const Tarifa&amp; t) { tarifa = &amp;t; }
+    void salida(int horas) const {
+        cout &lt;&lt; horas &lt;&lt; " h: $"
+             &lt;&lt; tarifa-&gt;cobrar(horas) &lt;&lt; endl;
+    }
+};</pre></div>
+      <div data-panel="st3" hidden style="margin-top:10px"><pre class="code c18">int main() {
+    cout &lt;&lt; fixed &lt;&lt; setprecision(2);
+    TarifaPorHora porHora;
+    TarifaFija fija;
+    Estacionamiento e(porHora);
+    e.salida(2);
+    e.salida(6);
+    e.cambiarTarifa(fija);
+    e.salida(2);
+    e.salida(6);
+    return 0;
+}</pre>
+        <div class="term t18" style="margin-top:8px">2 h: $3.00
+6 h: $9.00
+2 h: $5.00
+6 h: $5.00</div></div>
+    </div>
+    <div data-a>
+      <div class="sim">
+        <div class="lbl">El estacionamiento del recinto</div>
+        <div class="row gap12" id="st-b"><button data-t="hora" aria-pressed="true">TarifaPorHora</button><button data-t="fija">TarifaFija</button><button data-t="noche">+ TarifaNocturna</button></div>
+        <label class="lbl" for="st-h" style="display:block;margin-top:12px">Horas: <b id="st-hv" class="mono">2</b></label>
+        <input type="range" id="st-h" min="1" max="10" value="2">
+        <div class="res gap12" style="background:var(--tone)"><small id="st-e">e.salida(2);</small><b id="st-r">2 h: $3.00</b></div>
+      </div>
+      <p class="msg gap12" id="st-msg" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Observer: avisar a quien le interese">
+  <h2 class="mask"><span>Observer: la cuenta avisa sola</span></h2>
+  <div style="display:grid;grid-template-columns:660px 1fr;gap:22px;margin-top:14px">
+    <div data-tabs="ob1" data-a>
+      <div class="row"><button data-tab="ob1">1. Interfaz</button><button data-tab="ob2">2. Observadores</button><button data-tab="ob3">3. Cuenta</button><button data-tab="ob4">4. main</button></div>
+      <div data-panel="ob1" style="margin-top:10px"><pre class="code c18">class Observador {
+public:
+    virtual void avisar(int cuenta, double saldo) = 0;
+    virtual ~Observador() = default;
+};</pre><p class="body gap12" style="font-size:20px">El plano de cualquier observador: una sola función, <code>avisar</code>.</p></div>
+      <div data-panel="ob2" hidden style="margin-top:10px"><pre class="code c18">class AvisoSMS : public Observador {
+public:
+    void avisar(int cuenta, double saldo) override {
+        cout &lt;&lt; "SMS: la cuenta " &lt;&lt; cuenta
+             &lt;&lt; " tiene $" &lt;&lt; saldo &lt;&lt; endl;
+    }
+};
+
+class Auditoria : public Observador {
+    int movimientos = 0;
+public:
+    void avisar(int cuenta, double) override {
+        movimientos++;
+        cout &lt;&lt; "Auditoria: movimiento " &lt;&lt; movimientos
+             &lt;&lt; " en " &lt;&lt; cuenta &lt;&lt; endl;
+    }
+};</pre></div>
+      <div data-panel="ob3" hidden style="margin-top:10px"><pre class="code c18">class Cuenta {
+    int numero;
+    double saldo = 0;
+    Observador* obs[5];
+    int n = 0;
+public:
+    Cuenta(int num) : numero(num) {}
+    void suscribir(Observador* o) {
+        if (n &lt; 5) obs[n++] = o;
+    }
+    void depositar(double monto) {
+        saldo += monto;
+        for (int i = 0; i &lt; n; i++)
+            obs[i]-&gt;avisar(numero, saldo);
+    }
+};</pre></div>
+      <div data-panel="ob4" hidden style="margin-top:10px"><pre class="code c18">int main() {
+    cout &lt;&lt; fixed &lt;&lt; setprecision(2);
+    AvisoSMS sms;
+    Auditoria audit;
+    Cuenta c(1001);
+    c.depositar(50);          // nadie escucha todavia
+    c.suscribir(&amp;sms);
+    c.depositar(100);
+    c.suscribir(&amp;audit);
+    c.depositar(25);
+    return 0;
+}</pre>
+        <div class="term t18" style="margin-top:8px">SMS: la cuenta 1001 tiene $150.00
+SMS: la cuenta 1001 tiene $175.00
+Auditoria: movimiento 1 en 1001</div></div>
+    </div>
+    <div data-a>
+      <div class="sim">
+        <div class="lbl">Suscriptores de la cuenta 1001</div>
+        <div class="row gap12" style="gap:22px"><label class="chk"><input type="checkbox" id="ob-sms"> AvisoSMS</label><label class="chk"><input type="checkbox" id="ob-aud"> Auditoria</label></div>
+        <div class="row gap12"><button class="go" id="ob-dep">depositar(100)</button><button id="ob-rst">Reiniciar</button></div>
+        <div class="log gap12" id="ob-log" aria-live="polite"></div>
+      </div>
+      <p class="msg gap12" style="font-size:19px">Cuenta no sabe qué hace cada observador: solo llama <code>avisar</code>. Se añade otro sin tocar <code>Cuenta</code>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TEMA 2 -->
+<section class="slide chapter" data-title="Tema 2: Principios de diseño (SOLID)" data-topic="2">
+  <div class="chwrap"><div class="left">
+    <p class="hoja">PLANO J-2</p>
+    <h1 class="mask"><span>Principios de diseño (SOLID)</span></h1>
+    <p class="lead" data-a>Cinco columnas que aguantan el edificio. Si una falla, cada cambio cuesta más.</p></div>
+    <div data-a style="align-self:center"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
+      <path class="stroke" d="M20 110 L220 30 L420 110 Z"/><rect class="stroke" x="20" y="110" width="400" height="26"/>
+      <g id="cols"></g>
+      <rect class="stroke" x="10" y="318" width="420" height="22"/>
+      <path class="cota" d="M30 368 H410 M30 358 V378 M410 358 V378"/><text class="cotat" x="220" y="394" font-size="18" text-anchor="middle">SOLID: cinco principios</text>
+    </svg></div>
+  </div>
+  <div class="cajetin"></div>
+</section>
+
+<section class="slide" data-title="SOLID: antes y después">
+  <h2 class="mask"><span>Cinco letras, cinco remodelaciones</span></h2>
+  <div data-tabs="sS" data-a style="margin-top:14px">
+    <div class="row letters"><button data-tab="sS">S</button><button data-tab="sO">O</button><button data-tab="sL">L</button><button data-tab="sI">I</button><button data-tab="sD">D</button><span class="solid-n" id="solid-n" aria-live="polite"></span></div>
+    <div data-panel="sS" style="margin-top:12px"><div class="ab">
+      <div><div class="hd"><span class="tag bad">ANTES</span><span class="lbl">tres razones para cambiar</span></div><pre class="code c18">class Cuenta {
+    double saldo = 0;
+public:
+    void depositar(double m) { saldo += m; }
+    void imprimirEstado();   // formato
+    void enviarCorreo();     // servidor
+};</pre></div>
+      <div><div class="hd"><span class="tag ok">DESPUÉS</span><span class="lbl">una clase, un trabajo</span></div><pre class="code c18">class Cuenta {          // solo el dinero
+    double saldo = 0;
+public:
+    void depositar(double m) { saldo += m; }
+    double consultarSaldo() const;
+};
+class EstadoDeCuenta {  // solo imprimir
+public:
+    void imprimir(const Cuenta&amp; c);
+};
+class Notificador {     // solo avisar
+public:
+    void enviar(const Cuenta&amp; c);
+};</pre></div></div>
+      <p class="msg gap12" style="font-size:20px"><b>Responsabilidad única.</b> Si cambia el formato del estado, solo se toca <code>EstadoDeCuenta</code>; el dinero no se arriesga.</p></div>
+    <div data-panel="sO" hidden style="margin-top:12px"><div class="ab">
+      <div><div class="hd"><span class="tag bad">ANTES</span><span class="lbl">un if por cada tipo</span></div><pre class="code c18">double peaje(const Vehiculo&amp; v) {
+    if (v.tipo == "auto") return 1.00;
+    else if (v.tipo == "moto") return 0.50;
+    else if (v.tipo == "camion") return 3.00;
+    return 0;
+}
+// tipo nuevo: abrir y cambiar esta funcion</pre></div>
+      <div><div class="hd"><span class="tag ok">DESPUÉS</span><span class="lbl">cada tipo sabe su peaje</span></div><pre class="code c18">class Vehiculo {
+public:
+    virtual double peaje() const = 0;
+    virtual ~Vehiculo() = default;
+};
+class Guagua : public Vehiculo {  // nueva
+public:
+    double peaje() const override;
+};
+// tipo nuevo: una clase nueva;
+// lo que ya funciona no se toca</pre></div></div>
+      <p class="msg gap12" style="font-size:20px"><b>Abierto/cerrado.</b> Abierto para extender (clases nuevas), cerrado para modificar (lo que ya está probado).</p></div>
+    <div data-panel="sL" hidden style="margin-top:12px"><div class="ab">
+      <div><div class="hd"><span class="tag bad">ANTES</span><span class="lbl">Cuadrado hereda de Rectangulo</span></div><pre class="code c18">class Cuadrado : public Rectangulo {
+public:   // un lado cambia el otro
+    void setAncho(int a) override {
+        ancho = alto = a;
+    }
+    void setAlto(int h) override {
+        ancho = alto = h;
+    }
+};
+void estirar(Rectangulo&amp; r) {
+    r.setAncho(10);
+    r.setAlto(5);
+    cout &lt;&lt; r.area() &lt;&lt; endl;   // espera 50
+}</pre></div>
+      <div><div class="hd"><span class="tag">SALIDA</span><span class="lbl">estirar(r) y estirar(c)</span></div><div class="term t18">Rectangulo: 50
+Cuadrado: 25</div>
+        <div class="hd" style="margin-top:12px"><span class="tag ok">DESPUÉS</span><span class="lbl">los dos heredan de Figura</span></div><pre class="code c18">class Figura {
+public:
+    virtual int area() const = 0;
+    virtual ~Figura() = default;
+};</pre>
+        <p class="msg gap12" style="font-size:19px"><b>Sustitución de Liskov.</b> Un hijo debe poder usarse donde se espera al padre sin sorpresas.</p></div></div></div>
+    <div data-panel="sI" hidden style="margin-top:12px"><div class="ab">
+      <div><div class="hd"><span class="tag bad">ANTES</span><span class="lbl">una interfaz para todo</span></div><pre class="code c18">class Dispositivo {
+public:
+    virtual void imprimir() = 0;
+    virtual void escanear() = 0;
+    virtual void enviarFax() = 0;
+};
+class ImpresoraSimple : public Dispositivo {
+    // obligada a escanear() y enviarFax(),
+    // que no sabe hacer
+};</pre></div>
+      <div><div class="hd"><span class="tag ok">DESPUÉS</span><span class="lbl">interfaces pequeñas</span></div><pre class="code c18">class Impresora {
+public:
+    virtual void imprimir() = 0;
+};
+class Escaner {
+public:
+    virtual void escanear() = 0;
+};
+class ImpresoraSimple : public Impresora {
+public:
+    void imprimir() override;
+};</pre></div></div>
+      <p class="msg gap12" style="font-size:20px"><b>Segregación de interfaces.</b> Nadie debe estar obligado a implementar funciones que no usa.</p></div>
+    <div data-panel="sD" hidden style="margin-top:12px"><div class="ab">
+      <div><div class="hd"><span class="tag bad">ANTES</span><span class="lbl">depende de lo concreto</span></div><pre class="code c18">class Caja {
+    ArchivoTexto archivo;  // atada al archivo
+public:
+    void cobrar(double m) {
+        archivo.guardar(to_string(m));
+    }
+};
+// probarla sin el archivo: imposible</pre></div>
+      <div><div class="hd"><span class="tag ok">DESPUÉS</span><span class="lbl">depende de una abstracción</span></div><pre class="code c18">class Almacen {              // abstraccion
+public:
+    virtual void guardar(const string&amp; l) = 0;
+};
+class Caja {
+    Almacen&amp; almacen;        // cualquiera
+public:
+    Caja(Almacen&amp; a) : almacen(a) {}
+    void cobrar(double m) {
+        almacen.guardar(to_string(m));
+    }
+};</pre></div></div>
+      <p class="msg gap12" style="font-size:20px"><b>Inversión de dependencias.</b> Caja recibe cualquier <code>Almacen</code>: un archivo, la memoria o uno de prueba.</p></div>
+  </div>
+</section>
+
+<section class="slide" data-title="¿Qué letra se rompe?">
+  <h2 class="mask"><span>¿Qué letra de SOLID se rompe?</span></h2>
+  <p class="body sub" data-a style="font-size:22px">Lea cada caso y pulse la letra. Son cinco casos.</p>
+  <div class="quiz" data-a style="margin-top:16px">
+    <div class="row" style="justify-content:space-between"><span class="lbl" id="qz-n">Caso 1 de 5</span><div class="dots" id="qz-d"></div></div>
+    <p class="sc gap12" id="qz-t"></p>
+    <div class="row ltr gap12" id="qz-b"><button data-l="S">S</button><button data-l="O">O</button><button data-l="L">L</button><button data-l="I">I</button><button data-l="D">D</button><button class="go" id="qz-next" style="margin-left:auto;font-size:20px;width:auto;padding:12px 20px" disabled>Siguiente caso</button></div>
+  </div>
+  <p class="msg gap16" id="qz-msg" data-a aria-live="polite" style="font-size:21px;min-height:88px"></p>
+</section>
+
+<section class="slide" data-title="Cuatro mensajes de g++ al diseñar con interfaces">
+  <h2 class="mask"><span>Cuatro mensajes de g++</span></h2>
+  <div data-tabs="e1" data-a style="margin-top:18px">
+    <div class="row"><button data-tab="e1">Crear la interfaz</button><button data-tab="e2">override mal escrito</button><button data-tab="e3">Copiar el Singleton</button><button data-tab="e4">Destructor no virtual</button></div>
+    <div style="display:grid;grid-template-columns:640px 1fr;gap:30px;margin-top:20px">
+      <div data-panel="e1"><pre class="code c20">Tarifa t;</pre><div class="term t18" style="margin-top:10px"><span class="e">error: cannot declare variable 't' to be of abstract type 'Tarifa'</span>
+<span class="p">note:   because the following virtual functions are pure within 'Tarifa':
+note:     'virtual double Tarifa::cobrar(int) const'</span></div></div>
+      <div data-panel="e1"><p class="lead" style="font-size:28px">Una clase con una función <code>= 0</code> es abstracta: es un plano, no una casa.</p><p class="body sub" style="font-size:22px">Se crean objetos de las clases hijas (<code>TarifaFija</code>) y se usan con una referencia o un puntero a <code>Tarifa</code>.</p></div>
+      <div data-panel="e2" hidden><pre class="code c20">double cobra(int) const override {
+    return PRECIO_DIA;
+}</pre><div class="term t18" style="margin-top:10px"><span class="e">error: 'double TarifaFija::cobra(int) const' marked 'override', but does not override</span></div></div>
+      <div data-panel="e2" hidden><p class="lead" style="font-size:28px">El nombre es <code>cobrar</code>, no <code>cobra</code>.</p><p class="body sub" style="font-size:22px"><code>override</code> le pide a g++ que confirme que la función de verdad reemplaza una del padre. Sin él, este error compila y la tarifa nunca se usa. Lo mismo pasa si falta el <code>const</code>.</p></div>
+      <div data-panel="e3" hidden><pre class="code c20">Config c = Config::instancia();</pre><div class="term t18" style="margin-top:10px"><span class="e">error: use of deleted function 'Config::Config(const Config&amp;)'</span></div></div>
+      <div data-panel="e3" hidden><p class="lead" style="font-size:28px">Una copia sería un segundo objeto: el Singleton lo prohíbe.</p><p class="body sub" style="font-size:22px">Se guarda una referencia: <code>Config&amp; c = Config::instancia();</code></p></div>
+      <div data-panel="e4" hidden><pre class="code c20">Tarifa* t = new TarifaFija;
+cout &lt;&lt; t-&gt;cobrar(3) &lt;&lt; endl;
+delete t;</pre><div class="term t18" style="margin-top:10px"><span class="w">warning: deleting object of abstract class type 'Tarifa' which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]</span></div></div>
+      <div data-panel="e4" hidden><p class="lead" style="font-size:28px">Compila, pero borrar por el puntero del padre no llama al destructor del hijo.</p><p class="body sub" style="font-size:22px">Toda interfaz lleva <code>virtual ~Tarifa() = default;</code>, como en el ejemplo de Strategy.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: un descuento nuevo">
+  <p class="q mask"><span>La cafetería añade un descuento para jubilados. ¿Qué se toca?</span></p>
+  <p class="body gap" data-a style="max-width:1050px;font-size:26px">Piensen en un <code>switch</code> con un caso por tipo de cliente y en el Strategy del estacionamiento.</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:56px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b>Añadir un case al switch</b><span>se abre y se cambia una función que ya funcionaba</span></div><div class="ok" data-rv-box><b>Añadir una clase</b><span>DescuentoJubilado implementa la interfaz</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">Una clase nueva (principio O): lo probado no se toca. El switch obliga a modificar y volver a probar todo.</span></div></div></div>
+</section>
+
+<!-- TEMA 3 -->
+<section class="slide chapter" data-title="Tema 3: Modelado de objetos (UML básico)" data-topic="3">
+  <div class="chwrap"><div class="left">
+    <p class="hoja">PLANO J-3</p>
+    <h1 class="mask"><span>Modelado de objetos (UML básico)</span></h1>
+    <p class="lead" data-a>UML es el plano de las clases: se dibuja antes de construir y lo entiende cualquiera, sepa o no C++.</p></div>
+    <div data-a style="align-self:center"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
+      <rect class="stroke" x="20" y="40" width="300" height="300"/><path class="stroke" d="M20 92 H320 M20 190 H320"/>
+      <text x="170" y="74" font-size="22" font-weight="600" text-anchor="middle">Cuenta</text>
+      <text x="36" y="122" font-size="19">- numero: int</text><text x="36" y="150" font-size="19">- saldo: double</text>
+      <text x="36" y="222" font-size="19">+ depositar(): bool</text><text x="36" y="250" font-size="19">+ retirar(): bool</text>
+      <path class="cota" d="M340 40 V92 M332 40 H348 M332 92 H348 M340 92 V190 M332 190 H348 M340 190 V340 M332 340 H348"/>
+      <text class="cotat" x="352" y="72" font-size="18">nombre</text><text class="cotat" x="352" y="146" font-size="18">datos</text><text class="cotat" x="352" y="270" font-size="18">métodos</text>
+      <path class="cota" d="M20 362 H320 M20 354 V370 M320 354 V370"/><text class="cotat" x="170" y="392" font-size="18" text-anchor="middle">una clase = un rectángulo</text>
+    </svg></div>
+  </div>
+  <div class="cajetin"></div>
+</section>
+
+<section class="slide" data-title="De la clase en C++ al diagrama">
+  <h2 class="mask"><span>La clase en C++ y su diagrama</span></h2>
+  <div class="row" data-a style="margin-top:12px;gap:18px"><div class="row" id="um-b"><button data-c="cuenta">class Cuenta</button><button data-c="veh">class Vehiculo</button></div><span class="lbl">Pulse una línea del código o una fila del diagrama.</span></div>
+  <div style="display:grid;grid-template-columns:560px 1fr;gap:24px;margin-top:12px">
+    <pre class="code c18 umlcode" data-raw data-a id="um-code"></pre>
+    <div data-a>
+      <div class="plano" style="padding:12px 16px"><div class="tt"><span>DIAGRAMA DE CLASE</span><span id="um-t">J-3</span></div>
+        <svg class="bp uml" id="um-svg" viewBox="0 0 520 330" width="520" height="330" role="img" aria-label="Diagrama UML de la clase"></svg></div>
+      <p class="msg gap12" id="um-msg" aria-live="polite" style="min-height:84px"></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Las relaciones entre clases">
+  <h2 class="mask"><span>Cuatro líneas que unen las clases</span></h2>
+  <div style="display:grid;grid-template-columns:720px 1fr;gap:22px;margin-top:16px">
+    <div class="plano" data-a style="padding:10px 10px 6px"><svg class="bp" id="rl-svg" viewBox="0 0 700 420" width="700" height="420" role="img" aria-label="Diagrama de clases con relaciones"></svg></div>
+    <div data-a>
+      <div class="ops" id="rl-b"><button data-r="her">Herencia</button><button data-r="com">Composición</button><button data-r="agr">Agregación</button><button data-r="aso">Asociación</button></div>
+      <h3 id="rl-h" style="font-size:24px;margin-top:14px"></h3>
+      <pre class="code c18 gap12" data-raw id="rl-code"></pre>
+      <p class="msg gap12" id="rl-msg" aria-live="polite" style="font-size:19px"></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: composición o agregación">
+  <p class="q mask"><span>Si se bota el Auto, ¿qué pasa con su Motor? ¿Y con los vehículos si se cierra el Garaje?</span></p>
+  <p class="body gap" data-a style="max-width:1050px;font-size:26px">La pregunta que decide el rombo: ¿la parte puede existir sin el todo?</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:56px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b>Rombo lleno ◆</b><span>composición: la parte vive y muere con el todo</span></div><div class="ok" data-rv-box><b>Rombo vacío ◇</b><span>agregación: la parte existe por su cuenta</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">Motor dentro de Auto: composición (es un miembro, muere con él). Vehiculo* en Garaje: agregación (los autos siguen existiendo).</span></div></div></div>
+</section>
+
+<!-- TEMA 4 -->
+<section class="slide chapter" data-title="Tema 4: Refactorización: mejora del código sin cambiar el comportamiento" data-topic="4">
+  <div class="chwrap"><div class="left">
+    <p class="hoja">PLANO J-4</p>
+    <h1 class="mask long"><span>Refactorización: mejora del código sin cambiar el comportamiento</span></h1>
+    <p class="lead" data-a>Remodelar sin mudanza: por dentro todo cambia de lugar, pero la casa hace lo mismo que antes.</p></div>
+    <div data-a style="align-self:center"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
+      <text x="20" y="26" font-size="18" font-weight="600">ANTES</text>
+      <rect class="stroke" x="20" y="38" width="400" height="140"/><path class="thin" d="M120 38 V100 L200 140 M260 178 V120 H330 M330 38 V80 M60 120 H170"/>
+      <text x="20" y="226" font-size="18" font-weight="600">DESPUÉS</text>
+      <rect class="stroke" x="20" y="238" width="400" height="140"/><path class="stroke" d="M150 238 V378 M290 238 V378 M150 308 H290"/>
+      <text x="85" y="314" font-size="18" text-anchor="middle">calcular</text><text x="220" y="280" font-size="18" text-anchor="middle">leer</text><text x="220" y="350" font-size="18" text-anchor="middle">validar</text><text x="355" y="314" font-size="18" text-anchor="middle">imprimir</text>
+      <path class="cota" d="M432 38 V178 M424 38 H440 M424 178 H440 M432 238 V378 M424 238 H440 M424 378 H440"/>
+    </svg><div style="margin:-226px 0 0 230px"><span class="sello anim">SALIDA IGUAL</span></div></div>
+  </div>
+  <div class="cajetin"></div>
+</section>
+
+<section class="slide" data-title="Remodelar paso a paso">
+  <h2 class="mask"><span>Tres remodelaciones, la misma salida</span></h2>
+  <div style="display:grid;grid-template-columns:760px 1fr;gap:22px;margin-top:14px">
+    <pre class="code c18" data-raw data-a id="rf-code"></pre>
+    <div data-a>
+      <div class="steps-b ops" id="rf-b" style="flex-direction:column;align-items:stretch"><button data-v="0">Original</button><button data-v="1">1. Renombrar</button><button data-v="2">2. Constantes con nombre</button><button data-v="3">3. Extraer funciones</button></div>
+      <div class="row gap12"><button class="go" id="rf-next">Siguiente paso</button></div>
+      <div class="term t18 gap12" id="rf-out">Final: 84.3
+Aprobado
+Final: 64.5
+No aprobado</div>
+      <div class="igual"><span class="sello sm" id="rf-sello">SALIDA IGUAL</span></div>
+      <p class="msg gap12" id="rf-msg" aria-live="polite" style="font-size:19px;min-height:110px"></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="La red de seguridad: comparar salidas">
+  <h2 class="mask"><span>Refactorizar sin red es adivinar</span></h2>
+  <div style="display:grid;grid-template-columns:470px 1fr;gap:26px;margin-top:18px">
+    <div data-a>
+      <p class="body" style="font-size:21px">Antes de tocar nada, guarde la salida del original. Después de cada paso, compare.</p>
+      <pre class="code c18 gap12" data-raw><span class="ln">./notas_v0 &gt; antes.txt</span><span class="ln">./notas_v3 &gt; despues.txt</span><span class="ln">diff antes.txt despues.txt</span></pre>
+      <div class="term t18" style="margin-top:8px"><span class="p">(diff no imprime nada: son idénticas)</span></div>
+      <p class="body gap12" style="font-size:20px">En el Laboratorio J el verificador de la página hace esa comparación por usted, línea por línea.</p>
+    </div>
+    <div data-tabs="rr1" data-a>
+      <div class="row"><button data-tab="rr1">Renombrar a medias</button><button data-tab="rr2">Extraer con otro tipo</button></div>
+      <div data-panel="rr1" style="margin-top:12px"><pre class="code c18">double nota = a * 0.3 + b * 0.3 + c * 0.4;
+cout &lt;&lt; "Final: " &lt;&lt; x &lt;&lt; endl;</pre>
+        <div class="term t18" style="margin-top:8px"><span class="e">error: 'x' was not declared in this scope</span></div>
+        <p class="body gap12" style="font-size:20px">Se cambió la declaración y no los usos. g++ avisa: es el error fácil.</p></div>
+      <div data-panel="rr2" hidden style="margin-top:12px"><pre class="code c18">int notaFinal(double p1, double p2, double examen) {
+    return p1 * PESO_PARCIAL + p2 * PESO_PARCIAL
+         + examen * PESO_FINAL;
+}</pre>
+        <div class="term t18 diffl" style="margin-top:8px">1c1
+<span class="e">&lt; Final: 84.3</span>
+---
+<span class="o">&gt; Final: 84.0</span>
+3c3
+<span class="e">&lt; Final: 64.5</span>
+---
+<span class="o">&gt; Final: 64.0</span></div>
+        <p class="body gap12" style="font-size:20px">Compila sin avisos, pero devuelve <code>int</code> y bota los decimales. Solo <code>diff</code> lo descubre: es el error peligroso.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TEMA 5 -->
+<section class="slide chapter" data-title="Tema 5: Principios de código limpio (DRY, KISS, YAGNI)" data-topic="5">
+  <div class="chwrap"><div class="left">
+    <p class="hoja">PLANO J-5</p>
+    <h1 class="mask"><span>Principios de código limpio (DRY, KISS, YAGNI)</span></h1>
+    <p class="lead" data-a>Tres reglas de obra: no repita, no complique, no construya cuartos que nadie pidió.</p></div>
+    <div data-a style="align-self:center"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
+      <g font-size="20">
+      <rect class="stroke" x="20" y="40" width="40" height="40"/><path class="stroke" d="M28 60 L38 72 L54 46" style="stroke-width:4"/><text x="80" y="58" font-weight="600">DRY</text><text x="80" y="84" font-size="18" class="cotat">Don't Repeat Yourself</text>
+      <rect class="stroke" x="20" y="160" width="40" height="40"/><path class="stroke" d="M28 180 L38 192 L54 166" style="stroke-width:4"/><text x="80" y="178" font-weight="600">KISS</text><text x="80" y="204" font-size="18" class="cotat">Keep It Simple</text>
+      <rect class="stroke" x="20" y="280" width="40" height="40"/><path class="stroke" d="M28 300 L38 312 L54 286" style="stroke-width:4"/><text x="80" y="298" font-weight="600">YAGNI</text><text x="80" y="324" font-size="18" class="cotat">You Aren't Gonna Need It</text>
+      </g><path class="thin" d="M20 120 H420 M20 240 H420 M20 360 H420" stroke-dasharray="6 6"/>
+    </svg></div>
+  </div>
+  <div class="cajetin"></div>
+</section>
+
+<section class="slide" data-title="DRY, KISS y YAGNI">
+  <h2 class="mask"><span>Tres reglas con su antes y después</span></h2>
+  <div data-tabs="k1" data-a style="margin-top:14px">
+    <div class="row"><button data-tab="k1">DRY: no se repita</button><button data-tab="k2">KISS: simple</button><button data-tab="k3">YAGNI: no lo va a necesitar</button></div>
+    <div data-panel="k1" style="margin-top:12px"><div class="ab">
+      <div><div class="hd"><span class="tag bad">ANTES</span><span class="lbl">la validación, dos veces</span></div><pre class="code c18">bool Cuenta::depositar(double m) {
+    if (m &lt;= 0 || m &gt; 10000) return false;
+    saldo += m;
+    return true;
+}
+bool Cuenta::retirar(double m) {
+    if (m &lt;= 0 || m &gt; 10000 || m &gt; saldo)
+        return false;
+    saldo -= m;
+    return true;
+}</pre>
+        <div class="term t18" style="margin-top:8px">antes:   10010
+despues: 10010</div></div>
+      <div><div class="hd"><span class="tag ok">DESPUÉS</span><span class="lbl">una regla, un lugar</span></div><pre class="code c18">const double LIMITE = 10000;
+bool montoValido(double m) {
+    return m &gt; 0 &amp;&amp; m &lt;= LIMITE;
+}
+bool Cuenta::depositar(double m) {
+    if (!montoValido(m)) return false;
+    saldo += m;
+    return true;
+}
+bool Cuenta::retirar(double m) {
+    if (!montoValido(m) || m &gt; saldo)
+        return false;
+    saldo -= m;
+    return true;
+}</pre></div></div></div>
+    <div data-panel="k2" hidden style="margin-top:12px"><div class="ab">
+      <div><div class="hd"><span class="tag bad">ANTES</span><span class="lbl">vueltas para decir sí o no</span></div><pre class="code c18">bool puedeVotarAntes(int edad) {
+    if (edad &gt;= 18) {
+        return true;
+    } else {
+        if (edad &lt; 18) {
+            return false;
+        }
+    }
+    return false;
+}</pre></div>
+      <div><div class="hd"><span class="tag ok">DESPUÉS</span><span class="lbl">la condición ya es el bool</span></div><pre class="code c18">const int EDAD_VOTO = 18;
+bool puedeVotar(int edad) {
+    return edad &gt;= EDAD_VOTO;
+}</pre>
+        <div class="term t18" style="margin-top:10px">edad 17: 0 0
+edad 18: 1 1
+edad 30: 1 1</div>
+        <p class="msg gap12" style="font-size:20px">Mismas respuestas con una línea. Lo simple se lee, se prueba y se arregla más rápido.</p></div></div></div>
+    <div data-panel="k3" hidden style="margin-top:12px"><div class="ab">
+      <div><div class="hd"><span class="tag bad">ANTES</span><span class="lbl">cuartos «por si acaso»</span></div><pre class="code c18">class Cuenta {
+    double saldo = 0;
+    string monedaExtranjera;  // por si acaso
+    double tasaCripto = 0;    // sin pedido
+public:
+    void depositar(double m) { saldo += m; }
+    void exportarXML();       // nadie lo usa
+    void convertirAYenes();   // tampoco
+};</pre></div>
+      <div><div class="hd"><span class="tag ok">DESPUÉS</span><span class="lbl">solo lo que se pidió</span></div><pre class="code c18">class Cuenta {
+    double saldo = 0;
+public:
+    void depositar(double m) { saldo += m; }
+    double consultarSaldo() const;
+};</pre>
+        <p class="msg gap12" style="font-size:20px">Cada línea de más hay que leerla, probarla y mantenerla. Si mañana se pide, se añade mañana.</p></div></div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="¿Qué principio falta?">
+  <h2 class="mask"><span>¿DRY, KISS o YAGNI?</span></h2>
+  <p class="body sub" data-a style="font-size:22px">Seis inspecciones de obra. Escoja el principio que cada una rompe. <b id="cl-sc" class="mono"></b></p>
+  <div class="cards" id="cl" data-a style="margin-top:14px"></div>
+</section>
+
+<!-- TEMA 6 -->
+<section class="slide chapter" data-title="Tema 6: Principios de diseño de software" data-topic="6">
+  <div class="chwrap"><div class="left">
+    <p class="hoja">PLANO J-6</p>
+    <h1 class="mask"><span>Principios de diseño de software</span></h1>
+    <p class="lead" data-a>La síntesis: cuartos con un solo uso, pocas puertas entre ellos y piezas que se cambian sin tumbar paredes.</p></div>
+    <div data-a style="align-self:center"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
+      <rect class="stroke" x="20" y="30" width="400" height="300"/><path class="stroke" d="M220 30 V140 M220 180 V330 M20 180 H90 M130 180 H310 M350 180 H420"/>
+      <text x="120" y="110" font-size="19" text-anchor="middle">Orden</text><text x="320" y="110" font-size="19" text-anchor="middle">Recibo</text>
+      <text x="120" y="262" font-size="19" text-anchor="middle">Caja</text><text x="320" y="262" font-size="19" text-anchor="middle">Almacen</text>
+      <path class="cota" d="M20 360 H420 M20 352 V368 M420 352 V368"/><text class="cotat" x="220" y="392" font-size="18" text-anchor="middle">un uso por cuarto, pocas puertas</text>
+    </svg></div>
+  </div>
+  <div class="cajetin"></div>
+</section>
+
+<section class="slide" data-title="Cohesión y acoplamiento">
+  <h2 class="mask"><span>Alta cohesión, bajo acoplamiento</span></h2>
+  <div style="display:grid;grid-template-columns:640px 1fr;gap:24px;margin-top:14px">
+    <div data-a>
+      <div class="row" id="ca-d"><button data-d="A">Diseño A: todo mezclado</button><button data-d="B">Diseño B: separado</button></div>
+      <div class="plano gap12" style="padding:8px"><svg class="bp" id="ca-svg" viewBox="0 0 620 400" width="620" height="400" role="img" aria-label="Módulos y dependencias"></svg></div>
+    </div>
+    <div data-a>
+      <div class="lbl">Pedido de cambio:</div>
+      <div class="ops" id="ca-c" style="flex-direction:column;align-items:stretch;margin-top:6px"><button data-c="arch">Cambiar el formato del archivo</button><button data-c="ivu">Cambiar el cálculo del IVU</button><button data-c="rec">Cambiar el diseño del recibo</button></div>
+      <div class="metric gap12"><div class="res"><small>Módulos que se tocan</small><b id="ca-n">0</b></div><div class="res"><small>Dependencias</small><b id="ca-dep">0</b></div></div>
+      <p class="msg gap12" id="ca-msg" aria-live="polite" style="font-size:19px;min-height:140px"></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Composición sobre herencia">
+  <h2 class="mask"><span>Composición sobre herencia</span></h2>
+  <div style="display:grid;grid-template-columns:640px 1fr;gap:24px;margin-top:14px">
+    <div data-a><pre class="code c18">class Vehiculo {
+    string nombre;
+    const Motor* motor;             // TIENE un motor
+public:
+    Vehiculo(const string&amp; n, const Motor&amp; m)
+        : nombre(n), motor(&amp;m) {}
+    void cambiarMotor(const Motor&amp; m) { motor = &amp;m; }
+    void describir() const {
+        cout &lt;&lt; nombre &lt;&lt; " con motor "
+             &lt;&lt; motor-&gt;tipo() &lt;&lt; endl;
+    }
+};</pre>
+      <pre class="code c18" style="margin-top:8px">    Vehiculo guagua("Guagua", gas);
+    guagua.describir();
+    guagua.cambiarMotor(elec);      // sin clase nueva
+    guagua.describir();</pre></div>
+    <div data-a>
+      <div class="term t18">Guagua con motor gasolina
+Guagua con motor electrico</div>
+      <p class="body gap12" style="font-size:20px">Con herencia, cada combinación es una clase: <code>GuaguaGasolina</code>, <code>GuaguaElectrica</code>… Con composición, el vehículo <b>tiene</b> un motor y se le cambia.</p>
+      <div class="sim gap12">
+        <label class="lbl" for="cp-v">Tipos de vehículo: <b class="mono" id="cp-vv">3</b></label><input type="range" id="cp-v" min="1" max="6" value="3">
+        <label class="lbl" for="cp-m" style="display:block;margin-top:6px">Tipos de motor: <b class="mono" id="cp-mv">2</b></label><input type="range" id="cp-m" min="1" max="5" value="2">
+        <div class="bars gap12"><span>Herencia</span><div><div class="bar h" id="cp-bh"></div></div><b id="cp-h">6</b><span>Composición</span><div><div class="bar" id="cp-bc"></div></div><b id="cp-c">5</b></div>
+      </div>
+      <p class="msg gap12" style="font-size:19px">La herencia sigue siendo correcta para «es un» (Auto es un Vehiculo). Para «tiene un» o «usa un», componga.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: el empleado que estudia">
+  <p class="q mask"><span>Marta trabaja en la Biblioteca y estudia en el recinto. ¿Cómo se modela?</span></p>
+  <p class="body gap" data-a style="max-width:1050px;font-size:26px">Piensen en qué pasa el día que se gradúa y sigue trabajando.</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:56px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b>Herencia</b><span>class EmpleadoEstudiante : public Empleado, public Estudiante</span></div><div class="ok" data-rv-box><b>Composición</b><span>una Persona que tiene roles</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">Composición: una Persona con una lista de roles. Al graduarse se le quita un rol; con herencia habría que crear otro objeto de otra clase.</span></div></div></div>
+</section>
+
+<section class="slide" data-title="Lo esencial de la unidad">
+  <h2 class="mask"><span>Lo que se lleva de esta unidad</span></h2>
+  <div class="dir" data-a>
+    <div><h3>Patrones</h3><p>Planos probados con nombre. Singleton con cuidado; Strategy y Observer separan lo que cambia.</p></div>
+    <div><h3>SOLID</h3><p>Una razón para cambiar; extender sin modificar; hijos sustituibles; interfaces pequeñas; depender de abstracciones.</p></div>
+    <div><h3>UML</h3><p>Tres compartimientos, <code>+ - #</code>. Triángulo: herencia. Rombo lleno: composición. Rombo vacío: agregación.</p></div>
+    <div><h3>Refactorizar</h3><p>Renombrar, nombrar constantes, extraer funciones. Pasos pequeños y la salida comparada en cada uno.</p></div>
+    <div><h3>Código limpio</h3><p>DRY: un lugar por regla. KISS: lo simple. YAGNI: solo lo que se pidió.</p></div>
+    <div><h3>Diseño</h3><p>Alta cohesión, bajo acoplamiento, responsabilidades separadas y composición antes que herencia.</p></div>
+  </div>
+</section>
+
+<!-- LABORATORIO -->
+<section class="slide chapter" data-title="Laboratorio J: remodelación sin mudanza" data-topic="7">
+  <div class="chwrap"><div class="left">
+    <p class="hoja">PLANO J-LAB</p>
+    <h1 class="mask"><span>Laboratorio&nbsp;J</span></h1>
+    <p class="lead" data-a>Remodelación sin mudanza: la caja de la cafetería funciona, pero es espagueti. Usted la remodela y la salida no puede cambiar ni un centavo.</p></div>
+    <div data-a style="align-self:center"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
+      <rect class="stroke" x="20" y="30" width="400" height="300"/><rect class="stroke" x="40" y="50" width="200" height="40"/><text x="140" y="77" font-size="19" text-anchor="middle">CAJA</text>
+      <circle class="stroke" cx="110" cy="200" r="34"/><circle class="stroke" cx="250" cy="200" r="34"/><circle class="stroke" cx="180" cy="285" r="30"/>
+      <rect class="stroke" x="320" y="70" width="80" height="160"/><text x="360" y="155" font-size="18" text-anchor="middle">MENU</text>
+      <path class="fillw" d="M300 330 h60 v-6 h-60 z" opacity=".9"/>
+      <path class="cota" d="M20 360 H420 M20 352 V368 M420 352 V368"/><text class="cotat" x="220" y="392" font-size="18" text-anchor="middle">misma caja, otra distribución</text>
+    </svg><div style="margin:-200px 0 0 150px"><span class="sello anim">EN REMODELACIÓN</span></div></div>
+  </div>
+  <div class="cajetin"></div>
+</section>
+
+<section class="slide" data-title="Laboratorio J: la misión">
+  <h2 class="mask"><span>La misión: remodelar en siete partes</span></h2>
+  <p class="body sub" data-a style="max-width:1136px;font-size:20px">La PARTE A es el original (no se toca). En la PARTE B, las clases <code>Orden</code> y <code>Caja</code> ya están declaradas y el menú ya funciona: usted completa cada <code>TODO</code>.</p>
+  <ol class="todo" data-a style="margin-top:12px">
+    <li><b class="nm">1</b><span>Constantes con nombre (<code>IVU</code>, descuentos) y la tabla <code>MENU</code>.</span></li>
+    <li><b class="nm">2</b><span><code>porcentajeDescuento</code> y <code>nombreCliente</code>: el tipo de cliente en un solo lugar.</span></li>
+    <li><b class="nm">3</b><span><code>Orden::agregar</code> y <code>Orden::subtotal</code>.</span></li>
+    <li><b class="nm">4</b><span><code>descuento</code>, <code>ivu</code> y <code>total</code>, en el mismo orden de cuentas que el original.</span></li>
+    <li><b class="nm">5</b><span><code>imprimirLinea</code> e <code>imprimirRecibo</code>: imprimir, sin calcular.</span></li>
+    <li><b class="nm">6</b><span><code>Caja::registrar</code>: la cuenta del día.</span></li>
+    <li><b class="nm">7</b><span><code>Caja::mostrarResumen</code>.</span></li>
+    <li><b class="nm">✎</b><span>El diagrama UML de su diseño (vea la rúbrica).</span></li>
+  </ol>
+  <p class="body" data-a style="margin-top:10px;font-size:20px">Al ejecutar, escriba <b>1</b> para correr el original o <b>2</b> para correr el suyo. Con las mismas entradas, las dos versiones deben imprimir exactamente lo mismo.</p>
+  <div class="row" data-a style="margin-top:10px;gap:14px;align-items:stretch;flex-wrap:nowrap">
+    <a class="dl" href="laboratorios/LabJ_Cafeteria.cpp" download>Descargar LabJ_Cafeteria.cpp</a>
+    <pre class="code c18" data-raw style="flex:1;padding:12px 0"><span class="ln">g++ -std=c++17 -Wall -Wextra -o cafeteria LabJ_Cafeteria.cpp</span></pre>
+  </div>
+</section>
+
+<section class="slide" data-title="Laboratorio J: las pruebas">
+  <h2 class="mask"><span>Cuatro pruebas: la salida debe ser idéntica</span></h2>
+  <div style="display:grid;grid-template-columns:720px 1fr;gap:24px;margin-top:14px">
+    <div class="cases" data-tabs="c1" data-a>
+      <div class="row"><button data-tab="c1" id="tb-c1">Caso 1</button><button data-tab="c2" id="tb-c2">Caso 2</button><button data-tab="c3" id="tb-c3">Caso 3</button><button data-tab="c4" id="tb-c4">Caso 4</button></div>
+      <div id="cases-panels" style="margin-top:10px"></div>
+    </div>
+    <div data-a>
+      <label for="vf-in" style="font-size:19px;font-weight:600;display:block;margin-bottom:6px">Corra la versión 2 con el <span id="vf-name">Caso 1</span> y pegue aquí todo lo que imprimió</label>
+      <textarea class="paste" id="vf-in" spellcheck="false" placeholder="Copie todo el texto de la terminal y péguelo aquí"></textarea>
+      <div class="row" style="margin-top:8px"><button class="go" id="vf-go">Comprobar</button><span class="score" id="vf-score" aria-live="polite"></span></div>
+      <ul class="checks" id="vf-checks" aria-label="Resultado de la comprobación"></ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Laboratorio J: rúbrica y entrega">
+  <h2 class="mask"><span>Rúbrica y entrega</span></h2>
+  <div style="display:grid;grid-template-columns:500px 1fr;gap:34px;margin-top:14px;align-items:start">
+    <table class="t rub" data-a>
+      <tr><th>Criterio</th><th>Puntos</th></tr>
+      <tr><td>1. Constantes y tabla MENU</td><td>10</td></tr>
+      <tr><td>2. Tipo de cliente en un lugar</td><td>10</td></tr>
+      <tr><td>3. agregar y subtotal</td><td>10</td></tr>
+      <tr><td>4. descuento, ivu y total</td><td>10</td></tr>
+      <tr><td>5. imprimirLinea e imprimirRecibo</td><td>15</td></tr>
+      <tr><td>6. registrar</td><td>5</td></tr>
+      <tr><td>7. mostrarResumen</td><td>5</td></tr>
+      <tr><td>Diagrama UML del diseño</td><td>15</td></tr>
+      <tr><td>Compila sin avisos con -Wall -Wextra</td><td>10</td></tr>
+      <tr><td>Nombre, fecha y sangría correcta</td><td>10</td></tr>
+      <tr><th>Total</th><th>100</th></tr>
+    </table>
+    <div data-a>
+      <h3 style="font-size:24px">El diagrama UML</h3>
+      <p class="body" style="font-size:19px;margin-top:4px;line-height:1.38">A mano (foto legible) o en una herramienta de diagramas. Debe tener <code>Orden</code>, <code>Caja</code> y <code>Articulo</code> con sus tres compartimientos, cada miembro con <code>+</code> o <code>-</code> y su tipo, y las relaciones: <code>Caja</code> usa <code>Orden</code>, <code>Orden</code> usa <code>Articulo</code> del <code>MENU</code>.</p>
+      <h3 style="font-size:24px;margin-top:12px">Qué se entrega</h3>
+      <p class="body" style="font-size:19px;margin-top:4px;line-height:1.38">Por OrbundSIS, <code>Apellido_Nombre_TESI2105_LabJ.zip</code> con <code>LabJ_Cafeteria.cpp</code>, el diagrama (PDF o imagen) y una captura de cada prueba. La fecha de entrega se anuncia en OrbundSIS.</p>
+      <div class="tone" style="margin-top:12px;padding:12px 18px"><b style="font-size:21px">Reto (+10): Strategy</b><p style="font-size:19px;margin-top:4px;line-height:1.38">Cambie los <code>if</code> del tipo de cliente por una interfaz <code>PoliticaDescuento</code> con <code>DescuentoEstudiante</code>, <code>DescuentoEmpleado</code> y <code>SinDescuento</code>; <code>Orden</code> guarda un puntero a la suya. Para el reto sí puede cambiar <code>Orden</code>. Las cuatro pruebas deben seguir idénticas.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Referencias">
+  <h2 class="mask"><span>Referencias</span></h2>
+  <div class="refs gap20" data-a style="max-width:1120px">
+    <p>cppreference.com. (s. f.). <i>Abstract class</i>. https://en.cppreference.com/w/cpp/language/abstract_class</p>
+    <p>cppreference.com. (s. f.). <i>Function definition: Deleted functions</i>. https://en.cppreference.com/w/cpp/language/function</p>
+    <p>cppreference.com. (s. f.). <i>override specifier</i>. https://en.cppreference.com/w/cpp/language/override</p>
+    <p>cppreference.com. (s. f.). <i>Storage class specifiers: Static local variables</i>. https://en.cppreference.com/w/cpp/language/storage_duration</p>
+    <p>cppreference.com. (s. f.). <i>virtual function specifier</i>. https://en.cppreference.com/w/cpp/language/virtual</p>
+    <p>Gamma, E., Helm, R., Johnson, R., &amp; Vlissides, J. (1994). <i>Design patterns: Elements of reusable object-oriented software</i>. Addison-Wesley.</p>
+    <p>Kumar, A. (2024). <i>Hands-on object-oriented programming: Mastering OOP features for real-world software systems development</i>. Apress.</p>
+    <p>Lutz, M. (2025). <i>Learning Python: Powerful object-oriented programming</i>. O’Reilly Media.</p>
+  </div>
+  <p class="body gap16" data-a style="font-size:19px">Kumar (2024) y Lutz (2025) son los textos oficiales del prontuario. Los programas, salidas y mensajes se verificaron con g++ 13.3 en Linux.</p>
+</section>
+
+</div></div>
+
+<script>
+(function(){
+function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+window.__CASES={"c1": {"titulo": "Una orden de estudiante", "input": ["2", "1", "1", "2", "3", "1", "0", "1", "2", "0"], "out": ["----- RECIBO -----", "Cliente: estudiante", "2 x Sandwich de pavo: $6.50", "1 x Jugo de china: $2.00", "Subtotal: $8.50", "Descuento: -$0.85", "IVU: $0.88", "Total: $8.53", "…", "----- RESUMEN DEL DIA -----", "Ordenes: 1", "Descuentos: $0.85", "IVU cobrado: $0.88", "Ventas: $8.53", "…", "Caja cerrada"], "E": [">> Version remodelada", "===== CAJA DE LA CAFETERIA =====", "----- RECIBO -----", "Cliente: estudiante", "2 x Sandwich de pavo: $6.50", "1 x Jugo de china: $2.00", "Subtotal: $8.50", "Descuento: -$0.85", "IVU: $0.88", "Total: $8.53", "===== CAJA DE LA CAFETERIA =====", "----- RESUMEN DEL DIA -----", "Ordenes: 1", "Descuentos: $0.85", "IVU cobrado: $0.88", "Ventas: $8.53", "===== CAJA DE LA CAFETERIA =====", "Caja cerrada"]}, "c2": {"titulo": "Empleado, visitante y resumen", "input": ["2", "1", "2", "3", "4", "2", "4", "1", "0", "2", "1", "3", "2", "1", "1", "0", "3", "2", "0"], "out": ["----- RECIBO -----", "Cliente: empleado", "3 x Empanadilla: $5.25", "2 x Cafe con leche: $2.50", "1 x Cafe con leche: $1.25", "Subtotal: $9.00", "Descuento: -$1.35", "IVU: $0.88", "Total: $8.53", "…", "----- RECIBO -----", "Cliente: visitante", "2 x Jugo de china: $4.00", "1 x Sandwich de pavo: $3.25", "Subtotal: $7.25", "IVU: $0.83", "Total: $8.08", "…", "----- RESUMEN DEL DIA -----", "Ordenes: 2", "Descuentos: $1.35", "IVU cobrado: $1.71", "Ventas: $16.61", "…", "Caja cerrada"], "E": [">> Version remodelada", "===== CAJA DE LA CAFETERIA =====", "----- RECIBO -----", "Cliente: empleado", "3 x Empanadilla: $5.25", "2 x Cafe con leche: $2.50", "1 x Cafe con leche: $1.25", "Subtotal: $9.00", "Descuento: -$1.35", "IVU: $0.88", "Total: $8.53", "===== CAJA DE LA CAFETERIA =====", "----- RECIBO -----", "Cliente: visitante", "2 x Jugo de china: $4.00", "1 x Sandwich de pavo: $3.25", "Subtotal: $7.25", "IVU: $0.83", "Total: $8.08", "===== CAJA DE LA CAFETERIA =====", "----- RESUMEN DEL DIA -----", "Ordenes: 2", "Descuentos: $1.35", "IVU cobrado: $1.71", "Ventas: $16.61", "===== CAJA DE LA CAFETERIA =====", "Caja cerrada"]}, "c3": {"titulo": "Entradas que no se cobran", "input": ["2", "2", "1", "7", "2", "0", "0", "5", "0"], "out": ["----- RESUMEN DEL DIA -----", "Ordenes: 0", "Descuentos: $0.00", "IVU cobrado: $0.00", "Ventas: $0.00", "…", "Codigo invalido", "Cantidad invalida", "Orden vacia: no se cobra", "…", "Opcion invalida", "…", "Caja cerrada"], "E": [">> Version remodelada", "===== CAJA DE LA CAFETERIA =====", "----- RESUMEN DEL DIA -----", "Ordenes: 0", "Descuentos: $0.00", "IVU cobrado: $0.00", "Ventas: $0.00", "===== CAJA DE LA CAFETERIA =====", "Codigo invalido", "Cantidad invalida", "Orden vacia: no se cobra", "===== CAJA DE LA CAFETERIA =====", "Opcion invalida", "===== CAJA DE LA CAFETERIA =====", "Caja cerrada"]}, "c4": {"titulo": "Cliente desconocido", "input": ["2", "1", "4", "3", "0", "9", "1", "1", "1", "2", "1", "3", "1", "4", "2", "0", "1", "2", "0"], "out": ["----- RECIBO -----", "Cliente: visitante", "3 x Cafe con leche: $3.75", "Subtotal: $3.75", "IVU: $0.43", "Total: $4.18", "…", "----- RECIBO -----", "Cliente: estudiante", "1 x Sandwich de pavo: $3.25", "1 x Empanadilla: $1.75", "1 x Jugo de china: $2.00", "2 x Cafe con leche: $2.50", "Subtotal: $9.50", "Descuento: -$0.95", "IVU: $0.98", "Total: $9.53", "…", "----- RESUMEN DEL DIA -----", "Ordenes: 2", "Descuentos: $0.95", "IVU cobrado: $1.41", "Ventas: $13.71", "…", "Caja cerrada"], "E": [">> Version remodelada", "===== CAJA DE LA CAFETERIA =====", "----- RECIBO -----", "Cliente: visitante", "3 x Cafe con leche: $3.75", "Subtotal: $3.75", "IVU: $0.43", "Total: $4.18", "===== CAJA DE LA CAFETERIA =====", "----- RECIBO -----", "Cliente: estudiante", "1 x Sandwich de pavo: $3.25", "1 x Empanadilla: $1.75", "1 x Jugo de china: $2.00", "2 x Cafe con leche: $2.50", "Subtotal: $9.50", "Descuento: -$0.95", "IVU: $0.98", "Total: $9.53", "===== CAJA DE LA CAFETERIA =====", "----- RESUMEN DEL DIA -----", "Ordenes: 2", "Descuentos: $0.95", "IVU cobrado: $1.41", "Ventas: $13.71", "===== CAJA DE LA CAFETERIA =====", "Caja cerrada"]}};
+window.__CODE={"um_cuenta": "class Cuenta {\nprivate:\n    int numero;\n    string socio;\n    double saldo = 0.0;\n    static int totalCuentas;\npublic:\n    Cuenta(int n, const string& s);\n    bool depositar(double monto);\n    bool retirar(double monto);\n    double consultarSaldo() const;\n};", "um_veh": "class Vehiculo {\nprotected:\n    string tablilla;\n    int anio;\npublic:\n    Vehiculo(const string& t, int a);\n    virtual double peaje() const = 0;\n    string obtenerTablilla() const;\n    virtual ~Vehiculo() = default;\n};", "rl_her": "class Auto : public Vehiculo {\n    ...\n};\nclass Motocicleta : public Vehiculo {\n    ...\n};", "rl_com": "class Auto : public Vehiculo {\n    Motor motor;\n    ...\n};", "rl_agr": "class Garaje {\n    Vehiculo* lugares[10];\n    int ocupados = 0;\n    ...\n};", "rl_aso": "class Conductor {\n    ...\n    void conducir(Vehiculo& v) {\n        ...\n    }\n};", "rf0": "int main() {\n    cout << fixed << setprecision(1);\n    double a = 85, b = 92, c = 78;\n    double x = a * 0.3 + b * 0.3 + c * 0.4;\n    cout << \"Final: \" << x << endl;\n    if (x >= 70) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    double y = 65 * 0.3 + 70 * 0.3 + 60 * 0.4;\n    cout << \"Final: \" << y << endl;\n    if (y >= 70) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    return 0;\n}", "rf1": "int main() {\n    cout << fixed << setprecision(1);\n    double parcial1 = 85, parcial2 = 92, examen = 78;\n    double nota = parcial1 * 0.3 + parcial2 * 0.3\n                + examen * 0.4;\n    cout << \"Final: \" << nota << endl;\n    if (nota >= 70) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    double nota2 = 65 * 0.3 + 70 * 0.3 + 60 * 0.4;\n    cout << \"Final: \" << nota2 << endl;\n    if (nota2 >= 70) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    return 0;\n}", "rf2": "const double PESO_PARCIAL = 0.3;\nconst double PESO_FINAL   = 0.4;\nconst double MINIMO       = 70;\nint main() {\n    cout << fixed << setprecision(1);\n    double parcial1 = 85, parcial2 = 92, examen = 78;\n    double nota = parcial1 * PESO_PARCIAL + parcial2 * PESO_PARCIAL\n                + examen * PESO_FINAL;\n    cout << \"Final: \" << nota << endl;\n    if (nota >= MINIMO) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    double nota2 = 65 * PESO_PARCIAL + 70 * PESO_PARCIAL\n                 + 60 * PESO_FINAL;\n    cout << \"Final: \" << nota2 << endl;\n    if (nota2 >= MINIMO) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    return 0;\n}", "rf3": "const double PESO_PARCIAL = 0.3;\nconst double PESO_FINAL   = 0.4;\nconst double MINIMO       = 70;\ndouble notaFinal(double p1, double p2, double examen) {\n    return p1 * PESO_PARCIAL + p2 * PESO_PARCIAL\n         + examen * PESO_FINAL;\n}\nvoid informar(double nota) {\n    cout << \"Final: \" << nota << endl;\n    if (nota >= MINIMO) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n}\nint main() {\n    cout << fixed << setprecision(1);\n    informar(notaFinal(85, 92, 78));\n    informar(notaFinal(65, 70, 60));\n    return 0;\n}", "pc_o": "if (c[i] == 4) {\n    cout << ... << q[i] * 1.25 << endl;\n    s = s + q[i] * 1.25;\n}\n...\nif (t == 1) d = s * 0.10;\nif (t == 2) d = s * 0.15;\n...\ndouble i2 = (s - d) * 0.115;\n...\niv = iv + (s - d) * 0.115;\nif (t == 1) ds = ds + s * 0.10;\nif (t == 2) ds = ds + s * 0.15;", "pc_r": "const double IVU                  = 0.115;\nconst double DESCUENTO_ESTUDIANTE = 0.10;\nconst double DESCUENTO_EMPLEADO   = 0.15;\n...\nconst Articulo MENU[CANT_ARTICULOS] = {\n    ...\n    {\"Cafe con leche\",   1.25}\n};"};
+var C=window.__CASES,ph='';
+Object.keys(C).forEach(function(k){var c=C[k];
+  ph+='<div data-panel="'+k+'"'+(k==='c1'?'':' hidden')+'><p style="font-size:19px;font-weight:600">'+esc(c.titulo)+'. Escriba, una por línea:</p><div class="typein">'+c.input.map(esc).join('  ⏎  ')+'</div><p style="font-size:19px;font-weight:600;margin-top:8px">La versión original imprime, entre los menús:</p><div class="term">'+esc(c.out.join('\n'))+'</div></div>'});
+document.getElementById('cases-panels').innerHTML=ph;
+})();
+</script>
+<script src="assets/deck.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id)};
+var CODE=window.__CODE;
+function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function each(sel,fn){[].forEach.call(typeof sel==='string'?document.querySelectorAll(sel):sel,fn)}
+function press(sel,fn){each(sel,function(b){b.setAttribute('aria-pressed',fn(b)?'true':'false')})}
+function setCode(pre,text){pre.textContent=text;Deck.hl(pre);return pre.querySelectorAll('.ln')}
+function restamp(el){if(!el)return;el.classList.remove('again');void el.offsetWidth;el.classList.add('again')}
+var SVGNS='http://www.w3.org/2000/svg';
+
+/* ---------- cajetín de los capítulos ---------- */
+var CJ=['Patrones','SOLID','UML','Refactorizar','Código limpio','Principios','Laboratorio'];
+each('[data-topic]',function(sl){var t=+sl.dataset.topic,c=sl.querySelector('.cajetin');
+  if(c)c.innerHTML=CJ.map(function(w,i){return '<span class="'+(i+1===t?'on':'')+'"><small>'+(i<6?'J-'+(i+1):'J-LAB')+'</small>'+w+'</span>'}).join('')});
+/* columnas de SOLID */
+(function(){var g=$('cols'),h='',L='SOLID';for(var i=0;i<5;i++){var x=38+i*78;h+='<rect class="stroke" x="'+x+'" y="136" width="54" height="182"/><text x="'+(x+27)+'" y="240" font-size="30" font-weight="600" text-anchor="middle">'+L[i]+'</text>'}g.innerHTML=h})();
+
+/* ---------- portada: tres hojas ---------- */
+var PT=[
+ '<text x="16" y="28" font-size="18" class="cotat">HOJA 1 · LA CASA</text><rect class="stroke" x="20" y="44" width="400" height="280"/><path class="stroke" d="M200 44 V150 M200 200 V324 M20 190 H130 M170 190 H420 M300 190 V324"/><text x="110" y="122" font-size="19" text-anchor="middle">cocina</text><text x="310" y="122" font-size="19" text-anchor="middle">sala</text><text x="110" y="262" font-size="19" text-anchor="middle">cuarto</text><text x="250" y="262" font-size="19" text-anchor="middle">baño</text><text x="362" y="262" font-size="19" text-anchor="middle">patio</text><path class="cota" d="M20 352 H420 M20 344 V360 M420 344 V360"/><text class="cotat" x="220" y="388" font-size="18" text-anchor="middle">cada cuarto, un uso</text>',
+ '<text x="16" y="28" font-size="18" class="cotat">HOJA 2 · LA CLASE</text><rect class="stroke" x="40" y="44" width="360" height="280"/><path class="stroke" d="M40 96 H400 M40 196 H400"/><text x="220" y="78" font-size="22" font-weight="600" text-anchor="middle">Orden</text><text x="58" y="128" font-size="19">- lineas: int</text><text x="58" y="158" font-size="19">- tipoCliente: int</text><text x="58" y="228" font-size="19">+ agregar(c: int, n: int)</text><text x="58" y="258" font-size="19">+ subtotal(): double</text><text x="58" y="288" font-size="19">+ total(): double</text><path class="cota" d="M40 352 H400 M40 344 V360 M400 344 V360"/><text class="cotat" x="220" y="388" font-size="18" text-anchor="middle">nombre · datos · métodos</text>',
+ '<text x="16" y="28" font-size="18" class="cotat">HOJA 3 · EL PATRÓN</text><rect class="stroke" x="140" y="54" width="160" height="50"/><text x="220" y="86" font-size="20" text-anchor="middle" font-style="italic">Observador</text><rect class="stroke" x="40" y="230" width="150" height="50"/><text x="115" y="262" font-size="19" text-anchor="middle">AvisoSMS</text><rect class="stroke" x="250" y="230" width="150" height="50"/><text x="325" y="262" font-size="19" text-anchor="middle">Auditoria</text><path class="stroke" d="M115 230 V180 H325 V230 M220 180 V124"/><path d="M220 104 L208 124 L232 124 Z" fill="#123F6E" stroke="#F1F6FC" stroke-width="2.5"/><path class="cota" d="M40 352 H400 M40 344 V360 M400 344 V360"/><text class="cotat" x="220" y="388" font-size="18" text-anchor="middle">un plano probado</text>'];
+function ptShow(i){$('pt-svg').innerHTML=PT[i];press('#pt-b button',function(b){return +b.dataset.i===i})}
+each('#pt-b button',function(b){b.onclick=function(){ptShow(+b.dataset.i)}});ptShow(1);
+
+/* ---------- pedido de cambio ---------- */
+var PC={ivu:{o:[8,10],r:[0],m:'El 0.115 aparece dos veces en el original: en el recibo y en el resumen. Si se cambia uno solo, el resumen del día deja de cuadrar con los recibos.'},
+ est:{o:[5,11],r:[1],m:'El 10% del estudiante está escrito dos veces. Olvidar uno no da error: da un resumen con descuentos que no se dieron.'},
+ cafe:{o:[1,2],r:[8],m:'El precio del café está en la línea que imprime y en la que suma. En el remodelado, la tabla MENU es el único lugar.'}};
+var pcO=setCode($('pc-o'),CODE.pc_o),pcR=setCode($('pc-r'),CODE.pc_r);
+function pcShow(k){var p=PC[k];each(pcO,function(l,i){l.classList.toggle('cur',p.o.indexOf(i)>=0)});each(pcR,function(l,i){l.classList.toggle('cur',p.r.indexOf(i)>=0)});
+  $('pc-no').textContent=p.o.length;$('pc-nr').textContent=p.r.length;$('pc-msg').textContent=p.m;press('#pc-b button',function(b){return b.dataset.k===k})}
+each('#pc-b button',function(b){b.onclick=function(){pcShow(b.dataset.k)}});pcShow('ivu');
+
+/* ---------- familias de patrones ---------- */
+var PF={sing:['CREACIÓN','Singleton','Hace falta exactamente un objeto de una clase, por ejemplo la configuración del programa.','Constructor privado y una función static que siempre devuelve el mismo objeto.','Fácil de usar desde cualquier parte… y por eso mismo, fácil de abusar: es una global.'],
+ fact:['CREACIÓN','Factory','El programa no debe saber qué clase concreta crear (TarifaFija o TarifaPorHora).','Una función decide qué objeto crear y devuelve un puntero a la interfaz.','Las clases nuevas se añaden en un solo lugar: la fábrica.'],
+ adap:['ESTRUCTURA','Adapter','Una clase útil tiene una interfaz distinta a la que el programa espera.','Una clase intermedia traduce las llamadas, como un adaptador de enchufe.','Se reutiliza código viejo sin modificarlo.'],
+ comp:['ESTRUCTURA','Composite','Hay partes que contienen otras partes: un menú con submenús, una carpeta con carpetas.','La parte y el grupo comparten la misma interfaz.','El programa trata igual un objeto que un grupo de objetos.'],
+ strat:['CONDUCTA','Strategy','Un cálculo tiene varias versiones y se escoge una mientras el programa corre.','Cada versión es una clase con la misma interfaz; el objeto guarda un puntero a la que use.','Versiones nuevas sin tocar la clase que las usa.'],
+ obs:['CONDUCTA','Observer','Varios objetos necesitan enterarse cuando otro cambia.','El que cambia guarda una lista de observadores y les avisa a todos.','El que avisa no sabe qué hace cada uno con el aviso.']};
+function pfShow(k){var p=PF[k];$('pf-fam').textContent='FAMILIA: '+p[0];$('pf-n').textContent=p[1];$('pf-p').textContent=p[2];$('pf-s').textContent=p[3];$('pf-c').textContent=p[4];
+  press('#pf-b button',function(b){return b.dataset.p===k});restamp($('pf-sello'))}
+each('#pf-b button',function(b){b.onclick=function(){pfShow(b.dataset.p)}});$('pf-sello').classList.add('anim');pfShow('strat');
+
+/* ---------- Strategy ---------- */
+var ST={hora:{n:'TarifaPorHora',f:function(h){return 1.5*h},m:'TarifaPorHora: PRECIO_HORA por cada hora.'},
+ fija:{n:'TarifaFija',f:function(){return 5},m:'TarifaFija: PRECIO_DIA sin importar las horas. Estacionamiento es la misma clase; solo cambió el objeto que tiene enchufado.'},
+ noche:{n:'TarifaNocturna',f:function(){return 3},m:'Una estrategia nueva es una clase nueva: class TarifaNocturna : public Tarifa, con cobrar() que devuelve PRECIO_NOCHE (3.00). Estacionamiento no se tocó.'}},stT='hora';
+function stDraw(){var h=+$('st-h').value,s=ST[stT];$('st-hv').textContent=h;$('st-e').textContent='e.cambiarTarifa('+s.n.charAt(0).toLowerCase()+s.n.slice(1)+');  e.salida('+h+');';
+  $('st-r').textContent=h+' h: $'+s.f(h).toFixed(2);$('st-msg').textContent=s.m;press('#st-b button',function(b){return b.dataset.t===stT})}
+each('#st-b button',function(b){b.onclick=function(){stT=b.dataset.t;stDraw()}});$('st-h').oninput=stDraw;stDraw();
+
+/* ---------- Observer ---------- */
+var obSaldo=50,obMov=0;
+function obReset(){obSaldo=50;obMov=0;$('ob-log').innerHTML='<span class="p">saldo inicial: $50.00</span>\n'}
+$('ob-dep').onclick=function(){obSaldo+=100;var h='<span class="p">c.depositar(100);</span>\n',s=$('ob-sms').checked,a=$('ob-aud').checked;
+  if(s)h+='SMS: la cuenta 1001 tiene $'+obSaldo.toFixed(2)+'\n';
+  if(a){obMov++;h+='Auditoria: movimiento '+obMov+' en 1001\n'}
+  if(!s&&!a)h+='<span class="p">(nadie escucha: no se imprime nada)</span>\n';
+  var L=$('ob-log');L.innerHTML+=h;var ls=L.innerHTML.split('\n');if(ls.length>8)L.innerHTML=ls.slice(ls.length-8).join('\n')};
+$('ob-rst').onclick=obReset;obReset();
+
+/* ---------- SOLID: nombre de la letra ---------- */
+var SN={sS:'Single responsibility · Responsabilidad única',sO:'Open/closed · Abierto/cerrado',sL:'Liskov substitution · Sustitución de Liskov',sI:'Interface segregation · Segregación de interfaces',sD:'Dependency inversion · Inversión de dependencias'};
+each('.letters [data-tab]',function(b){b.addEventListener('click',function(){$('solid-n').textContent=SN[b.dataset.tab]})});$('solid-n').textContent=SN.sS;
+
+/* ---------- ¿Qué letra se rompe? ---------- */
+var QZ=[['La clase Estudiante calcula el promedio, imprime el expediente y además lo envía por correo.','S','Tres razones para cambiar en una clase: responsabilidad única (S). Separe el cálculo, la impresión y el envío.'],
+ ['Para aceptar pagos con tarjeta hay que abrir cobrar() y añadir otro else if.','O','Abierto/cerrado (O): cada forma de pago debería ser una clase que implementa una interfaz Pago.'],
+ ['Pinguino hereda de Ave, pero su volar() imprime un error y no hace nada.','L','Sustitución de Liskov (L): donde el programa espera un Ave que vuela, un Pinguino lo sorprende.'],
+ ['La interfaz Empleado obliga al Conserje a implementar calcularComision(), que no usa.','I','Segregación de interfaces (I): interfaces pequeñas, y cada clase implementa solo las que le tocan.'],
+ ['Reporte crea por dentro un ArchivoCSV concreto, y por eso no se puede probar sin un archivo de verdad.','D','Inversión de dependencias (D): Reporte debe recibir una abstracción (un Almacen) por el constructor.']];
+var qi=0,qr=[];
+function qzDots(){$('qz-d').innerHTML=QZ.map(function(q,i){return '<i class="'+(qr[i]===true?'ok':qr[i]===false?'no':'')+(i===qi?' cur':'')+'"></i>'}).join('')}
+function qzShow(){var q=QZ[qi];$('qz-n').textContent='Caso '+(qi+1)+' de '+QZ.length;$('qz-t').textContent=q[0];$('qz-msg').textContent='';
+  each('#qz-b [data-l]',function(b){b.classList.remove('right','wrong');b.disabled=false});$('qz-next').disabled=true;qzDots()}
+each('#qz-b [data-l]',function(b){b.onclick=function(){var q=QZ[qi],ok=b.dataset.l===q[1];if(qr[qi]===undefined)qr[qi]=ok;
+  b.classList.add(ok?'right':'wrong');if(ok){each('#qz-b [data-l]',function(x){x.disabled=x!==b});$('qz-msg').textContent=q[2];$('qz-next').disabled=false;
+    if(qi===QZ.length-1){var n=qr.filter(function(x){return x}).length;$('qz-msg').textContent=q[2]+'  Primer intento correcto: '+n+' de 5.';$('qz-next').textContent='Empezar otra vez'}}
+  else $('qz-msg').textContent='Esa letra no es. Lea otra vez: ¿qué es lo que cuesta cambiar?';qzDots()}});
+$('qz-next').onclick=function(){if(qi===QZ.length-1){qi=0;qr=[];$('qz-next').textContent='Siguiente caso'}else qi++;qzShow()};qzShow();
+
+/* ---------- UML: clase ↔ diagrama ---------- */
+var UM={cuenta:{code:CODE.um_cuenta,name:'Cuenta',abs:false,
+  map:['name','priv','a0','a1','a2','a3','pub','m0','m1','m2','m3','name'],
+  attrs:[['- numero: int','numero es private: en UML lleva un signo menos (-). Primero el nombre, después dos puntos y el tipo.'],['- socio: string','Otro dato privado. El orden es nombre: tipo, al revés que en C++.'],['- saldo: double = 0.0','El valor inicial se escribe después de un signo igual.'],['- totalCuentas: int','static: un solo valor para toda la clase. En UML se subraya.',1]],
+  meths:[['+ Cuenta(n: int, s: string)','El constructor: public (+), con sus parámetros como nombre: tipo.'],['+ depositar(monto: double): bool','Lo que devuelve va al final, después de dos puntos.'],['+ retirar(monto: double): bool','Otro método público: es parte de la ventanilla.'],['+ consultarSaldo(): double','const no tiene símbolo propio en el UML básico; se puede anotar como {query}.']],
+  info:{name:'El nombre de la clase va arriba, en el primer compartimiento. Las llaves y el ; de C++ no se dibujan.',priv:'private: no se dibuja; en su lugar, cada dato lleva un signo menos (-).',pub:'public: cada método lleva un signo más (+).'}},
+ veh:{code:CODE.um_veh,name:'Vehiculo',abs:true,
+  map:['name','prot','a0','a1','pub','m0','m1','m2','m3','name'],
+  attrs:[['# tablilla: string','protected se dibuja con #: las clases hijas (Auto, Motocicleta) sí lo pueden usar.'],['# anio: int','Otro dato protegido.']],
+  meths:[['+ Vehiculo(t: string, a: int)','El constructor público.'],['+ peaje(): double','= 0 la hace abstracta: el método se escribe en cursiva.',0,1],['+ obtenerTablilla(): string','Un método público normal.'],['+ ~Vehiculo()','El destructor virtual, para que borrar por un puntero al padre sea seguro.']],
+  info:{name:'Vehiculo es abstracta (tiene una función = 0): su nombre va en cursiva.',prot:'protected: cada dato lleva un numeral (#).',pub:'public: cada método lleva un signo más (+).'}}};
+var umK='cuenta',umLns=null;
+function umSvg(u){var W=480,x0=20,y=10,h='',rowH=30,i;
+  var nA=u.attrs.length,nM=u.meths.length,hN=46,hA=nA*rowH+14,hM=nM*rowH+14;
+  h+='<rect x="'+x0+'" y="'+y+'" width="'+W+'" height="'+(hN+hA+hM)+'" fill="none" stroke="#F1F6FC" stroke-width="2.5"/>';
+  h+='<g class="row" data-r="name"><rect class="hit" x="'+x0+'" y="'+y+'" width="'+W+'" height="'+hN+'"/><text x="'+(x0+W/2)+'" y="'+(y+31)+'" font-size="22" font-weight="600" text-anchor="middle"'+(u.abs?' font-style="italic"':'')+'>'+u.name+'</text></g>';
+  y+=hN;h+='<path d="M'+x0+' '+y+' H'+(x0+W)+'" stroke="#F1F6FC" stroke-width="2.5"/>';
+  for(i=0;i<nA;i++){var a=u.attrs[i],ty=y+8+i*rowH;h+='<g class="row" data-r="a'+i+'"><rect class="hit" x="'+x0+'" y="'+ty+'" width="'+W+'" height="'+rowH+'"/><text x="'+(x0+16)+'" y="'+(ty+22)+'" font-size="19"'+(a[2]?' text-decoration="underline"':'')+'>'+esc(a[0])+'</text></g>'}
+  y+=hA;h+='<path d="M'+x0+' '+y+' H'+(x0+W)+'" stroke="#F1F6FC" stroke-width="2.5"/>';
+  for(i=0;i<nM;i++){var m=u.meths[i],tm=y+8+i*rowH;h+='<g class="row" data-r="m'+i+'"><rect class="hit" x="'+x0+'" y="'+tm+'" width="'+W+'" height="'+rowH+'"/><text x="'+(x0+16)+'" y="'+(tm+22)+'" font-size="19"'+(m[3]?' font-style="italic"':'')+'>'+esc(m[0])+'</text></g>'}
+  return h}
+function umSel(key){var u=UM[umK],rows=[];
+  if(key==='priv'||key==='prot')rows=u.attrs.map(function(_,i){return 'a'+i});else if(key==='pub')rows=u.meths.map(function(_,i){return 'm'+i});else rows=[key];
+  each('#um-svg .row',function(g){g.classList.toggle('sel',rows.indexOf(g.dataset.r)>=0)});
+  each(umLns,function(l,i){var k=u.map[i];l.classList.toggle('sel',k===key||rows.indexOf(k)>=0)});
+  var msg=u.info[key];if(!msg){var c=key.charAt(0),n=+key.slice(1);msg=(c==='a'?u.attrs:u.meths)[n][1]}$('um-msg').textContent=msg}
+function umShow(k){umK=k;var u=UM[k];umLns=setCode($('um-code'),u.code);$('um-svg').innerHTML=umSvg(u);$('um-t').textContent=u.name.toUpperCase();
+  each(umLns,function(l,i){l.onclick=function(){umSel(u.map[i])}});
+  each('#um-svg .row',function(g){g.addEventListener('click',function(){umSel(g.dataset.r)})});
+  press('#um-b button',function(b){return b.dataset.c===k});umSel(k==='cuenta'?'m1':'name')}
+each('#um-b button',function(b){b.onclick=function(){umShow(b.dataset.c)}});umShow('cuenta');
+
+/* ---------- relaciones ---------- */
+(function(){
+ function box(x,y,w,n,it){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="56" fill="#123F6E" stroke="#F1F6FC" stroke-width="2.5"/><text x="'+(x+w/2)+'" y="'+(y+35)+'" font-size="21" text-anchor="middle"'+(it?' font-style="italic"':'')+'>'+n+'</text>'}
+ var h='';
+ h+='<g class="rel" data-r="agr"><path class="stroke" d="M184 62 H260"/><path class="stroke" d="M160 62 L172 54 L184 62 L172 70 Z" fill="#123F6E"/><text x="250" y="52" font-size="20" text-anchor="end">0..10</text></g>';
+ h+='<g class="rel" data-r="aso"><path class="stroke" d="M440 62 H540"/><text x="490" y="52" font-size="20" text-anchor="middle">conduce</text><path class="stroke" d="M452 54 L440 62 L452 70"/></g>';
+ h+='<g class="rel" data-r="her"><path class="stroke" d="M300 300 V210 H510 V300 M350 210 V112"/><path class="stroke" d="M350 90 L338 112 L362 112 Z" fill="#123F6E"/></g>';
+ h+='<g class="rel" data-r="com"><path class="stroke" d="M140 328 H206"/><path class="stroke fillw" d="M230 328 L218 320 L206 328 L218 336 Z"/><text x="168" y="318" font-size="20" text-anchor="middle">1</text></g>';
+ h+=box(10,34,150,'Garaje')+box(260,34,180,'Vehiculo',1)+box(540,34,150,'Conductor')+box(10,300,130,'Motor')+box(230,300,140,'Auto')+box(420,300,180,'Motocicleta');
+ h+='<text x="10" y="410" font-size="20" class="cotat">Vehiculo en cursiva: clase abstracta</text>';
+ $('rl-svg').innerHTML=h})();
+var RL={her:['Herencia: Auto ES un Vehiculo','Línea con triángulo vacío que apunta al padre. Auto y Motocicleta heredan tablilla, anio y peaje().'],
+ com:['Composición: Auto TIENE un Motor','Rombo lleno del lado del todo. El Motor es un miembro: nace y muere con su Auto.'],
+ agr:['Agregación: el Garaje guarda vehículos','Rombo vacío del lado del todo. Guarda punteros: si se cierra el garaje, los vehículos siguen existiendo. 0..10 es la multiplicidad.'],
+ aso:['Asociación: Conductor usa un Vehiculo','Una línea simple, con flecha si se navega en un solo sentido. El conductor recibe el vehículo; no es dueño de él.']};
+function rlShow(k){$('rl-svg').classList.add('dim');each('#rl-svg .rel',function(g){g.classList.toggle('on',g.dataset.r===k)});$('rl-h').textContent=RL[k][0];$('rl-msg').textContent=RL[k][1];setCode($('rl-code'),CODE['rl_'+k]);press('#rl-b button',function(b){return b.dataset.r===k})}
+each('#rl-b button',function(b){b.onclick=function(){rlShow(b.dataset.r)}});rlShow('her');
+
+/* ---------- refactorización paso a paso ---------- */
+var RF=[{m:'El original funciona, pero a, b, c, x, y no dicen nada; 0.3, 0.4 y 70 son números magicos; y el bloque del if está copiado dos veces.'},
+ {m:'1. Renombrar: a, b, c pasan a parcial1, parcial2 y examen; x, a nota. Solo cambian nombres, por eso la salida no puede cambiar.'},
+ {m:'2. Constantes con nombre: PESO_PARCIAL, PESO_FINAL y MINIMO. Si cambia el peso del examen, se cambia una sola línea.'},
+ {m:'3. Extraer funciones: notaFinal calcula e informar imprime. El código repetido desapareció y main se lee como una lista de pasos.'}],rfV=0,rfPrev=null;
+function rfShow(v){var lines=CODE['rf'+v].split('\n'),prev=v>0?CODE['rf'+(v-1)].split('\n'):null;var ls=setCode($('rf-code'),CODE['rf'+v]);
+  if(prev)each(ls,function(l,i){l.classList.toggle('cur',prev.indexOf(lines[i])<0&&lines[i].trim()!=='')});
+  rfV=v;$('rf-msg').textContent=RF[v].m;press('#rf-b button',function(b){return +b.dataset.v===v});$('rf-next').disabled=v>=3;
+  var s=$('rf-sello');s.classList.add('anim');restamp(s)}
+each('#rf-b button',function(b){b.onclick=function(){rfShow(+b.dataset.v)}});$('rf-next').onclick=function(){if(rfV<3)rfShow(rfV+1)};rfShow(0);
+
+/* ---------- clasificador DRY / KISS / YAGNI ---------- */
+var CL=[['El mismo cálculo del IVU copiado en tres funciones distintas.','DRY','Una regla en tres lugares: póngala en una función o una constante.'],
+ ['if (activo == true) return true; else return false;','KISS','return activo; dice lo mismo.'],
+ ['Un método exportarAPDF() que ningún requisito pidió, «por si acaso».','YAGNI','Si nadie lo pidió, no se escribe todavía.'],
+ ['Las mismas cuatro líneas de validación en depositar() y en retirar().','DRY','Extraiga montoValido() y llámela desde las dos.'],
+ ['Una función de 40 líneas con tres banderas para saber si un número es par.','KISS','n % 2 == 0. La solución simple es la que se entiende.'],
+ ['Un menú con ocho opciones vacías «para el futuro».','YAGNI','Las opciones se añaden cuando hagan falta.']],clOk={};
+(function(){var h='';CL.forEach(function(c,i){h+='<div class="card" data-i="'+i+'"><p>'+esc(c[0])+'</p><div class="row">'+['DRY','KISS','YAGNI'].map(function(x){return '<button data-x="'+x+'">'+x+'</button>'}).join('')+'</div><div class="fb"></div></div>'});$('cl').innerHTML=h})();
+function clScore(){var n=Object.keys(clOk).length;$('cl-sc').textContent=n?n+' de 6':''}
+each('#cl .card',function(cd){var c=CL[+cd.dataset.i];each(cd.querySelectorAll('button'),function(b){b.onclick=function(){var ok=b.dataset.x===c[1];
+  cd.classList.toggle('ok',ok);cd.classList.toggle('no',!ok);press(cd.querySelectorAll('button'),function(x){return x===b});
+  cd.querySelector('.fb').textContent=ok?c[1]+': '+c[2]:'No es '+b.dataset.x+'. Intente otra.';if(ok)clOk[cd.dataset.i]=1;clScore()}})});
+
+/* ---------- cohesión y acoplamiento ---------- */
+var CA={A:{mods:{Caja:[20,30,280,150,['cobrar','calcular IVU','imprimir recibo','guardar en archivo']],Recibo:[360,30,240,104,['imprimir','calcular IVU']],Resumen:[360,210,240,104,['sumar ventas','leer el archivo']],Archivo:[20,250,280,80,['formato de texto']]},
+   edges:[[300,70,360,70],[360,110,300,110],[160,180,160,250],[360,280,300,290],[420,210,290,170]],
+   ch:{arch:['Archivo','Caja','Resumen'],ivu:['Caja','Recibo'],rec:['Recibo','Caja']},
+   m:{arch:'Caja y Resumen escriben y leen el formato directamente: un cambio en el archivo obliga a abrir tres módulos.',ivu:'El IVU está calculado en Caja y en Recibo: baja cohesión y código repetido.',rec:'Caja también imprime: hay que tocarla para cambiar el diseño del recibo.'}},
+ B:{mods:{Recibo:[20,30,180,96,['imprimir']],Orden:[230,30,180,96,['calcular']],Caja:[440,30,160,96,['cuenta del día']],Almacen:[440,170,160,96,['«interfaz»']],Archivo:[440,300,160,90,['formato']]},
+   edges:[[200,78,230,78],[440,78,410,78],[520,126,520,170],[520,300,520,266,1]],
+   ch:{arch:['Archivo'],ivu:['Orden'],rec:['Recibo']},
+   m:{arch:'Caja solo conoce la interfaz Almacen: se cambia Archivo y nada más.',ivu:'El cálculo vive en Orden. Recibo y Caja solo piden ivu() y total().',rec:'Recibo solo imprime. Nadie más sabe cómo se ve el recibo.'}}},caD='A',caC='arch';
+function caDraw(){var d=CA[caD],h='<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10" fill="none" stroke="#F1F6FC" stroke-width="1.6"/></marker><marker id="tri" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse"><path d="M0 0 L12 6 L0 12 Z" fill="#123F6E" stroke="#F1F6FC" stroke-width="1.4"/></marker></defs>',hit=d.ch[caC];
+  d.edges.forEach(function(e){h+='<line x1="'+e[0]+'" y1="'+e[1]+'" x2="'+e[2]+'" y2="'+e[3]+'" stroke="#F1F6FC" stroke-width="2.5"'+(e[4]?' stroke-dasharray="7 5" marker-end="url(#tri)"':' marker-end="url(#ah)"')+'/>'});
+  Object.keys(d.mods).forEach(function(n){var m=d.mods[n];h+='<g class="mod'+(hit.indexOf(n)>=0?' hit':'')+'"><rect class="box" x="'+m[0]+'" y="'+m[1]+'" width="'+m[2]+'" height="'+m[3]+'"/><text x="'+(m[0]+14)+'" y="'+(m[1]+30)+'" font-size="21" font-weight="600">'+n+'</text>'+m[4].map(function(r,i){return '<text x="'+(m[0]+14)+'" y="'+(m[1]+58+i*24)+'" font-size="18" class="cotat">'+esc(r)+'</text>'}).join('')+'</g>'});
+  $('ca-svg').innerHTML=h;$('ca-n').textContent=hit.length;$('ca-dep').textContent=d.edges.length;$('ca-msg').textContent=d.m[caC];
+  press('#ca-d button',function(b){return b.dataset.d===caD});press('#ca-c button',function(b){return b.dataset.c===caC})}
+each('#ca-d button',function(b){b.onclick=function(){caD=b.dataset.d;caDraw()}});each('#ca-c button',function(b){b.onclick=function(){caC=b.dataset.c;caDraw()}});caDraw();
+
+/* ---------- composición: cuántas clases ---------- */
+function cpDraw(){var v=+$('cp-v').value,m=+$('cp-m').value,h=v*m,c=v+m;$('cp-vv').textContent=v;$('cp-mv').textContent=m;$('cp-h').textContent=h;$('cp-c').textContent=c;
+  $('cp-bh').style.width=(h/30*100)+'%';$('cp-bc').style.width=(c/30*100)+'%'}
+$('cp-v').oninput=cpDraw;$('cp-m').oninput=cpDraw;cpDraw();
+
+/* ---------- Laboratorio J: verificador ---------- */
+var CASES=window.__CASES,PASS={},cur='c1',KEY='tesi2105-labJ';
+try{PASS=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){PASS={}}
+var PROMPTS=['Version (1 = original, 2 = remodelada):','Opcion:','Codigo (1-4, 0 termina):','Cantidad:','Cliente (1 estudiante, 2 empleado, 3 visitante):'],MENU=['1. Nueva orden','2. Resumen del dia','0. Salir'];
+function seq(text){var out=[];text.replace(/\r/g,'').split('\n').forEach(function(l){l=l.replace(/[ \t ]+/g,' ').trim();var ch=true;
+  while(ch){ch=false;for(var i=0;i<PROMPTS.length;i++){var p=PROMPTS[i];if(l.indexOf(p)===0){l=l.slice(p.length).trim();if(l.indexOf('>>')!==0)l=l.replace(/^-?\d+(\.\d+)?\s*/,'');ch=true}}}
+  if(l===''||MENU.indexOf(l)>=0)return;out.push(l)});return out}
+window.__seq=seq;
+function markTabs(){Object.keys(CASES).forEach(function(k){$('tb-'+k).classList.toggle('pass',!!PASS[k])})}
+Object.keys(CASES).forEach(function(k){$('tb-'+k).addEventListener('click',function(){cur=k;$('vf-name').textContent='Caso '+k.slice(1);$('vf-checks').innerHTML='';$('vf-score').textContent='';$('vf-in').value=''})});
+function li(ok,t){return '<li class="'+(ok?'ok':'no')+'">'+t+'</li>'}
+$('vf-go').onclick=function(){var E=CASES[cur].E,raw=$('vf-in').value,h='',ok=false;
+  if(!raw.trim()){$('vf-score').textContent='';$('vf-checks').innerHTML=li(false,'Pegue primero la salida de su programa.');return}
+  var s=seq(raw),i0=s.indexOf(E[0]);
+  if(i0<0){h=li(false,s.indexOf('>> Version original')>=0?'Esa es la salida de la versión 1. Corra el programa otra vez y escriba 2.':'Falta la línea <code>&gt;&gt; Version remodelada</code>: pegue todo lo que imprimió el programa, desde el principio.')}
+  else{s=s.slice(i0);var fin=s.indexOf('Caja cerrada');if(fin>=0)s=s.slice(0,fin+1);
+    h+=li(true,'Versión 2: la remodelada');
+    var hdr=s.indexOf(E[1])>=0;h+=li(hdr,hdr?'Encabezado de la caja':'Falta el encabezado <code>'+esc(E[1])+'</code>');
+    var bad=-1;for(var i=0;i<Math.max(E.length,s.length);i++){if(E[i]!==s[i]){bad=i;break}}
+    if(bad<0){ok=hdr;h+=li(true,'Las '+(E.length-1)+' líneas de resultados son idénticas a las del original')}
+    else{var n=0;for(var j=0;j<E.length;j++)if(E[j]===s[j])n++;
+      h+=li(true,(bad-1)+' líneas iguales antes de la primera diferencia');
+      if(bad>=s.length)h+=li(false,'Su programa terminó antes. Faltó: <code>'+esc(E[bad])+'</code>');
+      else if(bad>=E.length)h+=li(false,'Sobra: <code>'+esc(s[bad])+'</code>');
+      else h+=li(false,'Se esperaba <code>'+esc(E[bad])+'</code> y su programa imprimió <code>'+esc(s[bad])+'</code>')}}
+  $('vf-checks').innerHTML=h;$('vf-score').textContent=ok?'Prueba superada':'No es idéntica';
+  if(ok){PASS[cur]=1;try{localStorage.setItem(KEY,JSON.stringify(PASS))}catch(e){}}
+  markTabs()};
+markTabs();
+
+Deck.start();
+})();
+</script>
+</body>
+</html>

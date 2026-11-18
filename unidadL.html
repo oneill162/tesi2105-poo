@@ -1,0 +1,1103 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unidad L: Pruebas y debugging · TESI 2105</title>
+<meta name="description" content="TESI 2105 Programación Orientada a Objetos. Unidad L: pruebas unitarias y técnicas de depuración en C++, contadas desde el banco de diagnóstico del taller de reparación. Incluye el Laboratorio L.">
+<link rel="preload" href="assets/fonts/schibsted-grotesk-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* Tema de la Unidad L: el banco de diagnóstico del taller de reparación.
+   La alfombra antiestática verde oscuro, el multímetro amarillo, las etiquetas de PASÓ y FALLÓ
+   y la bitácora cuadriculada del técnico. Probar es medir antes de abrir; depurar es seguir el
+   circuito hasta la falla. */
+:root{--ground:#EEF1EC;--tone:#DFE6DD;--tone2:#C8D3C6;--ink:#14201A;--soft:#44544B;--accent:#1E6A4F;--field:#1B2A24;--field-ink:#EEF5EF;--hi:#FFC425;--code-bg:#15211B;--code-ink:#E6EFE8;--c-kw:#8FD9B6;--c-str:#FFD38A;--c-num:#FFE9A8;--c-cmt:#9DB3A6;--pasa:#17703F;--falla:#B92D24;--papel:#FFFEF8;--cuadro:#D5E2DA;--mm:#F2B705;--mm-d:#2A2F2C;--lcd:#C3D1AE}
+[hidden]{display:none!important}
+pre.code .ln.cur{background:rgba(255,196,37,.26)}
+.term{background:#0D1712}
+.term .ok{color:var(--ok)} .term .bad{color:var(--err)} .term .cmd{color:#FFE08A}
+#map button.ch{box-shadow:inset 0 0 0 3px #7FBF9F;background:transparent}
+#map button.ch.seen{background:#7FBF9F}
+#map button.cur,#map button.ch.cur{background:var(--hi);box-shadow:none}
+.field-hi button:focus-visible{outline-color:var(--ink)}
+
+/* tamaños de código */
+pre.c18{font-size:18px;line-height:1.45;padding:10px 0}
+pre.c18 .ln{padding:0 16px}
+pre.c19{font-size:19px;line-height:1.5;padding:12px 0}
+pre.c19 .ln{padding:0 18px}
+pre.c21{font-size:21px;line-height:1.5;padding:12px 0}
+pre.code.nums.c18 .ln{padding-left:56px}
+pre.code.nums.c18 .ln::before{left:14px}
+.term.t18{font-size:18px;line-height:1.42;padding:10px 16px;min-height:0}
+.term.t19{font-size:19px;line-height:1.45;padding:12px 18px;min-height:0}
+.gap8{margin-top:8px}.gap12{margin-top:12px}.gap16{margin-top:16px}.gap20{margin-top:20px}
+pre.code.gap8{margin-top:8px}pre.code.gap12{margin-top:12px}pre.code.gap16{margin-top:16px}
+.cap{font-size:19px;line-height:1.3;font-weight:600;color:var(--soft);margin:0 0 6px}
+.msg{background:var(--tone);padding:12px 16px;font-size:21px;line-height:1.4;min-height:56px}
+.mono{font-family:var(--mono)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+
+/* capítulos: la alfombra antiestática, con su punteado */
+.slide.chapter{background:var(--field) radial-gradient(circle,rgba(127,191,159,.16) 1.5px,transparent 2px) 0 0/22px 22px}
+.chwrap{display:grid;grid-template-columns:minmax(0,1fr) 460px;gap:48px;height:100%}
+.chwrap .left{display:flex;flex-direction:column;min-width:0}
+.chapter h1{font-size:92px}
+.chapter .ext{display:flex;flex-wrap:wrap;gap:12px 26px;margin-top:auto;font-size:23px;font-weight:700}
+.chapter .ext span{opacity:.5;white-space:nowrap}
+.chapter .ext span.on{opacity:1}
+.chapter .ext span.on::after{content:"";display:block;height:6px;background:var(--hi);margin-top:8px}
+.chapter .lead code{font-size:.85em}
+
+/* etiqueta de taller: PASÓ / FALLÓ */
+.tag{display:inline-flex;align-items:center;gap:8px;font:800 18px/1 var(--sans);letter-spacing:.08em;color:#fff;padding:6px 12px 6px 26px;clip-path:polygon(14px 0,100% 0,100% 100%,14px 100%,0 50%);background:var(--pasa) radial-gradient(circle at 13px 50%,var(--papel) 0 3.5px,transparent 4px);white-space:nowrap}
+.tag.no{background-color:var(--falla)}
+.tag.nada{background-color:var(--tone2);color:var(--soft)}
+.tag.big{font-size:24px;padding:9px 16px 9px 34px;clip-path:polygon(18px 0,100% 0,100% 100%,18px 100%,0 50%);background-image:radial-gradient(circle at 17px 50%,var(--papel) 0 4.5px,transparent 5px)}
+@keyframes colgar{0%{transform:rotate(-14deg)}45%{transform:rotate(6deg)}75%{transform:rotate(-2deg)}100%{transform:none}}
+@media (prefers-reduced-motion:no-preference){.tag.anim{transform-origin:0 50%;animation:colgar .7s var(--ease-out)}}
+
+/* bitácora del técnico: papel cuadriculado */
+.bita{background-color:var(--papel);background-image:linear-gradient(rgba(181,206,191,.45) 1px,transparent 1px),linear-gradient(90deg,rgba(181,206,191,.45) 1px,transparent 1px);background-size:26px 26px;color:var(--ink);padding:14px 20px;border-left:8px solid var(--accent)}
+.bita h3{font:700 20px var(--mono);color:var(--accent);margin-bottom:6px;display:flex;justify-content:space-between;gap:12px}
+.bita .br{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:5px 0;border-top:2px solid var(--cuadro);font-size:20px;line-height:1.35;align-items:baseline}
+.bita .br>span:first-child{font:600 18px var(--mono);color:var(--soft)}
+
+/* multímetro */
+.mm{display:block}
+.mm .lcdtxt{font:700 40px var(--mono);fill:#1E2A1A}
+.mm .lcdsm{font:600 18px var(--mono);fill:#3B4A35}
+.mm .lbl{font:700 15px var(--sans);fill:#F3F5F0}
+
+/* portada */
+.pt-r{align-self:center;display:grid;gap:12px;justify-items:center}
+.pt-b{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.pt-b button{font:600 18px var(--mono);padding:10px 12px;background:var(--field-ink);color:var(--ink)}
+.pt-b button:hover{background:var(--hi);color:var(--ink)}
+.pt-b button[aria-pressed=true]{background:var(--hi);color:var(--ink)}
+.pt-res{min-height:44px;display:flex;align-items:center;gap:14px;font-size:20px}
+
+/* probar y depurar */
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:22px}
+.dos>div{background:#fff;padding:20px 24px;border-top:8px solid var(--accent)}
+.dos>div.dep{border-top-color:var(--falla)}
+.dos h3{font-size:30px}
+.dos p{font-size:22px;margin-top:8px}
+.ciclo{display:flex;gap:6px;margin-top:18px}
+.ciclo button{flex:1;font:600 19px var(--sans);padding:12px 8px;background:var(--tone2)}
+.ciclo button[aria-pressed=true]{background:var(--ink);color:var(--ground)}
+
+/* anatomía (prueba unitaria y mensaje) */
+.pa{transition:background .2s,color .2s;padding:0 2px}
+.pa.lit,.pa.lit *{background:var(--hi);color:var(--ink)!important}
+.ops{display:flex;flex-wrap:wrap;gap:8px}
+.ops button{font:600 19px var(--sans);padding:10px 14px}
+.ops button.mono{font-family:var(--mono);font-size:18px}
+
+/* regla de casos */
+.regla{position:relative;height:150px;margin-top:6px}
+.regla .zona{position:absolute;top:56px;height:22px}
+.regla .z-no{background:repeating-linear-gradient(45deg,#E9B8B3 0 8px,#F4D6D2 8px 16px)}
+.regla .z-si{background:#B9DCC8}
+.regla .tick{position:absolute;top:44px;width:3px;height:46px;background:var(--ink);margin-left:-1px}
+.regla .tl{position:absolute;top:96px;font:700 19px var(--mono);transform:translateX(-50%);white-space:nowrap}
+.regla .mk{position:absolute;top:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;transition:left .45s var(--ease-out)}
+.regla .mk b{font:700 18px var(--mono);background:var(--ink);color:#fff;padding:4px 8px;white-space:nowrap}
+.regla .mk i{display:block;width:0;height:0;border:9px solid transparent;border-top-color:var(--ink)}
+table.t.casos td,table.t.casos th{padding:8px 14px;font-size:20px}
+table.t.casos td{font-family:var(--mono);font-size:19px}
+table.t.casos tr{cursor:pointer}
+table.t.casos tr.lit td{background:var(--hi)}
+.cat{font:700 16px var(--sans);letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;color:#fff;background:var(--accent);white-space:nowrap}
+.cat.lim{background:#8A5A00}.cat.err{background:var(--falla)}
+
+/* tablero de pruebas */
+.tab-u{display:flex;gap:8px}
+.tab-u button{font:700 19px var(--sans)}
+.tb{width:100%;border-collapse:collapse;font-size:19px;margin-top:10px}
+.tb th{text-align:left;background:var(--ink);color:var(--ground);padding:8px 12px;font-weight:600}
+.tb td{padding:6px 12px;border-bottom:2px solid var(--tone2);font-family:var(--mono);vertical-align:middle}
+.tb td.chk{width:56px}
+.tb input{width:24px;height:24px;accent-color:var(--accent);cursor:pointer;vertical-align:middle}
+.tb tr.off td{opacity:.45}
+.tb td.res{width:170px}
+.tb td.obt{width:200px}
+.tbres{display:flex;gap:16px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.tbres .score{font:800 30px var(--sans)}
+.abierta{background:var(--code-bg);color:var(--code-ink);font:500 19px/1.45 var(--mono);padding:10px 16px;margin-top:10px;white-space:pre}
+.abierta .malo{background:rgba(255,138,128,.25);color:#FFB4AC}
+
+/* discusiones */
+.field-hi .q{font-size:58px;line-height:1.04;letter-spacing:-.03em;font-weight:800;max-width:1120px}
+.prop2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.prop2>div{background:var(--ink);color:#fff;padding:18px 22px;min-height:160px}
+.prop2>div.ok{background:var(--accent)}
+.prop2 b{display:block;font:700 23px var(--sans)}
+.prop2 span{display:block;font-size:21px;margin-top:8px}
+.prop2 .pbtn{margin-top:12px;background:#fff;color:var(--ink);font-size:18px;padding:8px 12px}
+.prop2 .resp{grid-column:1/3;background:#fff;color:var(--ink);font-size:21px;line-height:1.4;padding:14px 20px;min-height:0}
+.discrow{position:absolute;left:72px;right:72px;bottom:32px}
+
+/* pestañas genéricas */
+.tabs-row{display:flex;gap:8px;flex-wrap:wrap}
+.tabs-row button{font:600 19px var(--sans);padding:10px 14px}
+.tabs-row button.mono{font-family:var(--mono);font-size:18px}
+
+/* gdb */
+.gdbt{height:428px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;font-size:18px;line-height:1.38;padding:10px 14px;tab-size:8}
+.gdbt .cmd{color:#FFE08A;font-weight:600}
+.gdbt .ln-n{color:#fff}
+.stepbar{display:flex;gap:10px;align-items:center;margin-top:10px}
+.stepbar .stepn{min-width:120px}
+table.t.cmds td,table.t.cmds th{padding:7px 14px;font-size:20px}
+table.t.cmds td:first-child{font:700 20px var(--mono);white-space:nowrap}
+table.t.cmds td:nth-child(2){font:600 19px var(--mono);color:var(--soft);white-space:nowrap}
+
+/* pato */
+.pato{display:grid;grid-template-columns:200px 1fr;gap:18px;align-items:start}
+.globo{background:#fff;padding:14px 18px;font-size:21px;line-height:1.4;position:relative;min-height:96px}
+.globo::before{content:"";position:absolute;left:-18px;top:30px;border:10px solid transparent;border-right:10px solid #fff;border-left:0;border-width:10px 18px 10px 0}
+.globo.codigo{background:var(--code-bg);color:var(--code-ink);font-family:var(--mono);font-size:19px}
+.globo.codigo::before{border-right-color:var(--code-bg)}
+.globo.mal{outline:4px solid var(--falla)}
+
+/* búsqueda binaria */
+.circ{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;position:relative;margin-top:6px}
+.circ::before{content:"";position:absolute;left:4%;right:4%;top:34px;height:6px;background:#B87333}
+.tp{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;background:none;padding:0;color:var(--ink)}
+.tp:hover{background:none;color:var(--ink)}
+.tp .pt{width:70px;height:70px;border-radius:50%;background:var(--field);color:#fff;display:flex;align-items:center;justify-content:center;font:700 19px var(--mono);border:5px solid var(--ground);transition:background .2s}
+.tp:hover .pt{background:var(--accent)}
+.tp.bien .pt{background:var(--pasa)}
+.tp.mal .pt{background:var(--falla)}
+.tp .nm{font:600 18px var(--sans);line-height:1.15;text-align:center;min-height:42px}
+.tp .vv{font:700 19px var(--mono);min-height:24px}
+.tp.bien .vv{color:var(--pasa)}.tp.mal .vv{color:var(--falla)}
+.tp .esp{font:500 18px var(--mono);color:var(--soft)}
+.medida{display:grid;grid-template-columns:300px 1fr;gap:26px;align-items:center;margin-top:10px}
+
+/* lo esencial */
+.dir{display:grid;grid-template-columns:repeat(2,1fr);gap:22px 44px;margin-top:26px}
+.dir h3{font-size:27px}
+.dir p{font-size:22px;margin-top:6px}
+
+/* laboratorio */
+a.dl{display:inline-flex;align-items:center;background:var(--accent);color:#fff;font-weight:600;font-size:20px;padding:12px 18px;text-decoration:none;white-space:nowrap}a.dl:hover{background:var(--ink)}
+.todo{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:9px 24px}
+.todo li{background:#fff;padding:10px 14px;font-size:20px;line-height:1.35;display:grid;grid-template-columns:40px 1fr}
+.todo li b.nm{font:800 27px var(--sans);color:var(--accent)}
+.todo li.fx b.nm{color:var(--falla)}
+.todo code{font-size:18px;white-space:normal}
+.ruta{display:flex;gap:8px;flex-wrap:wrap}
+.ruta span{background:var(--tone2);padding:7px 12px;font-size:18px;font-weight:600}
+.cases [data-tab]{font:600 18px var(--sans);padding:9px 14px}
+.cases [data-tab].pass::after{content:" ✓";color:#2E9E5B}
+.cases .ct{font-size:22px;margin-bottom:8px}
+.cases .cc{display:grid;grid-template-columns:166px 1fr;gap:12px}
+.cases ol.typein li{padding:2px 0}
+.cases ol.typein li kbd{display:inline-block;margin:0 5px 4px 0}
+.cases .cl{font-size:18px;font-weight:600;margin-bottom:6px}
+.cases ol.typein{margin:0;padding:8px 10px 8px 34px;background:var(--tone);font:600 18px var(--mono);line-height:1.5}
+.cases kbd{font:600 18px var(--mono);background:#fff;padding:0 6px;margin-right:6px;border-bottom:2px solid var(--tone2)}
+.cases .term{font-size:18px;line-height:1.35;white-space:pre-wrap;min-height:0;padding:10px 14px}
+textarea.paste{width:100%;height:150px;font:500 18px/1.4 var(--mono);padding:10px 12px;border:0;background:#fff;color:var(--ink);resize:none}
+.checks{list-style:none;margin:8px 0 0;padding:0;font-size:18px;line-height:1.45;max-height:206px;overflow:auto}
+.checks li.ok{color:#0B6B47}.checks li.ok::before{content:"✓  "}
+.checks li.no{color:#B3261E}.checks li.no::before{content:"✗  "}
+.score{font:800 34px var(--sans)}
+.rub td:last-child,.rub th:last-child{text-align:right;width:100px}
+.rub td,.rub th{padding:7px 14px!important;font-size:20px!important}
+.refs p{font-size:20px;padding-left:36px;text-indent:-36px;margin-bottom:9px;line-height:1.45}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage" data-name="Unidad L · Pruebas y debugging" role="region" aria-roledescription="presentación" aria-label="Unidad L: Pruebas y debugging">
+
+<!-- PORTADA -->
+<section class="slide chapter" data-title="Portada">
+  <div class="chwrap">
+    <div class="left">
+      <h1 class="mask"><span>Pruebas y debugging</span></h1>
+      <p class="lead" data-a style="margin-top:22px;max-width:640px">En el taller nadie abre una computadora sin medirla primero. Con el código es igual: se prueba antes de abrir y se depura siguiendo el circuito hasta la falla.</p>
+      <div class="ext" data-a><span class="on">Probar</span><span class="on">Depurar</span><span class="on">Laboratorio</span></div>
+      <p class="body" data-a style="margin-top:18px;font-size:20px">TESI 2105, Unidad L<br>Prof. Eduardo O. De Jesús Arroyo · ITPR, Recinto de Manatí</p>
+    </div>
+    <div class="pt-r" data-a>
+      <svg class="mm" id="pt-mm" width="300" height="380" viewBox="0 0 300 380" role="img" aria-label="Multímetro del banco de pruebas"></svg>
+      <div class="pt-b" id="pt-b"><button data-i="0">retirar(200)</button><button data-i="1">retirar(500)</button><button data-i="2">retirar(0)</button></div>
+      <div class="pt-res" id="pt-res" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Probar y depurar">
+  <h2 class="mask"><span>Medir antes de abrir</span></h2>
+  <div class="dos" data-a>
+    <div><h3>Probar</h3><p>Medir sin abrir: se le da una entrada conocida y se compara lo que sale con lo que debía salir. Dice <b>que</b> hay una falla.</p><p class="gap12"><span class="tag">PASÓ</span>&nbsp;&nbsp;<span class="tag no">FALLÓ</span></p></div>
+    <div class="dep"><h3>Depurar</h3><p>Abrir y seguir el circuito: mirar por dentro, paso a paso, hasta llegar a la línea que falla. Dice <b>dónde</b> y <b>por qué</b>.</p><p class="gap12" style="font:600 20px var(--mono)">cerr · gdb · sanitizadores</p></div>
+  </div>
+  <p class="body" data-a style="margin-top:20px;font-size:22px;font-weight:600">La bitácora del técnico: el mismo ciclo para una laptop o para un programa. Pulse cada paso.</p>
+  <div class="ciclo" id="ci-b" data-a><button data-c="0">1. Síntoma</button><button data-c="1">2. Medir</button><button data-c="2">3. Hipótesis</button><button data-c="3">4. Corregir</button><button data-c="4">5. Medir otra vez</button></div>
+  <p class="msg gap12" id="ci-msg" data-a aria-live="polite"></p>
+</section>
+
+<!-- TEMA 1 -->
+<section class="slide chapter" data-title="Tema 1: Estrategias de pruebas (unitarias)" data-topic="1">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask" style="font-size:68px"><span>Estrategias de pruebas (unitarias)</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:640px">Cada pieza se mide sola en el banco, con valores que ya se sabe cuánto deben dar.</p>
+    <div class="ext" data-a></div></div>
+    <div data-a style="align-self:center;display:grid;gap:14px">
+      <pre class="code c19">revisar("retirar todo el saldo",
+        b.retirar(500) &amp;&amp;
+        b.consultarSaldo() == 0);</pre>
+      <div style="display:flex;gap:12px"><span class="tag big">PASÓ</span><span class="tag big no">FALLÓ</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="¿Qué es una prueba unitaria?">
+  <h2 class="mask"><span>Una prueba unitaria mide una sola pieza</span></h2>
+  <p class="body sub" data-a style="max-width:1120px;font-size:23px">Una función o una clase, sola, con una entrada fija y un resultado que se sabe de antemano. Se corre sola y se repite cuantas veces haga falta. Pulse cada parte.</p>
+  <div style="display:grid;grid-template-columns:650px 1fr;gap:28px;margin-top:20px">
+    <div data-a>
+      <pre class="code c19" data-raw id="pu-code"><span class="ln"><span class="pa" data-p="prep">Cuenta a(<span class="n">1001</span>, <span class="n">500.00</span>);</span></span><span class="ln">revisar(<span class="pa" data-p="nom"><span class="s">"normal: retirar 200 de 500"</span></span>,</span><span class="ln">        <span class="pa" data-p="act">a.retirar(<span class="n">200</span>)</span> &amp;&amp; <span class="pa" data-p="comp">a.consultarSaldo() == <span class="n">300</span></span>);</span></pre>
+      <div class="ops gap16" id="pu-b"><button data-pt="prep">1. Preparar</button><button data-pt="act">2. Actuar</button><button data-pt="comp">3. Comprobar</button><button data-pt="nom">El nombre</button></div>
+    </div>
+    <div data-a>
+      <p class="msg" id="pu-msg" aria-live="polite" style="min-height:150px;font-size:22px"></p>
+      <div class="bita gap16"><h3><span>Buena prueba</span></h3>
+        <div class="br"><span>una pieza</span><span>si falla, se sabe cuál</span></div>
+        <div class="br"><span>esperado</span><span>escrito antes de correr</span></div>
+        <div class="br"><span>repetible</span><span>sin teclear nada</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Casos normales, límite y de error">
+  <h2 class="mask"><span>Casos normales, límite y de error</span></h2>
+  <p class="body sub" data-a style="font-size:22px">Cuenta con saldo 500.00. ¿Qué debe hacer <code>retirar(monto)</code>? Pulse un renglón para ver dónde cae el monto.</p>
+  <div data-a class="regla" id="rg">
+    <div class="zona z-no" style="left:0;width:9.09%"></div><div class="zona z-si" style="left:9.09%;width:83.33%"></div><div class="zona z-no" style="left:92.42%;width:7.58%"></div>
+    <div class="tick" style="left:9.09%"></div><div class="tl" style="left:9.09%">0</div>
+    <div class="tick" style="left:92.42%"></div><div class="tl" style="left:92.42%">500</div>
+    <div class="tl" style="top:122px;left:4.5%;font-family:var(--sans);font-size:18px;color:var(--falla)">rechaza</div>
+    <div class="tl" style="top:122px;left:51%;font-family:var(--sans);font-size:18px;color:var(--pasa)">acepta: 0 &lt; monto ≤ saldo</div>
+    <div class="tl" style="top:122px;left:96.5%;font-family:var(--sans);font-size:18px;color:var(--falla)">rechaza</div>
+    <div class="mk" id="rg-mk"><b id="rg-v">200</b><i></i></div>
+  </div>
+  <table class="t casos" data-a id="cs">
+    <tr><th>Tipo</th><th>Llamada</th><th>Debe devolver</th><th>Saldo después</th><th>Por qué</th></tr>
+  </table>
+</section>
+
+<section class="slide" data-title="Tablero de pruebas">
+  <h2 class="mask"><span>Tablero: tres unidades con una falla cada una</span></h2>
+  <p class="body sub" data-a style="font-size:21px;max-width:1130px">Escoja la unidad, marque los casos que quiere correr y pulse «Correr». Con solo dos casos marcados, las tres pasan: añada casos hasta que cada una falle.</p>
+  <div data-a style="display:grid;grid-template-columns:1fr 360px;gap:26px;margin-top:12px">
+    <div>
+      <div class="row"><div class="tab-u" id="tb-u"><button data-u="A">Unidad A</button><button data-u="B">Unidad B</button><button data-u="C">Unidad C</button></div><button class="go" id="tb-go" style="margin-left:auto">Correr</button></div>
+      <table class="tb" id="tb"><tr><th></th><th>Tipo</th><th>Llamada</th><th>Obtuvo</th><th>Resultado</th></tr></table>
+    </div>
+    <div>
+      <div class="tbres"><span class="score" id="tb-score">Sin correr</span></div>
+      <p class="msg gap12" id="tb-msg" aria-live="polite" style="min-height:120px;font-size:20px"></p>
+      <button id="tb-abrir" class="gap12" hidden>Abrir la unidad</button>
+      <div class="abierta" id="tb-cod" hidden></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="assert de &lt;cassert&gt;">
+  <h2 class="mask"><span>assert detiene el programa si algo es falso</span></h2>
+  <div style="display:grid;grid-template-columns:540px 1fr;gap:28px;margin-top:18px">
+    <div data-a>
+      <p class="cap">cuenta_test.cpp, con <code>#include &lt;cassert&gt;</code> y la misma <code>Cuenta</code>:</p>
+      <pre class="code c19 nums" style="counter-reset:ln 17">int main() {
+    Cuenta a(500.00);
+    a.retirar(200);
+    assert(a.consultarSaldo() == 300);
+    cout &lt;&lt; "Prueba 1 bien" &lt;&lt; endl;
+
+    Cuenta b(500.00);
+    b.retirar(500);
+    assert(b.consultarSaldo() == 0);
+    cout &lt;&lt; "Prueba 2 bien" &lt;&lt; endl;
+    return 0;
+}</pre>
+    </div>
+    <div data-a>
+      <div class="term t18"><span class="p">$ g++ -std=c++17 -Wall -Wextra -o cuenta_test cuenta_test.cpp
+$ ./cuenta_test</span>
+Prueba 1 bien
+<span class="e">cuenta_test: cuenta_test.cpp:26: int main(): Assertion `b.consultarSaldo() == 0' failed.</span>
+<span class="e">Aborted</span></div>
+      <p class="body gap16" style="font-size:21px">El mensaje dice el programa, el archivo, la <b>línea 26</b>, la función y la condición que resultó falsa. Después, <code>abort()</code> corta el programa: «Prueba 2 bien» nunca sale.</p>
+      <p class="small gap12" style="font-size:18px">Mensaje de g++ 13.3 con la biblioteca glibc de Linux. Según la terminal, la última línea puede decir <code>Aborted (core dumped)</code>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="-DNDEBUG apaga los assert">
+  <h2 class="mask"><span>-DNDEBUG apaga los assert</span></h2>
+  <div data-tabs="nd1" data-a style="margin-top:20px">
+    <div class="tabs-row"><button data-tab="nd1">Compilado normal</button><button data-tab="nd2" class="mono">-DNDEBUG</button><button data-tab="nd3">La trampa</button></div>
+    <div style="display:grid;grid-template-columns:640px 1fr;gap:30px;margin-top:20px">
+      <div data-panel="nd1"><div class="term t19"><span class="p">$ g++ -std=c++17 -Wall -Wextra -o cuenta_test cuenta_test.cpp
+$ ./cuenta_test</span>
+Prueba 1 bien
+<span class="e">cuenta_test: cuenta_test.cpp:26: int main(): Assertion `b.consultarSaldo() == 0' failed.
+Aborted</span></div></div>
+      <div data-panel="nd1"><p class="lead" style="font-size:28px">Mientras se desarrolla, cada <code>assert</code> está activo.</p><p class="body sub" style="font-size:22px">La falla de <code>retirar</code> con el saldo completo detiene el programa en la línea 26.</p></div>
+      <div data-panel="nd2" hidden><div class="term t19"><span class="p">$ g++ -std=c++17 -Wall -Wextra -DNDEBUG -o cuenta_test cuenta_test.cpp
+$ ./cuenta_test</span>
+Prueba 1 bien
+Prueba 2 bien</div></div>
+      <div data-panel="nd2" hidden><p class="lead" style="font-size:28px">Con <code>-DNDEBUG</code> el compilador borra cada <code>assert</code>.</p><p class="body sub" style="font-size:22px">El mismo programa, con la misma falla, dice «Prueba 2 bien». <code>assert</code> sirve para el programador, no para revisar lo que escribe el usuario.</p></div>
+      <div data-panel="nd3" hidden><pre class="code c19">Cuenta a(500.00);
+assert(a.retirar(200));    // la accion va DENTRO
+cout &lt;&lt; "Saldo: " &lt;&lt; a.consultarSaldo() &lt;&lt; endl;</pre><div class="term t19 gap12"><span class="p">$ ./sin_ndebug</span>
+Saldo: 300
+<span class="p">$ ./con_ndebug</span>
+Saldo: 500</div></div>
+      <div data-panel="nd3" hidden><p class="lead" style="font-size:28px">Nunca ponga dentro de un assert algo que el programa necesita hacer.</p><p class="body sub" style="font-size:22px">Con <code>-DNDEBUG</code> desaparece la condición completa, y con ella el retiro. Primero se hace la acción; después se revisa: <code>bool ok = a.retirar(200); assert(ok);</code></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Un mini marco de pruebas hecho a mano">
+  <h2 class="mask"><span>Un mini marco de pruebas en diez líneas</span></h2>
+  <div style="display:grid;grid-template-columns:620px 1fr;gap:28px;margin-top:20px">
+    <pre class="code c18" data-a style="line-height:1.6">int pasaron = 0, corridas = 0;
+
+void revisar(const string&amp; nombre, bool condicion) {
+    corridas++;
+    if (condicion) {
+        pasaron++;
+        cout &lt;&lt; "[PASO]  " &lt;&lt; nombre &lt;&lt; endl;
+    } else {
+        cout &lt;&lt; "[FALLO] " &lt;&lt; nombre &lt;&lt; endl;
+    }
+}</pre>
+    <div data-a>
+      <p class="lead" style="font-size:27px">A diferencia de <code>assert</code>, <code>revisar</code> no detiene nada: anota la etiqueta y sigue con la próxima prueba.</p>
+      <div class="bita gap16"><h3><span>Qué hace cada parte</span></h3>
+        <div class="br"><span>nombre</span><span>lo que se probó, para saber cuál falló</span></div>
+        <div class="br"><span>condicion</span><span>true si dio lo esperado</span></div>
+        <div class="br"><span>contadores</span><span>al final: <code>Pruebas: 3 de 4 pasaron</code></span></div>
+      </div>
+      <p class="small gap12" style="font-size:18px">La salida va sin acentos (<code>PASO</code>, <code>FALLO</code>) porque el código del curso se escribe en ASCII.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="El marco prueba la clase Cuenta">
+  <h2 class="mask"><span>Cuatro pruebas para retirar</span></h2>
+  <div style="display:grid;grid-template-columns:640px 1fr;gap:22px;margin-top:18px">
+    <div data-a>
+      <pre class="code c18">int main() {
+    Cuenta a(1001, 500.00);
+    revisar("normal: retirar 200 de 500",
+        a.retirar(200) &amp;&amp; a.consultarSaldo() == 300);
+    Cuenta b(1002, 500.00);
+    revisar("limite: retirar todo el saldo",
+        b.retirar(500) &amp;&amp; b.consultarSaldo() == 0);
+    Cuenta c(1003, 500.00);
+    revisar("error: retirar 0 se rechaza",
+        !c.retirar(0) &amp;&amp; c.consultarSaldo() == 500);
+    Cuenta d(1004, 500.00);
+    revisar("error: retirar de mas se rechaza",
+        !d.retirar(500.01) &amp;&amp; d.consultarSaldo() == 500);
+    cout &lt;&lt; "Pruebas: " &lt;&lt; pasaron &lt;&lt; " de " ...
+}</pre>
+    </div>
+    <div data-a>
+      <p class="cap">En <code>retirar</code>, dentro de <code>class Cuenta</code>:</p>
+      <pre class="code c18" id="mc-cod">if (monto &lt;= 0 || monto &gt;= saldo)</pre>
+      <div class="term t18 gap12" id="mc-out"></div>
+      <div class="row gap12"><button class="go" id="mc-go">Corregir: &gt;= por &gt;</button></div>
+      <p class="msg gap12" id="mc-msg" aria-live="polite" style="font-size:20px"></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: todas pasan">
+  <p class="q mask"><span>Si todas las pruebas pasan, ¿el programa ya no tiene errores?</span></p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:27px">Piensen en el tablero: con dos casos marcados, las unidades A, B y C pasaban.</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a data-rv-box><div><b>Sí</b><span>si todo dice PASÓ, el programa está bien</span></div><div class="ok"><b>No necesariamente</b><span>las pruebas solo ven lo que miden</span><button data-rv="Ocultar" class="pbtn">Respuesta</button></div><div class="reveal resp">No. Una prueba que pasa dice que ese caso funciona, nada más. Las pruebas muestran que hay errores; no pueden mostrar que no los hay. Por eso se buscan los límites y los errores, no solo el caso normal.</div></div></div>
+</section>
+
+<section class="slide" data-title="Pruebas antes del código (TDD)">
+  <h2 class="mask"><span>Primero la prueba, después el código</span></h2>
+  <p class="body sub" data-a style="font-size:22px;max-width:1130px">En el desarrollo guiado por pruebas (TDD) se escribe la prueba de <code>transferir</code> antes de que <code>transferir</code> exista. Recorra las tres fases.</p>
+  <div data-tabs="td1" data-a style="margin-top:16px">
+    <div class="tabs-row"><button data-tab="td1">1. Rojo: no compila</button><button data-tab="td2">2. Rojo: falla</button><button data-tab="td3">3. Verde: pasa</button><button data-tab="td4">4. Mejorar</button></div>
+    <div style="display:grid;grid-template-columns:640px 1fr;gap:28px;margin-top:16px">
+      <div data-panel="td1"><pre class="code c18">Cuenta a(500), b(100);
+revisar("transferir 50 mueve el dinero",
+        a.transferir(b, 50) &amp;&amp; a.consultarSaldo() == 450
+        &amp;&amp; b.consultarSaldo() == 150);</pre><div class="term t18 gap12"><span class="e">tdd.cpp:33:15: error: 'class Cuenta' has no member named 'transferir'</span></div></div>
+      <div data-panel="td1"><p class="lead" style="font-size:27px">La prueba dice qué se quiere antes de escribirlo.</p><p class="body sub" style="font-size:21px">Que no compile es el primer rojo: la función aún no existe.</p></div>
+      <div data-panel="td2" hidden><pre class="code c18">bool transferir(Cuenta&amp; destino, double monto) {
+    return false;
+}</pre><div class="term t18 gap12"><span class="w">tdd.cpp:20:29: warning: unused parameter 'destino' [-Wunused-parameter]
+tdd.cpp:20:45: warning: unused parameter 'monto' [-Wunused-parameter]</span>
+<span class="bad">[FALLO] transferir 50 mueve el dinero</span>
+Pruebas: 0 de 1 pasaron</div></div>
+      <div data-panel="td2" hidden><p class="lead" style="font-size:27px">Una función vacía: compila, y la prueba falla.</p><p class="body sub" style="font-size:21px">Ver la prueba fallar confirma que de verdad mide algo.</p></div>
+      <div data-panel="td3" hidden><pre class="code c18">bool transferir(Cuenta&amp; destino, double monto) {
+    if (!retirar(monto)) return false;
+    destino.depositar(monto);
+    return true;
+}</pre><div class="term t18 gap12"><span class="ok">[PASO]  transferir 50 mueve el dinero</span>
+Pruebas: 1 de 1 pasaron</div></div>
+      <div data-panel="td3" hidden><p class="lead" style="font-size:27px">El código más sencillo que hace pasar la prueba.</p><p class="body sub" style="font-size:21px">Reutiliza <code>retirar</code> y <code>depositar</code>, que ya tienen sus validaciones.</p></div>
+      <div data-panel="td4" hidden><div class="bita"><h3><span>El ciclo de TDD</span></h3><div class="br"><span>rojo</span><span>una prueba nueva que falla</span></div><div class="br"><span>verde</span><span>el mínimo código para que pase</span></div><div class="br"><span>mejorar</span><span>limpiar el código; las pruebas avisan si algo se rompe</span></div></div></div>
+      <div data-panel="td4" hidden><p class="lead" style="font-size:27px">Y otra vuelta: transferir 0, transferir más del saldo…</p><p class="body sub" style="font-size:21px">Cada caso nuevo empieza como prueba roja.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Marcos de pruebas reales">
+  <h2 class="mask"><span>Los marcos de pruebas de la industria</span></h2>
+  <p class="body sub" data-a style="font-size:22px;max-width:1130px">Hacen lo mismo que <code>revisar</code>, con más ayudas. No se instalan en este curso; basta reconocerlos.</p>
+  <table class="t gap20" data-a style="font-size:21px">
+    <tr><th>Marco</th><th>Cómo se escribe una prueba</th><th>Qué lo distingue</th></tr>
+    <tr><td><b>GoogleTest</b></td><td><code>TEST(Grupo, Nombre)</code> y <code>EXPECT_EQ(a, b)</code></td><td>Muy usado en proyectos grandes; se compila como una biblioteca.</td></tr>
+    <tr><td><b>Catch2</b></td><td><code>TEST_CASE("nombre")</code> y <code>REQUIRE(cond)</code></td><td>Las pruebas se nombran con texto libre, como en <code>revisar</code>.</td></tr>
+    <tr><td><b>doctest</b></td><td><code>TEST_CASE("nombre")</code> y <code>CHECK(cond)</code></td><td>Un solo archivo de encabezado; muy liviano.</td></tr>
+  </table>
+  <div class="bita gap20" data-a><h3><span>Lo que añaden a revisar()</span></h3>
+    <div class="br"><span>registro</span><span>cada prueba se anota sola; no hay que llamarlas desde main</span></div>
+    <div class="br"><span>valores</span><span>al fallar muestran lo que se esperaba y lo que salió</span></div>
+  </div>
+</section>
+
+<!-- TEMA 2 -->
+<section class="slide chapter" data-title="Tema 2: Técnicas de debugging" data-topic="2">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask"><span>Técnicas de debugging</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:640px">La prueba dijo FALLÓ. Ahora se abre el equipo y se sigue el circuito, punto por punto, hasta la falla.</p>
+    <div class="ext" data-a></div></div>
+    <div data-a style="align-self:center"><svg width="460" height="330" viewBox="0 0 460 330" role="img" aria-label="Circuito con puntos de prueba y una punta de medir">
+      <g fill="none" stroke="#B87333" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 80 H150 V200 H300 V80 H440"/><path d="M150 140 H90 V280 H380 V200"/></g>
+      <g font-family="JetBrains Mono,monospace" font-size="18" font-weight="700" text-anchor="middle">
+        <circle cx="60" cy="80" r="22" fill="#17703F"/><text x="60" y="86" fill="#fff">1</text>
+        <circle cx="150" cy="200" r="22" fill="#17703F"/><text x="150" y="206" fill="#fff">2</text>
+        <circle cx="300" cy="200" r="22" fill="#B92D24"/><text x="300" y="206" fill="#fff">3</text>
+        <circle cx="380" cy="280" r="22" fill="#4A5A51"/><text x="380" y="286" fill="#fff">4</text></g>
+      <g transform="rotate(-35 330 120)"><rect x="318" y="40" width="24" height="120" rx="6" fill="#B92D24"/><rect x="326" y="160" width="8" height="40" fill="#C9CFCB"/></g>
+      <text x="300" y="250" fill="#EEF5EF" font-family="Schibsted Grotesk,sans-serif" font-size="19" font-weight="700" text-anchor="middle">aquí cambió</text>
+    </svg></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Leer el mensaje del compilador">
+  <h2 class="mask"><span>Un mensaje de g++ tiene cinco partes</span></h2>
+  <p class="body sub" data-a style="font-size:22px">Falta un punto y coma. Pulse cada parte del mensaje.</p>
+  <div data-a style="margin-top:14px">
+    <pre class="code c19 nums" style="counter-reset:ln 3">int main() {
+    double saldo = 500.00
+    saldo -= 200;
+    cout &lt;&lt; saldo &lt;&lt; endl;</pre>
+    <div class="term t19 gap12" id="mg-term"><span class="p">$ g++ -std=c++17 -Wall -Wextra -o cuenta2 cuenta2.cpp</span>
+cuenta2.cpp: In function 'int main()':
+<span class="pa" data-p="ar">cuenta2.cpp</span>:<span class="pa" data-p="li">6</span>:<span class="pa" data-p="co">5</span>: <span class="pa e" data-p="ti">error</span>: <span class="pa" data-p="qu">expected ',' or ';' before 'saldo'</span>
+    6 |     saldo -= 200;
+      |     ^~~~~</div>
+  </div>
+  <div style="display:grid;grid-template-columns:auto 1fr;gap:22px;margin-top:14px;align-items:start" data-a>
+    <div class="ops" id="mg-b" style="display:grid;grid-template-columns:1fr 1fr 1fr;width:520px"><button data-pt="ar">Archivo</button><button data-pt="li">Línea</button><button data-pt="co">Columna</button><button data-pt="ti">Tipo</button><button data-pt="qu" style="grid-column:2/4">Qué esperaba</button></div>
+    <p class="msg" id="mg-msg" aria-live="polite" style="min-height:104px"></p>
+  </div>
+</section>
+
+<section class="slide" data-title="El primer error primero">
+  <h2 class="mask"><span>Tres errores, una sola falla</span></h2>
+  <div style="display:grid;grid-template-columns:590px 1fr;gap:24px;margin-top:18px">
+    <div data-a>
+      <pre class="code c18 nums" style="counter-reset:ln 4" id="pe-cod">class Cuenta {
+private:
+    strin  socio;
+    double saldo;
+public:
+    Cuenta(const string&amp; s, double inicial) {
+        socio = s;
+        saldo = inicial;
+    }
+    void mostrar() const {
+        cout &lt;&lt; socio &lt;&lt; ": $" &lt;&lt; saldo &lt;&lt; endl;
+    }
+};</pre>
+      <div class="row gap12"><button class="go" id="pe-go">Corregir la línea 7</button><button id="pe-re">Volver</button></div>
+    </div>
+    <div data-a>
+      <div class="term t18" id="pe-out"></div>
+      <p class="msg gap12" id="pe-msg" aria-live="polite" style="font-size:20px"></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Los avisos son pistas">
+  <h2 class="mask"><span>-Wall -Wextra: los avisos son pistas</span></h2>
+  <p class="body sub" data-a style="font-size:21px;max-width:1130px">Estos programas compilan. Cada aviso señala una línea que muy probablemente está mal.</p>
+  <div data-tabs="av1" data-a style="margin-top:14px">
+    <div class="tabs-row"><button data-tab="av1" class="mono">-Wparentheses</button><button data-tab="av2" class="mono">-Wsign-compare</button><button data-tab="av3" class="mono">-Wreturn-type</button><button data-tab="av4" class="mono">-Wuninitialized</button></div>
+    <div style="margin-top:14px">
+      <div data-panel="av1"><pre class="code c19 nums" style="counter-reset:ln 11">bool vacia(double saldo) {
+    if (saldo = 0) return true;
+    return false;
+}</pre><div class="term t18 gap8"><span class="w">avisos.cpp:13:15: warning: suggest parentheses around assignment used as truth value [-Wparentheses]</span>
+   13 |     if (saldo = 0) return true;
+      |         ~~~~~~^~~</div><p class="msg gap8">Un <code>=</code> donde iba <code>==</code>: asigna 0 al saldo y la condición siempre es falsa.</p></div>
+      <div data-panel="av2" hidden><pre class="code c19 nums" style="counter-reset:ln 16">int contar(const string&amp; s, char c) {
+    int k = 0;
+    for (int i = 0; i &lt; s.size(); i++)
+        if (s[i] == c) k++;</pre><div class="term t18 gap8"><span class="w">avisos.cpp:19:23: warning: comparison of integer expressions of different signedness: 'int' and 'std::__cxx11::basic_string&lt;char&gt;::size_type' {aka 'long unsigned int'} [-Wsign-compare]</span></div><p class="msg gap8"><code>size()</code> no tiene signo y <code>i</code> sí. Aquí no hace daño, pero con un negativo la comparación da al revés. Use <code>size_t i</code>.</p></div>
+      <div data-panel="av3" hidden><pre class="code c19 nums" style="counter-reset:ln 23">char letra(int nota) {
+    if (nota &gt;= 90) return 'A';
+    if (nota &gt;= 80) return 'B';
+}</pre><div class="term t18 gap8"><span class="w">avisos.cpp:27:1: warning: control reaches end of non-void function [-Wreturn-type]</span>
+   27 | }
+      | ^</div><p class="msg gap8">Con una nota de 70 la función termina sin devolver nada: comportamiento indefinido. Falta un <code>return</code> final.</p></div>
+      <div data-panel="av4" hidden><div style="display:grid;grid-template-columns:520px 1fr;gap:22px"><pre class="code c19 nums" style="counter-reset:ln 4">int main() {
+    int lecturas[3] = {70, 71, 72};
+    int total;
+    for (int i = 0; i &lt; 3; i++)
+        total += lecturas[i];</pre><div class="term t18"><span class="p">$ g++ -std=c++17 -Wall -Wextra -o sinini sinini.cpp
+$ ./sinini</span>
+Total: 32979
+<span class="p">$ ./sinini</span>
+Total: 32977</div></div><div class="term t18 gap8"><span class="p">$ g++ -std=c++17 -Wall -Wextra -O2 -o sinini sinini.cpp</span>
+<span class="w">sinini.cpp:8:15: warning: 'total' is used uninitialized [-Wuninitialized]</span></div><p class="msg gap8">Un acumulador sin iniciar: el total cambia en cada corrida. Sin <code>-O2</code> g++ no avisó; con <code>-O2</code> analiza más y sí avisa.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Trazas con cerr">
+  <h2 class="mask"><span>Trazas con cerr: puntos de prueba en el código</span></h2>
+  <div style="display:grid;grid-template-columns:640px 1fr;gap:26px;margin-top:18px">
+    <div data-a>
+      <p class="cap">factura.cpp: el costo de una reparación, con trazas</p>
+      <pre class="code c18">double subtotal = totalPiezas + manoObra;
+cerr &lt;&lt; "[TP3] subtotal = " &lt;&lt; subtotal &lt;&lt; endl;
+double pct = 10 / 100;
+cerr &lt;&lt; "[TP4] pct = " &lt;&lt; pct &lt;&lt; endl;
+double descuento = subtotal * pct;
+cerr &lt;&lt; "[TP5] descuento = " &lt;&lt; descuento &lt;&lt; endl;</pre>
+      <p class="body gap16" style="font-size:21px"><code>cerr</code> es la salida de errores: se escribe enseguida, sin esperar, y va por un canal distinto de <code>cout</code>.</p>
+    </div>
+    <div data-a>
+      <div class="term t18"><span class="p">$ ./factura</span>
+[TP1] piezas = 87.50
+[TP2] mano de obra = 60.00
+[TP3] subtotal = 147.50
+<span class="e">[TP4] pct = 0.00</span>
+[TP5] descuento = 0.00
+...
+Total a pagar: $164.46
+<span class="p">$ ./factura 2&gt;/dev/null</span>
+Total a pagar: $164.46</div>
+      <p class="body gap12" style="font-size:21px">Con <code>2&gt;/dev/null</code> las trazas se descartan y solo queda lo de <code>cout</code>. La traza TP4 delata la falla: el descuento del 10 % dio 0.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="gdb: el depurador">
+  <h2 class="mask"><span>gdb: detener el programa y preguntarle</span></h2>
+  <div style="display:grid;grid-template-columns:1fr 470px;gap:28px;margin-top:18px">
+    <table class="t cmds" data-a>
+      <tr><th>Comando</th><th>Corto</th><th>Qué hace</th></tr>
+      <tr><td>break main</td><td>b</td><td>pone un punto de parada</td></tr>
+      <tr><td>run</td><td>r</td><td>corre hasta la parada</td></tr>
+      <tr><td>next</td><td>n</td><td>una línea, sin entrar a funciones</td></tr>
+      <tr><td>step</td><td>s</td><td>una línea, entrando a la función</td></tr>
+      <tr><td>print total</td><td>p</td><td>muestra una variable o expresión</td></tr>
+      <tr><td>backtrace</td><td>bt</td><td>quién llamó a quién</td></tr>
+      <tr><td>finish</td><td>fin</td><td>termina la función actual</td></tr>
+      <tr><td>continue</td><td>c</td><td>sigue hasta la próxima parada</td></tr>
+    </table>
+    <div data-a>
+      <p class="cap">Compile con <code>-g</code> para que gdb conozca las líneas y los nombres:</p>
+      <div class="term t18"><span class="p">$ g++ -std=c++17 -Wall -Wextra -g -o lecturas lecturas.cpp
+$ gdb -q ./lecturas</span>
+Reading symbols from ./lecturas...
+(gdb)</div>
+      <p class="body gap16" style="font-size:21px">Sin <code>-g</code>, gdb corre el programa pero no puede mostrar el código ni las variables por su nombre.</p>
+      <p class="body gap12" style="font-size:21px">Para salir: <code>quit</code>. En Windows, gdb viene con MinGW; en Linux se instala con <code>sudo apt install gdb</code>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Sesión de gdb paso a paso">
+  <h2 class="mask"><span>Una sesión real de gdb, paso a paso</span></h2>
+  <div data-step="gdb" data-a style="display:grid;grid-template-columns:560px 1fr;gap:22px;margin-top:14px">
+    <div>
+      <pre class="code c18 nums" style="counter-reset:ln 3;line-height:1.36;padding:8px 0">int sumar(const int lecturas[], int n) {
+    int total = 0;
+    for (int i = 0; i &lt; n; i++)
+        total += lecturas[i];
+    return total;
+}
+
+double promedio(const int lecturas[], int n) {
+    int total = sumar(lecturas, n);
+    return total / n;
+}
+
+int main() {
+    int lecturas[4] = {70, 71, 72, 74};
+    double p = promedio(lecturas, 4);
+    cout &lt;&lt; "Promedio: " &lt;&lt; p &lt;&lt; endl;
+    return 0;
+}</pre>
+      <div class="stepbar"><button class="go" data-s="next">Siguiente comando</button><button data-s="reset">Reiniciar</button><span class="stepn"></span></div>
+    </div>
+    <div class="ws">
+      <div class="term gdbt"><div data-id="out"><span class="p">$ gdb -q ./lecturas</span>
+Reading symbols from ./lecturas...
+</div></div>
+      <p class="msg gap8" data-id="msg" aria-live="polite" style="font-size:19px;min-height:84px">El programa dice «Promedio: 71», pero 70, 71, 72 y 74 promedian 71.75. Recorra la sesión.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Cuando el programa se cae: backtrace">
+  <h2 class="mask"><span>Segmentation fault: ¿quién llamó a quién?</span></h2>
+  <div style="display:grid;grid-template-columns:690px 1fr;gap:22px;margin-top:14px" data-a>
+    <div>
+      <p class="cap">choque.cpp: <code>buscar</code> devuelve <code>&amp;lista[i]</code> o <code>nullptr</code></p>
+      <pre class="code c18 nums" style="counter-reset:ln 23">int main() {
+    Cuenta cuentas[2] = {{1001, 500.00}, {1002, 75.50}};
+    Cuenta* c = buscar(cuentas, 2, 1009);
+    c-&gt;retirar(20);</pre>
+    </div>
+    <div>
+      <div class="term t18"><span class="p">$ ./choque</span>
+<span class="e">Segmentation fault</span></div>
+    </div>
+  </div>
+  <div class="term t18 gap12" data-a style="line-height:1.32"><span class="cmd">(gdb) run</span>
+Program received signal SIGSEGV, Segmentation fault.
+0x000055555555532a in Cuenta::retirar (<span class="e">this=0x0</span>, monto=20) at choque.cpp:12
+12	        if (monto &lt;= 0 || monto &gt; saldo) return false;
+<span class="cmd">(gdb) backtrace</span>
+#0  0x000055555555532a in Cuenta::retirar (this=0x0, monto=20) at choque.cpp:12
+#1  0x000055555555527d in main () at choque.cpp:27
+<span class="cmd">(gdb) frame 1</span>
+#1  0x000055555555527d in main () at choque.cpp:27
+27	    c-&gt;retirar(20);
+<span class="cmd">(gdb) print c</span>
+$1 = (Cuenta *) 0x0</div>
+  <p class="msg gap12" data-a style="font-size:20px;min-height:0">Se cayó en <code>retirar</code>, pero la causa está en <code>main</code>: la cuenta 1009 no existe. Falta <code>if (c != nullptr)</code>.</p>
+</section>
+
+<section class="slide" data-title="AddressSanitizer y UBSan">
+  <h2 class="mask"><span>Los sanitizadores vigilan mientras corre</span></h2>
+  <div data-tabs="sa1" data-a style="margin-top:16px">
+    <div class="tabs-row"><button data-tab="sa1">AddressSanitizer: fuera del arreglo</button><button data-tab="sa2">UBSan: división entre cero</button></div>
+    <div style="display:grid;grid-template-columns:544px 1fr;gap:20px;margin-top:14px">
+      <div data-panel="sa1"><pre class="code c18 nums" style="counter-reset:ln 4">int main() {
+    int lecturas[4] = {70, 71, 72, 74};
+    int total = 0;
+    for (int i = 0; i &lt;= 4; i++)
+        total += lecturas[i];
+    cout &lt;&lt; "Total: " &lt;&lt; total &lt;&lt; endl;</pre><div class="term t18 gap12"><span class="p">$ g++ -std=c++17 -Wall -Wextra -o fuera fuera.cpp
+$ ./fuera</span>
+Total: 287</div></div>
+      <div data-panel="sa1"><div class="term t18" style="line-height:1.36"><span class="p">$ g++ -std=c++17 -Wall -Wextra -g -fsanitize=address -o fuera fuera.cpp
+$ ./fuera</span>
+<span class="e">==1649==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7fc53cd00030 ...</span>
+READ of size 4 at 0x7fc53cd00030 thread T0
+    #0 0x5603f3480464 in main .../fuera.cpp:8
+...
+    [32, 48) 'lecturas' (line 5) &lt;== Memory access at offset 48 overflows this variable</div><p class="msg gap12" style="font-size:20px">Sin el sanitizador salió 287, la suma correcta, por pura suerte. ASan señala la línea 8 y el arreglo <code>lecturas</code>: el <code>&lt;=</code> lee una casilla de más.</p></div>
+      <div data-panel="sa2" hidden><pre class="code c18 nums" style="counter-reset:ln 3">int promedio(const int lecturas[], int n) {
+    int total = 0;
+    for (int i = 0; i &lt; n; i++)
+        total += lecturas[i];
+    return total / n;
+}</pre><div class="term t18 gap12"><span class="p">$ ./cero</span>
+<span class="e">Floating point exception</span></div></div>
+      <div data-panel="sa2" hidden><div class="term t18"><span class="p">$ g++ -std=c++17 -Wall -Wextra -g -fsanitize=undefined -o cero cero.cpp
+$ ./cero</span>
+<span class="e">cero.cpp:8:18: runtime error: division by zero</span>
+<span class="e">Floating point exception</span></div><p class="msg gap12" style="font-size:20px"><code>main</code> llamó a <code>promedio(lecturas, 0)</code>. El sistema solo dice «Floating point exception»; UBSan dice el archivo, la línea, la columna y la causa.</p><p class="small gap12" style="font-size:18px">En el laboratorio, compile con <code>-g -fsanitize=address,undefined</code> mientras busca las fallas.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: salió bien por suerte">
+  <p class="q mask"><span>fuera.cpp leyó fuera del arreglo y aun así imprimió 287. ¿Está bien el programa?</span></p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:26px">70 + 71 + 72 + 74 = 287. ¿Qué pasa en otra computadora, o con otro compilador?</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a data-rv-box><div><b>Sí</b><span>la salida es la correcta</span></div><div class="ok"><b>No</b><span>funciona de casualidad</span><button data-rv="Ocultar" class="pbtn">Respuesta</button></div><div class="reveal resp">No. Leer fuera del arreglo es comportamiento indefinido: esta vez la casilla de más tenía 0. En otra máquina puede dar otro número o caerse. Que la salida se vea bien no prueba nada; el sanitizador sí lo ve.</div></div></div>
+</section>
+
+<section class="slide" data-title="El pato de hule">
+  <h2 class="mask"><span>El pato de hule: explicar en voz alta</span></h2>
+  <p class="body sub" data-a style="font-size:22px;max-width:1130px">Se le explica el código, línea por línea, a un pato de hule (o a un compañero). Cuando lo que usted dice no coincide con lo que dice el código, apareció la falla.</p>
+  <div data-step="pato" data-a style="display:grid;grid-template-columns:560px 1fr;gap:28px;margin-top:16px">
+    <div>
+      <pre class="code c19">double subtotal = totalPiezas + manoObra;
+double pct = 10 / 100;
+double descuento = subtotal * pct;
+double base = subtotal - descuento;</pre>
+      <div class="stepbar"><button class="go" data-s="next">Explicar la próxima línea</button><button data-s="reset">Reiniciar</button><span class="stepn"></span></div>
+    </div>
+    <div class="ws">
+      <div class="pato">
+        <svg width="200" height="180" viewBox="0 0 200 180" role="img" aria-label="Pato de hule"><ellipse cx="104" cy="128" rx="84" ry="44" fill="#FFC425"/><circle cx="74" cy="66" r="42" fill="#FFC425"/><path d="M30 64 L2 74 L32 82 Z" fill="#E8761C"/><circle cx="62" cy="56" r="6" fill="#14201A"/><path d="M120 118 q32 -6 52 16" fill="none" stroke="#D9A400" stroke-width="5" stroke-linecap="round"/></svg>
+        <div style="display:grid;gap:12px">
+          <div class="globo" data-id="usted">Usted: «Le voy a explicar cómo se calcula la factura».</div>
+          <div class="globo codigo" data-id="cod" hidden></div>
+        </div>
+      </div>
+      <p class="msg gap12" data-id="msg" aria-live="polite" style="font-size:20px;min-height:60px"></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Búsqueda binaria del error">
+  <h2 class="mask"><span>Búsqueda binaria: medir en el medio</span></h2>
+  <p class="body sub" data-a style="font-size:21px;max-width:1130px">La factura sale mal ($164.46 en vez de $148.02). Hay 8 puntos de prueba. Bajo cada punto, en gris, el valor que anotó la bitácora; al medir sale, en color, lo que dio el programa. Mida tocando un punto: si está bien, la falla está después; si está mal, antes.</p>
+  <div class="circ" id="bb" data-a></div>
+  <div class="medida" data-a>
+    <svg class="mm" id="bb-mm" width="300" height="250" viewBox="0 0 300 250" role="img" aria-label="Multímetro con la medición del punto escogido"></svg>
+    <div>
+      <p class="msg" id="bb-msg" aria-live="polite" style="min-height:118px;font-size:21px"></p>
+      <div class="row gap12"><span class="score" id="bb-n" style="font-size:26px">Mediciones: 0</span><button id="bb-re">Reiniciar</button></div>
+      <pre class="code c18 gap12" id="bb-cod" hidden>double pct = 10 / 100;      // int / int da 0
+double pct = 10.0 / 100;    // corregida: 0.10</pre>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Lo esencial de la unidad">
+  <h2 class="mask"><span>Lo que se lleva de esta unidad</span></h2>
+  <div class="dir" data-a>
+    <div><h3>Prueba unitaria</h3><p>Una pieza sola, con el resultado esperado escrito antes. Casos normales, límite y de error.</p></div>
+    <div><h3>assert y revisar</h3><p><code>assert</code> detiene el programa y <code>-DNDEBUG</code> lo apaga. Un marco como <code>revisar</code> anota PASO o FALLO y sigue.</p></div>
+    <div><h3>Leer antes de cambiar</h3><p>El primer error de g++ primero; la falla suele estar en esa línea o en la anterior. Cada aviso de <code>-Wall -Wextra</code> es una pista.</p></div>
+    <div><h3>Seguir el circuito</h3><p>Trazas con <code>cerr</code>, gdb con <code>-g</code>, sanitizadores, el pato de hule y la búsqueda binaria.</p></div>
+  </div>
+</section>
+
+<!-- LABORATORIO -->
+<section class="slide chapter" data-title="Laboratorio L: el caso de las tres fallas" data-topic="3">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask" style="font-size:86px"><span>Laboratorio&nbsp;L</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:620px">El caso de las tres fallas: una clase con tres errores sembrados y pruebas que no los ven. Usted escribe las pruebas que los atrapan y los corrige.</p>
+    <div class="ext" data-a></div></div>
+    <div data-a style="align-self:center"><div class="bita" style="width:460px"><h3><span>Orden de servicio</span><span>L-003</span></h3>
+      <div class="br"><span>equipo</span><span><code>class Bitacora</code></span></div>
+      <div class="br"><span>síntoma</span><span>«El promedio de temperaturas sale mal»</span></div>
+      <div class="br"><span>pruebas</span><span>6 de 6 <span class="tag" style="font-size:16px">PASÓ</span></span></div>
+      <div class="br"><span>fallas</span><span>3, sin marcar</span></div>
+    </div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Laboratorio L: el expediente">
+  <h2 class="mask"><span>Todo pasa, pero el promedio sale mal</span></h2>
+  <div style="display:grid;grid-template-columns:530px 1fr;gap:26px;margin-top:16px">
+    <div data-a>
+      <div class="bita"><h3><span>Especificación de Bitacora</span></h3>
+        <div class="br"><span>agregar(g)</span><span>guarda g; si ya hay 8, la rechaza y todo queda igual</span></div>
+        <div class="br"><span>cantidad()</span><span>cuántas lecturas hay</span></div>
+        <div class="br"><span>promedio()</span><span>con decimales; 0 si no hay lecturas</span></div>
+        <div class="br"><span>enRango(g)</span><span>de 30 a 85 grados, con 30 y 85 incluidos</span></div>
+        <div class="br"><span>fueraDeRango()</span><span>cuántas lecturas no están en rango</span></div>
+      </div>
+    </div>
+    <div data-a>
+      <p class="cap">El código base, opción 1 y opción 3 (con 70, 71, 72, 74):</p>
+      <div class="term t18" style="line-height:1.36"><span class="ok">[PASO]  bitacora nueva esta vacia
+[PASO]  promedio sin lecturas es 0
+[PASO]  promedio de 60 y 80 es 70
+[PASO]  50 esta en rango
+[PASO]  120 esta fuera de rango
+[PASO]  acepta 8 lecturas y rechaza la novena</span>
+Pruebas: 6 de 6 pasaron
+...
+Lecturas: 4
+<span class="e">Promedio: 71.00 grados</span>
+Fuera de rango (30 a 85): 0</div>
+      <p class="msg gap12" style="font-size:20px">Debía dar 71.75. Las seis pruebas pasan porque ninguna mide donde están las fallas.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Laboratorio L: la misión">
+  <h2 class="mask"><span>La misión: atrapar y corregir</span></h2>
+  <ol class="todo" data-a style="margin-top:16px">
+    <li><b class="nm">1</b><span>Prueba normal: <code>"promedio de 70 y 71 es 70.5"</code></span></li>
+    <li class="fx"><b class="nm">4</b><span>Corrija la falla que expone la prueba 1.</span></li>
+    <li><b class="nm">2</b><span>Prueba límite: <code>"30 y 85 estan en rango"</code></span></li>
+    <li class="fx"><b class="nm">5</b><span>Corrija la falla que expone la prueba 2.</span></li>
+    <li><b class="nm">3</b><span>Prueba de error: <code>"la lectura rechazada no cuenta en el promedio"</code></span></li>
+    <li class="fx"><b class="nm">6</b><span>Corrija la falla que expone la prueba 3.</span></li>
+  </ol>
+  <p class="body" data-a style="margin-top:12px;font-size:20px">Encima de cada corrección, un comentario: <code>// CORREGIDA (falla n): ...</code> y <code>// LA ENCONTRE CON: ...</code> (la prueba, el mensaje de g++ o gdb). Use el nombre exacto de cada prueba.</p>
+  <div class="ruta" data-a style="margin-top:10px"><span>TODO 1 a 3 → opción 1: 6 de 9</span><span>TODO 4 → Caso 2</span><span>TODO 5 → Caso 3</span><span>TODO 6 → Caso 4</span><span>Todo → Casos 1 y 5</span></div>
+  <div class="row" data-a style="margin-top:12px;gap:14px;align-items:stretch;flex-wrap:nowrap">
+    <a class="dl" href="laboratorios/LabL_TresFallas.cpp" download>Descargar LabL_TresFallas.cpp</a>
+    <pre class="code c18" data-raw style="flex:1;padding:11px 0"><span class="ln">g++ -std=c++17 -Wall -Wextra -g -o fallas LabL_TresFallas.cpp</span></pre>
+  </div>
+</section>
+
+<section class="slide" data-title="Laboratorio L: las pruebas">
+  <h2 class="mask"><span>Cinco pruebas del programa</span></h2>
+  <div style="display:grid;grid-template-columns:796px 1fr;gap:22px;margin-top:14px">
+    <div class="cases" data-tabs="c1" data-a>
+      <div class="row"><button data-tab="c1" id="tb-c1">Caso 1</button><button data-tab="c2" id="tb-c2">Caso 2</button><button data-tab="c3" id="tb-c3">Caso 3</button><button data-tab="c4" id="tb-c4">Caso 4</button><button data-tab="c5" id="tb-c5">Caso 5</button></div>
+      <div id="cases-panels" style="margin-top:12px"></div>
+    </div>
+    <div data-a>
+      <label for="vf-in" style="font-size:20px;font-weight:600;display:block;margin-bottom:6px">Pegue aquí lo que imprimió su programa con el <span id="vf-name">Caso 1</span></label>
+      <textarea class="paste" id="vf-in" spellcheck="false" placeholder="Copie todo el texto de la terminal y péguelo aquí"></textarea>
+      <div class="row" style="margin-top:8px"><button class="go" id="vf-go">Comprobar</button><span class="score" id="vf-score" aria-live="polite"></span></div>
+      <ul class="checks" id="vf-checks" aria-label="Resultado de la comprobación"></ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Laboratorio L: rúbrica y entrega">
+  <h2 class="mask"><span>Rúbrica y entrega</span></h2>
+  <div style="display:grid;grid-template-columns:560px 1fr;gap:36px;margin-top:16px;align-items:start">
+    <table class="t rub" data-a>
+      <tr><th>Criterio</th><th>Puntos</th></tr>
+      <tr><td>1. Prueba normal</td><td>10</td></tr>
+      <tr><td>2. Prueba límite</td><td>10</td></tr>
+      <tr><td>3. Prueba de error</td><td>10</td></tr>
+      <tr><td>4. Corrección de la falla 1</td><td>15</td></tr>
+      <tr><td>5. Corrección de la falla 2</td><td>15</td></tr>
+      <tr><td>6. Corrección de la falla 3</td><td>15</td></tr>
+      <tr><td>Comentarios: cómo encontró cada falla</td><td>5</td></tr>
+      <tr><td>Compila sin avisos con -Wall -Wextra</td><td>10</td></tr>
+      <tr><td>Nombre, fecha y sangría correcta</td><td>10</td></tr>
+      <tr><th>Total</th><th>100</th></tr>
+    </table>
+    <div data-a>
+      <h3 style="font-size:27px">Qué se entrega</h3>
+      <p class="body" style="margin-top:8px;font-size:21px">Por OrbundSIS, en un .zip llamado <code>Apellido_Nombre_TESI2105_LabL.zip</code>:</p>
+      <ul style="font-size:21px;line-height:1.42;margin:8px 0 0;padding-left:26px"><li><code>LabL_TresFallas.cpp</code> completo.</li><li>Una captura de la opción 1 con sus tres pruebas en <code>[FALLO]</code>, antes de corregir.</li><li>Una captura por cada uno de los 5 casos.</li></ul>
+      <p class="body" style="margin-top:10px;font-size:21px">La fecha de entrega se anuncia en OrbundSIS.</p>
+      <div class="tone" style="margin-top:14px;padding:14px 20px"><b style="font-size:23px">Reto (+10)</b><p style="font-size:20px;margin-top:6px">Busque un caso límite que nadie mencionó: ¿qué hace <code>agregar(-1)</code>, la lectura de un sensor desconectado? Escriba la prueba <code>"una lectura imposible se rechaza"</code> y corrija <code>agregar</code> para que rechace lo que no esté de 0 a 150. Entréguelo aparte, como <code>LabL_Reto.cpp</code>.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Referencias">
+  <h2 class="mask"><span>Referencias</span></h2>
+  <div class="refs gap20" data-a style="max-width:1100px">
+    <p>cppreference.com. (s. f.). <i>assert</i>. https://en.cppreference.com/w/cpp/error/assert</p>
+    <p>cppreference.com. (s. f.). <i>std::cerr, std::wcerr</i>. https://en.cppreference.com/w/cpp/io/cerr</p>
+    <p>cppreference.com. (s. f.). <i>Undefined behavior</i>. https://en.cppreference.com/w/cpp/language/ub</p>
+    <p>cppreference.com. (s. f.). <i>Arithmetic operators</i>. https://en.cppreference.com/w/cpp/language/operator_arithmetic</p>
+    <p>Kumar, A. (2024). <i>Hands-on object-oriented programming: Mastering OOP features for real-world software systems development</i>. Apress.</p>
+    <p>Lutz, M. (2025). <i>Learning Python: Powerful object-oriented programming</i>. O’Reilly Media.</p>
+  </div>
+  <p class="body gap16" data-a style="font-size:19px;max-width:1100px">Kumar (2024) y Lutz (2025) son los textos oficiales del prontuario. Los programas, salidas y mensajes se verificaron con g++&nbsp;13.3 y gdb&nbsp;15.1 en Linux.</p>
+</section>
+
+</div></div>
+
+<script>
+(function(){
+function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+var B='===== BANCO DE PRUEBAS: BITACORA DEL CPU =====';
+var PASO=['bitacora nueva esta vacia','promedio sin lecturas es 0','promedio de 60 y 80 es 70','50 esta en rango','120 esta fuera de rango','acepta 8 lecturas y rechaza la novena','promedio de 70 y 71 es 70.5','30 y 85 estan en rango','la lectura rechazada no cuenta en el promedio'].map(function(n){return '[PASO]  '+n});
+window.__CASES={
+ c1:{titulo:'Las pruebas',pasos:[['1'],['0']],out:PASO.join('\n')+'\nPruebas: 9 de 9 pasaron',chk:[B].concat(PASO,['Pruebas: 9 de 9 pasaron'])},
+ c2:{titulo:'Caso normal',pasos:[['2','4','70','71','72','74'],['3'],['0']],out:'Lecturas: 4\nPromedio: 71.75 grados\nFuera de rango (30 a 85): 0',chk:[B,'Lecturas: 4','Promedio: 71.75 grados','Fuera de rango (30 a 85): 0']},
+ c3:{titulo:'Los límites',pasos:[['2','5','30','85','29','86','50'],['3'],['0']],out:'Lecturas: 5\nPromedio: 56.00 grados\nFuera de rango (30 a 85): 2',chk:[B,'Lecturas: 5','Promedio: 56.00 grados','Fuera de rango (30 a 85): 2']},
+ c4:{titulo:'Bitácora llena',pasos:[['2','9','70','70','70','70','70','70','70','70','150'],['3'],['0']],out:'Rechazada: bitacora llena (150)\n…\nLecturas: 8\nPromedio: 70.00 grados\nFuera de rango (30 a 85): 0',chk:[B,'Rechazada: bitacora llena (150)','Lecturas: 8','Promedio: 70.00 grados','Fuera de rango (30 a 85): 0']},
+ c5:{titulo:'Vacía, decimales y opción inválida',pasos:[['3'],['2','3','71','72','72'],['3'],['7'],['0']],out:'Lecturas: 0\nPromedio: 0.00 grados\nFuera de rango (30 a 85): 0\n…\nLecturas: 3\nPromedio: 71.67 grados\nFuera de rango (30 a 85): 0\n…\nOpcion invalida',chk:[B,'Lecturas: 0','Promedio: 0.00 grados','Fuera de rango (30 a 85): 0','Lecturas: 3','Promedio: 71.67 grados','Fuera de rango (30 a 85): 0','Opcion invalida']}
+};
+var C=window.__CASES,ph='';
+Object.keys(C).forEach(function(k){
+  var pasos=C[k].pasos.map(function(p){return '<li>'+p.map(function(x){return '<kbd>'+esc(x)+'</kbd>'}).join('')+'</li>'}).join('');
+  ph+='<div data-panel="'+k+'"'+(k==='c1'?'':' hidden')+'><h3 class="ct">Caso '+k.slice(1)+': '+esc(C[k].titulo)+'</h3><div class="cc"><div><p class="cl">Teclee:</p><ol class="typein">'+pasos+'</ol><p class="cl" style="margin-top:6px;font-weight:500">Enter después de cada dato.</p></div><div><p class="cl">Debe ver, entre los menús:</p><div class="term">'+esc(C[k].out)+'</div></div></div></div>'});
+document.getElementById('cases-panels').innerHTML=ph;
+})();
+</script>
+<script src="assets/deck.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id)};
+function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function grupo(caja,attr,fn,inicial){var bs=[].slice.call($(caja).querySelectorAll('button['+attr+']'));
+  function ver(k){bs.forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute(attr)===k)});fn(k)}
+  bs.forEach(function(b){b.onclick=function(){ver(b.getAttribute(attr))}});if(inicial!=null)ver(inicial);return ver}
+function etiqueta(ok,txt){return '<span class="tag anim'+(ok?'':' no')+'">'+(txt||(ok?'PASÓ':'FALLÓ'))+'</span>'}
+
+/* multímetro dibujado en SVG */
+function multimetro(svg,alto){
+  var h=alto||380,c=h>300;
+  svg.innerHTML='<path d="M150 '+(h-6)+' C 150 '+(h+40)+' 40 '+(h-10)+' 10 '+(h-60)+'" fill="none" stroke="#B92D24" stroke-width="6"/>'+
+  '<rect x="40" y="6" width="220" height="'+(h-20)+'" rx="26" fill="#F2B705"/><rect x="56" y="22" width="188" height="'+(h-52)+'" rx="16" fill="#2A2F2C"/>'+
+  '<rect x="70" y="36" width="160" height="92" rx="6" fill="#C3D1AE"/>'+
+  '<text class="lcdsm" x="80" y="58" data-mm="u">ESPERA</text><text class="lcdtxt" x="222" y="114" text-anchor="end" data-mm="v">----</text>'+
+  (c?'<circle cx="150" cy="222" r="58" fill="#3A403C" stroke="#F2B705" stroke-width="4"/><rect x="146" y="166" width="8" height="40" rx="3" fill="#F3F5F0" transform="rotate(-30 150 222)"/>'+
+  '<text class="lbl" x="150" y="160" text-anchor="middle">V  A  Ω</text>':'')+
+  '<circle cx="110" cy="'+(h-46)+'" r="12" fill="#14201A" stroke="#C9CFCB" stroke-width="3"/><circle cx="190" cy="'+(h-46)+'" r="12" fill="#B92D24" stroke="#C9CFCB" stroke-width="3"/>'+
+  '<text class="lbl" x="110" y="'+(h-68)+'" text-anchor="middle">COM</text><text class="lbl" x="190" y="'+(h-68)+'" text-anchor="middle">PRUEBA</text>';
+  return {u:svg.querySelector('[data-mm=u]'),v:svg.querySelector('[data-mm=v]')};
+}
+
+/* capítulos */
+var EX=['Probar','Depurar','Laboratorio'];
+[].forEach.call(document.querySelectorAll('[data-topic]'),function(sl){var t=+sl.dataset.topic,e=sl.querySelector('.ext');
+  if(e)e.innerHTML=EX.map(function(w,i){return '<span class="'+(i+1===t?'on':'')+'">'+(i+1===t?'→ ':'')+w+'</span>'}).join('')});
+
+/* portada: la Cuenta del ejemplo, con retirar(monto >= saldo) */
+var ptm=multimetro($('pt-mm'));
+var PT=[{m:200,obt:'300.00',esp:'300.00',ok:true},{m:500,obt:'500.00',esp:'0.00',ok:false},{m:0,obt:'500.00',esp:'500.00',ok:true}];
+grupo('pt-b','data-i',function(i){var p=PT[+i];ptm.u.textContent='SALDO';ptm.v.textContent=p.obt;
+  $('pt-res').innerHTML=etiqueta(p.ok)+'<span>saldo 500.00 → esperado '+p.esp+'</span>'},'1');
+
+/* ciclo del técnico */
+var CI=['La laptop no enciende. El programa dice «Promedio: 71» y debía decir 71.75. Se anota lo que se ve, sin suponer.',
+ 'Se mide sin abrir: una prueba con una entrada conocida. Si la prueba falla, la falla se puede repetir cuando haga falta.',
+ 'Una sola idea a la vez: «la división es entera». Se busca con trazas, con gdb o explicándole el código a alguien.',
+ 'Un cambio pequeño, y solo uno. Si se cambian cinco cosas a la vez, no se sabe cuál arregló la falla.',
+ 'Se corren todas las pruebas otra vez: la nueva debe pasar y las viejas deben seguir pasando. Se anota en la bitácora.'];
+grupo('ci-b','data-c',function(c){$('ci-msg').textContent=CI[+c]},'0');
+
+/* anatomía de la prueba unitaria */
+var PU={prep:'Preparar: se crea el objeto en un estado conocido. Cada prueba usa su propia cuenta, así una no afecta a la otra.',
+ act:'Actuar: se llama a la única función que se está probando.',
+ comp:'Comprobar: se compara con lo esperado, que se calculó a mano antes: 500 − 200 = 300. Se mira el valor devuelto y también el estado del objeto.',
+ nom:'El nombre dice qué se probó y de qué tipo de caso es. Cuando salga FALLÓ, el nombre dice dónde mirar.'};
+grupo('pu-b','data-pt',function(k){[].forEach.call($('pu-code').querySelectorAll('.pa'),function(p){p.classList.toggle('lit',p.dataset.p===k)});$('pu-msg').textContent=PU[k]},'prep');
+
+/* casos normales, límite y de error */
+var CS=[['normal','retirar(200)','true','300.00','el uso de todos los días',200],
+ ['normal','retirar(125.50)','true','374.50','un monto con centavos',125.5],
+ ['limite','retirar(500)','true','0.00','justo el saldo completo',500],
+ ['limite','retirar(500.01)','false','500.00','un centavo más que el saldo',500.01],
+ ['error','retirar(0)','false','500.00','cero no es un retiro',0],
+ ['error','retirar(-20)','false','500.00','un monto negativo',-20]];
+var CAT={normal:['normal',''],limite:['límite',' lim'],error:['error',' err']};
+var cs=$('cs');CS.forEach(function(r,i){var tr=document.createElement('tr');tr.tabIndex=0;tr.dataset.i=i;
+  tr.innerHTML='<td><span class="cat'+CAT[r[0]][1]+'">'+CAT[r[0]][0]+'</span></td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td><td style="font-family:var(--sans)">'+r[4]+'</td>';cs.appendChild(tr)});
+function csShow(i){var r=CS[i];[].forEach.call(cs.querySelectorAll('tr[data-i]'),function(t){t.classList.toggle('lit',+t.dataset.i===i)});
+  var x=(r[5]+50)/550*100;$('rg-mk').style.left=x+'%';$('rg-v').textContent=r[5]}
+[].forEach.call(cs.querySelectorAll('tr[data-i]'),function(t){t.onclick=function(){csShow(+t.dataset.i)};t.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();csShow(+t.dataset.i)}}});
+csShow(2);
+
+/* tablero de pruebas: las mismas tres versiones de retirar que se probaron en C++ */
+var U={A:{f:function(s,m){if(m<=0||m>=s)return[false,s];return[true,s-m]},cod:['bool retirar(double monto) {','    if (monto &lt;= 0 || <span class="malo">monto &gt;= saldo</span>) return false;','    saldo -= monto;','    return true;','}'],why:'El límite: >= rechaza el retiro del saldo completo. Lo atrapa el caso límite retirar(500).'},
+ B:{f:function(s,m){if(m<0||m>s)return[false,s];return[true,s-m]},cod:['bool retirar(double monto) {','    if (<span class="malo">monto &lt; 0</span> || monto &gt; saldo) return false;','    saldo -= monto;','    return true;','}'],why:'El error: < 0 deja pasar el 0 como un retiro válido. Lo atrapa el caso de error retirar(0).'},
+ C:{f:function(s,m){if(m<=0||m>s)return[false,s];return[true,s-Math.trunc(m)]},cod:['bool retirar(double monto) {','    if (monto &lt;= 0 || monto &gt; saldo) return false;','    <span class="malo">saldo -= (int)monto;</span>','    return true;','}'],why:'Los centavos: (int) corta los decimales. Lo atrapa el caso normal con centavos, retirar(125.50).'}};
+var TBC=CS.map(function(r){return {cat:r[0],call:r[1],m:r[5],ok:r[2]==='true',saldo:parseFloat(r[3])}});
+var tbSel=[true,false,false,false,false,true],tbU='A',tbRes=null;
+var tb=$('tb');TBC.forEach(function(c,i){var tr=document.createElement('tr');tr.dataset.i=i;
+  tr.innerHTML='<td class="chk"><input type="checkbox" aria-label="Incluir '+c.call+'"'+(tbSel[i]?' checked':'')+'></td><td><span class="cat'+CAT[c.cat][1]+'">'+CAT[c.cat][0]+'</span></td><td>'+c.call+'</td><td class="obt"></td><td class="res"></td>';tb.appendChild(tr);
+  tr.querySelector('input').onchange=function(e){tbSel[i]=e.target.checked;tbLimpiar()}});
+function tbLimpiar(){tbRes=null;[].forEach.call(tb.querySelectorAll('tr[data-i]'),function(tr){var i=+tr.dataset.i;tr.classList.toggle('off',!tbSel[i]);tr.querySelector('.obt').textContent='';tr.querySelector('.res').innerHTML=''});
+  $('tb-score').textContent='Sin correr';$('tb-msg').textContent='Unidad '+tbU+' en el banco. Marque casos y pulse «Correr».';$('tb-abrir').hidden=true;$('tb-cod').hidden=true}
+grupo('tb-u','data-u',function(u){tbU=u;tbLimpiar()},'A');
+$('tb-go').onclick=function(){var n=0,ok=0,fallo=[];
+  [].forEach.call(tb.querySelectorAll('tr[data-i]'),function(tr){var i=+tr.dataset.i,c=TBC[i];if(!tbSel[i])return;n++;
+    var r=U[tbU].f(500,c.m),pasa=r[0]===c.ok&&Math.abs(r[1]-c.saldo)<0.001;if(pasa)ok++;else fallo.push(c.call);
+    tr.querySelector('.obt').textContent=r[0]+', '+r[1].toFixed(2);tr.querySelector('.res').innerHTML=etiqueta(pasa)});
+  if(!n){$('tb-score').textContent='Sin casos';$('tb-msg').textContent='Marque al menos un caso.';return}
+  $('tb-score').textContent=ok+' de '+n+' pasaron';
+  $('tb-msg').textContent=fallo.length?'La unidad '+tbU+' falló con '+fallo.join(' y ')+'. Ya sabe que hay una falla; ahora puede abrirla.':(n<6?'Todo pasó, pero solo con '+n+' de 6 casos. ¿Qué tipo de caso no ha probado?':'Todo pasó con los 6 casos.');
+  $('tb-abrir').hidden=!fallo.length;$('tb-cod').hidden=true};
+$('tb-abrir').onclick=function(){$('tb-cod').innerHTML=U[tbU].cod.join('\n');$('tb-cod').hidden=false;$('tb-abrir').hidden=true;$('tb-msg').textContent=U[tbU].why};
+
+/* el marco prueba Cuenta: antes y después de corregir */
+var MC={no:{cod:'if (monto &lt;= 0 || monto &gt;= saldo)',out:'<span class="ok">[PASO]  normal: retirar 200 de 500</span>\n<span class="bad">[FALLO] limite: retirar todo el saldo</span>\n<span class="ok">[PASO]  error: retirar 0 se rechaza\n[PASO]  error: retirar de mas se rechaza</span>\nPruebas: 3 de 4 pasaron',msg:'La prueba límite falló: retirar todo el saldo se rechaza. Con el nombre de la prueba se sabe qué mirar: la comparación con el saldo.',btn:'Corregir: >= por >'},
+ si:{cod:'if (monto &lt;= 0 || monto &gt; saldo)',out:'<span class="ok">[PASO]  normal: retirar 200 de 500\n[PASO]  limite: retirar todo el saldo\n[PASO]  error: retirar 0 se rechaza\n[PASO]  error: retirar de mas se rechaza</span>\nPruebas: 4 de 4 pasaron',msg:'Un solo carácter. Las cuatro pruebas se corren otra vez, sin teclear nada: la corregida pasa y las otras siguen pasando.',btn:'Volver a >='}};
+var mcEstado='no';
+function mcShow(k){mcEstado=k;var m=MC[k],pre=$('mc-cod');pre.innerHTML=m.cod;Deck.hl(pre);$('mc-out').innerHTML='<span class="p">$ ./pruebas</span>\n'+m.out;$('mc-msg').textContent=m.msg;$('mc-go').textContent=m.btn}
+$('mc-go').onclick=function(){mcShow(mcEstado==='no'?'si':'no')};mcShow('no');
+
+/* anatomía del mensaje de g++ */
+var MG={ar:'El archivo donde g++ encontró el problema.',li:'La línea 6. Pero la línea 6 está bien: el ; que falta es el del final de la línea 5. g++ se da cuenta al leer lo que sigue.',
+ co:'La columna 5: donde empieza saldo en la línea 6. El ^~~~~ de abajo la señala.',ti:'error: no se crea el programa. Un warning sí deja compilar, pero también hay que leerlo.',
+ qu:'Lo que esperaba encontrar: una coma o un punto y coma antes de saldo. Lea esta parte primero: casi siempre dice la solución.'};
+grupo('mg-b','data-pt',function(k){[].forEach.call($('mg-term').querySelectorAll('.pa'),function(p){p.classList.toggle('lit',p.dataset.p===k)});$('mg-msg').textContent=MG[k]},'li');
+
+/* el primer error primero */
+var PE={no:{out:'<span class="p">$ g++ -std=c++17 -Wall -Wextra -o cuenta cuenta.cpp</span>\n<span class="e">cuenta.cpp:7:5: error: \'strin\' does not name a type; did you mean \'stdin\'?</span>\n<span class="e">cuenta.cpp:11:9: error: \'socio\' was not declared in this scope</span>\n<span class="e">cuenta.cpp:15:17: error: \'socio\' was not declared in this scope</span>',
+  msg:'Tres errores. Los dos últimos son consecuencia del primero: como strin no es un tipo, socio nunca se declaró. Y ojo: la sugerencia «stdin» no es la correcta; lo que faltaba era una g.'},
+ si:{out:'<span class="p">$ g++ -std=c++17 -Wall -Wextra -o cuenta cuenta.cpp\n$ ./cuenta</span>\nMarta: $500',
+  msg:'Un solo cambio en la línea 7 (string) y desaparecen los tres errores. Corrija el primero, compile otra vez y solo entonces lea los que queden.'}};
+function peShow(k){$('pe-out').innerHTML=PE[k].out;$('pe-msg').textContent=PE[k].msg;var l=$('pe-cod').querySelectorAll('.ln')[2];
+  l.innerHTML=k==='si'?'    <span class="k">string</span> socio;':'    strin  socio;';l.classList.toggle('cur',true)}
+$('pe-go').onclick=function(){peShow('si')};$('pe-re').onclick=function(){peShow('no')};peShow('no');
+
+/* sesión de gdb: transcripción real (g++ 13.3, gdb 15.1). Se acortó la ruta del programa. */
+function gdbOut(cmd,txt){return function(q){var o=q('out');var s=document.createElement('span');s.className='cmd';s.textContent='(gdb) '+cmd;o.appendChild(s);o.appendChild(document.createTextNode('\n'+(txt?txt+'\n':'')))}}
+Deck.steps.gdb=[
+ {run:gdbOut('break main','Breakpoint 1 at 0x1236: file lecturas.cpp, line 16.'),msg:'break main: el programa se detendrá al entrar a main. Todavía no corre.'},
+ {l:12,run:gdbOut('run','Starting program: .../lecturas\n[Thread debugging using libthread_db enabled]\n\nBreakpoint 1, main () at lecturas.cpp:16\n16\tint main() {'),msg:'run: corre y se detiene en la línea 16. La línea que se muestra es la próxima que se va a ejecutar.'},
+ {l:13,run:gdbOut('next','17\t    int lecturas[4] = {70, 71, 72, 74};'),msg:'next: ejecuta una línea.'},
+ {l:14,run:gdbOut('next','18\t    double p = promedio(lecturas, 4);'),msg:'next otra vez. La próxima línea llama a promedio. Con next se la saltaría entera; aquí se quiere entrar.'},
+ {l:8,run:gdbOut('step','promedio (lecturas=0x7fffffff90d0, n=4) at lecturas.cpp:12\n12\t    int total = sumar(lecturas, n);'),msg:'step: entra a promedio. gdb muestra con qué argumentos se llamó: n=4.'},
+ {l:1,run:gdbOut('step','sumar (lecturas=0x7fffffff90d0, n=4) at lecturas.cpp:5\n5\t    int total = 0;'),msg:'step otra vez: ahora está dentro de sumar, que fue llamada desde promedio.'},
+ {l:1,run:gdbOut('backtrace','#0  sumar (lecturas=0x7fffffff90d0, n=4) at lecturas.cpp:5\n#1  0x0000555555555216 in promedio (lecturas=0x7fffffff90d0, n=4)\n    at lecturas.cpp:12\n#2  0x0000555555555272 in main () at lecturas.cpp:18'),msg:'backtrace: la pila de llamadas. main (#2) llamó a promedio (#1), que llamó a sumar (#0).'},
+ {l:8,run:gdbOut('finish','Run till exit from #0  sumar (lecturas=0x7fffffff90d0, n=4) at lecturas.cpp:5\n0x0000555555555216 in promedio (lecturas=0x7fffffff90d0, n=4)\n    at lecturas.cpp:12\n12\t    int total = sumar(lecturas, n);\nValue returned is $1 = 287'),msg:'finish: termina sumar y dice lo que devolvió: 287. Es correcto (70 + 71 + 72 + 74). La falla no está en sumar.'},
+ {l:9,run:gdbOut('next','13\t    return total / n;'),msg:'next: la próxima línea es la división.'},
+ {l:9,run:gdbOut('print total','$2 = 287'),msg:'print total: 287, bien.'},
+ {l:9,run:gdbOut('print total / n','$3 = 71'),msg:'print total / n: 71. Dos int dividen como enteros. ¡Ahí está la falla!'},
+ {l:9,run:gdbOut('print (double) total / n','$4 = 71.75'),msg:'Se prueba la corrección sin recompilar: con (double), 71.75. Ya se sabe qué cambiar en el código.'},
+ {l:-1,run:gdbOut('continue','Continuing.\nPromedio: 71\n[Inferior 1 (process 1434) exited normally]'),msg:'continue: el programa termina. Ahora se corrige la línea 13 y se vuelve a probar.'}];
+
+/* pato de hule */
+function pato(dice,cod,mal){return function(q){q('usted').textContent='Usted: «'+dice+'»';var c=q('cod');c.hidden=false;c.textContent='Código: '+cod;c.classList.toggle('mal',!!mal)}}
+Deck.steps.pato=[
+ {l:0,run:pato('El subtotal es lo de las piezas más la mano de obra: 87.50 + 60.00 = 147.50.','totalPiezas + manoObra. Coincide.'),msg:'Coinciden. Siguiente línea.'},
+ {l:1,run:pato('El descuento de estudiante es el diez por ciento, o sea 0.10…','10 / 100: dos int. La división entera da 0.',true),msg:'No coinciden. Al decirlo en voz alta se oye: 10 y 100 son enteros. Ahí está la falla; la corrección es 10.0 / 100.'},
+ {l:2,run:pato('…y el descuento es el subtotal por ese diez por ciento.','subtotal * pct, con pct en 0: el descuento es 0.'),msg:'Esta línea está bien escrita: solo arrastra la falla de la anterior. El síntoma aparece lejos de la causa.'}];
+
+/* búsqueda binaria con el multímetro */
+var bbm=multimetro($('bb-mm'),250);
+var BB=[['TP1','piezas','87.50','87.50'],['TP2','mano de obra','60.00','60.00'],['TP3','subtotal','147.50','147.50'],['TP4','pct','0.00','0.10'],['TP5','descuento','0.00','14.75'],['TP6','base','147.50','132.75'],['TP7','ivu','16.96','15.27'],['TP8','total','164.46','148.02']];
+var bbEst=[],bbN=0;
+function bbDibujar(){$('bb').innerHTML=BB.map(function(p,i){var e=bbEst[i];return '<button class="tp'+(e===true?' bien':e===false?' mal':'')+'" data-i="'+i+'" aria-label="Medir '+p[0]+', '+p[1]+'"><span class="pt">'+p[0]+'</span><span class="nm">'+p[1]+'</span><span class="esp">'+p[3]+'</span><span class="vv">'+(e===undefined?'':p[2])+'</span></button>'}).join('');
+  [].forEach.call($('bb').querySelectorAll('.tp'),function(b){b.onclick=function(){bbMedir(+b.dataset.i)}})}
+function bbMedir(i){var p=BB[i],ok=p[2]===p[3];if(bbEst[i]===undefined)bbN++;bbEst[i]=ok;bbDibujar();
+  bbm.u.textContent=p[0];bbm.v.textContent=p[2];$('bb-n').textContent='Mediciones: '+bbN;
+  var bueno=-1,malo=99;bbEst.forEach(function(e,j){if(e===true&&j>bueno)bueno=j;if(e===false&&j<malo)malo=j});
+  var t=p[0]+' ('+p[1]+'): mide '+p[2]+', la bitácora dice '+p[3]+'. '+(ok?'Bien: la falla está más adelante.':'Mal: la falla está aquí o antes.');
+  if(malo===bueno+1){t+=' La falla está entre '+BB[bueno][0]+' y '+BB[malo][0]+': '+(bbN<=3?'encontrada con '+bbN+' mediciones.':'encontrada con '+bbN+' mediciones; empezando por el medio bastan 3.');$('bb-cod').hidden=false}
+  else if(malo===0){t+=' La falla está en el primer tramo.'}
+  $('bb-msg').textContent=t}
+function bbReiniciar(){bbEst=[];bbN=0;bbDibujar();bbm.u.textContent='ESPERA';bbm.v.textContent='----';$('bb-n').textContent='Mediciones: 0';$('bb-cod').hidden=true;
+  $('bb-msg').textContent='Empiece por el medio, TP4, y siga partiendo el tramo que queda. Con 8 puntos bastan 3 mediciones.'}
+$('bb-re').onclick=bbReiniciar;bbReiniciar();
+
+/* laboratorio: verificador */
+function norm(x){return x.replace(/\r/g,'').replace(/[ \t   ]+/g,' ').toLowerCase()}
+function comprobar(chk,raw){var lines=norm(raw).split('\n').map(function(x){return x.trim()}),ln=0,col=0;
+  return chk.map(function(c){var t=norm(c).trim();for(var i=ln;i<lines.length;i++){var p=lines[i].indexOf(t,i===ln?col:0);if(p>=0){ln=i;col=p+t.length;return true}}return false})}
+var CASES=window.__CASES,PASS={},cur='c1';
+try{var g=JSON.parse(localStorage.getItem('tesi2105-labL')||'{}');if(g&&typeof g==='object'&&!Array.isArray(g))Object.keys(CASES).forEach(function(k){if(g[k]===1)PASS[k]=1})}catch(e){PASS={}}
+function marcar(){Object.keys(CASES).forEach(function(k){$('tb-'+k).classList.toggle('pass',!!PASS[k])})}
+function vfGuardar(){try{if(Object.keys(PASS).length)localStorage.setItem('tesi2105-labL',JSON.stringify(PASS));else localStorage.removeItem('tesi2105-labL')}catch(e){}}
+Object.keys(CASES).forEach(function(k){$('tb-'+k).addEventListener('click',function(){cur=k;$('vf-name').textContent='Caso '+k.slice(1);$('vf-checks').innerHTML='';$('vf-score').textContent='';$('vf-in').value=''})});
+$('vf-checks').addEventListener('keydown',function(e){if([' ','PageDown','PageUp','Home','End','ArrowDown','ArrowUp'].indexOf(e.key)>=0)e.stopPropagation()});
+['vf-checks','vf-in'].forEach(function(id){['touchstart','touchend'].forEach(function(ev){$(id).addEventListener(ev,function(e){e.stopPropagation()},{passive:true})})});
+$('vf-go').onclick=function(){var C=CASES[cur],raw=$('vf-in').value,h='';
+  if(!raw.trim()){$('vf-score').textContent='';$('vf-checks').innerHTML='<li class="no">Pegue primero la salida de su programa.</li>';return}
+  var r=comprobar(C.chk,raw),ok=r.filter(Boolean).length,todo=ok===C.chk.length;
+  C.chk.forEach(function(c,i){h+=r[i]?'<li class="ok">'+esc(c)+'</li>':'<li class="no">Falta, o sale en otro orden: '+esc(c)+'</li>'});
+  $('vf-checks').innerHTML=h;$('vf-checks').scrollTop=0;
+  $('vf-score').textContent=todo?'Prueba superada':ok+' de '+C.chk.length;
+  var antes=!!PASS[cur];if(todo)PASS[cur]=1;else delete PASS[cur];if(antes!==todo)vfGuardar();marcar()};
+marcar();
+
+Deck.start();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1292 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unidad M: Proyectos prácticos integradores · TESI 2105</title>
+<meta name="description" content="TESI 2105 Programación Orientada a Objetos. Unidad M: proyectos prácticos integradores, contados con el tablero del proyecto. Incluye la actividad de arranque del proyecto final.">
+<link rel="preload" href="assets/fonts/schibsted-grotesk-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* Tema de la Unidad M: el tablero del proyecto. Un proyecto es un tablero verde con notas
+   adhesivas que pasan de «Por hacer» a «Listo», y unos hitos (v1, v2, v3) que marcan cada versión que ya corre. */
+:root{--ground:#F3F5F0;--tone:#E4E9E1;--tone2:#CFD9CB;--ink:#13272B;--soft:#475A5B;--accent:#0D6B5F;--field:#173F3B;--field-ink:#F0F7F2;--hi:#FFC425;--code-bg:#13272B;--code-ink:#E7F0EC;--c-kw:#86DCC8;--c-str:#FFD08A;--c-num:#FFE9A8;--c-cmt:#9DB3AF;--am:#FFE57A;--ro:#FFC2D1;--ve:#B9EDCB;--az:#BFDDFF;--corcho:#1E4A45;--si:#0B6B47;--no:#B3261E}
+[hidden]{display:none!important}
+pre.code .ln.cur{background:rgba(255,196,37,.26)}
+.term{background:#0B1B1E}
+#map{gap:2px}
+#map button.ch{box-shadow:inset 0 0 0 3px #7FC9B6;background:transparent}
+#map button.ch.seen{background:#7FC9B6}
+#map button.cur,#map button.ch.cur{background:var(--hi);box-shadow:none}
+.field-hi button:focus-visible,.field-hi a:focus-visible{outline-color:var(--ink)}
+
+/* código y terminal en tamaños fijos */
+pre.code.c18{font-size:18px;line-height:1.45;padding:10px 0}
+pre.code.c18 .ln{padding:0 14px}
+pre.code.c20{font-size:20px;line-height:1.5;padding:12px 0}
+pre.code.c20 .ln{padding:0 18px}
+.term.t18{font-size:18px;line-height:1.4;padding:10px 14px;min-height:0}
+.term.t19{font-size:19px;line-height:1.4;padding:12px 16px;min-height:0}
+.cap{font-size:19px;font-weight:600;color:var(--soft);margin:12px 0 5px}
+.cap:first-child{margin-top:0}
+.cap code{font-size:18px}
+.msg{background:var(--tone);padding:12px 16px;font-size:20px;line-height:1.4;min-height:56px}
+.mono{font-family:var(--mono)}
+.g12{margin-top:12px}.g16{margin-top:16px}.g20{margin-top:20px}
+pre.code.g12{margin-top:12px}pre.code.g16{margin-top:16px}
+
+/* capítulos */
+.chwrap{display:grid;grid-template-columns:minmax(0,1fr) 500px;gap:52px;height:100%}
+.chwrap .left{display:flex;flex-direction:column;min-width:0}
+.chapter h1{font-size:84px}
+.chapter .ext{display:flex;flex-wrap:wrap;gap:12px 26px;margin-top:auto;font-size:22px;font-weight:700}
+.chapter .ext span{opacity:.5;white-space:nowrap}
+.chapter .ext span.on{opacity:1}
+.chapter .ext span.on::after{content:"";display:block;height:5px;background:var(--hi);margin-top:6px}
+.chapter .ext b{font-weight:700}
+
+/* nota adhesiva */
+.nota{display:block;position:relative;background:var(--am);color:var(--ink);padding:12px 14px 13px;font:600 19px/1.28 var(--sans);text-align:left;box-shadow:0 2px 0 rgba(0,0,0,.12),0 10px 16px -10px rgba(0,0,0,.45)}
+.nota::before{content:"";position:absolute;top:-7px;left:50%;width:44px;height:15px;margin-left:-22px;background:rgba(255,255,255,.5)}
+.nota.ro{background:var(--ro)}.nota.ve{background:var(--ve)}.nota.az{background:var(--az)}
+.nota small{display:block;font:700 18px var(--mono);color:var(--soft);margin-bottom:2px}
+.nota:nth-child(3n+1){transform:rotate(-1.1deg)}.nota:nth-child(3n+2){transform:rotate(.8deg)}.nota:nth-child(3n){transform:rotate(-.4deg)}
+button.nota:hover{background:var(--am);color:var(--ink);filter:brightness(.95)}
+button.nota.ro:hover{background:var(--ro)}button.nota.ve:hover{background:var(--ve)}button.nota.az:hover{background:var(--az)}
+button.nota[aria-pressed=true]{outline:5px solid var(--ink);outline-offset:3px;background:var(--am);color:var(--ink)}
+button.nota.ro[aria-pressed=true]{background:var(--ro)}button.nota.ve[aria-pressed=true]{background:var(--ve)}button.nota.az[aria-pressed=true]{background:var(--az)}
+
+/* tablero (corcho verde) */
+.tablero{background:var(--corcho);padding:12px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;border:8px solid #2C5F58}
+.tablero .col{background:rgba(255,255,255,.07);padding:10px 10px 14px;display:flex;flex-direction:column;gap:14px;min-height:120px}
+.tablero .col h4{margin:0;font:800 18px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--field-ink);border-bottom:4px solid var(--hi);padding-bottom:6px;display:flex;justify-content:space-between}
+.tablero .col h4 span{font-family:var(--mono);opacity:.75}
+.tablero .nota{font-size:18px;padding:10px 12px 11px}
+#pt-board .col{gap:9px;padding:8px 8px 10px}
+#pt-board .nota{padding:6px 10px 7px;line-height:1.2}
+#pt-board .nota::before{top:-5px;height:11px}
+@media (prefers-reduced-motion:no-preference){.tablero .nota.llega{animation:llega .55s var(--ease-expo)}}
+@keyframes llega{from{opacity:0;transform:translateX(-40px) rotate(-4deg)}to{opacity:1}}
+/* hitos */
+.hitos{display:flex;align-items:center;margin-bottom:14px;color:var(--field-ink)}
+.hitos .h{display:flex;align-items:center;gap:8px;font:700 18px var(--mono);white-space:nowrap}
+.hitos .h i{width:22px;height:22px;border-radius:50%;border:4px solid var(--hi);display:block}
+.hitos .h.ok i{background:var(--hi)}
+.hitos .linea{flex:1;height:4px;background:rgba(255,255,255,.3);margin:0 10px}
+
+/* lámina 2: las unidades del curso */
+.unis{display:grid;grid-template-columns:repeat(3,1fr);gap:18px 16px}
+.unis .nota{min-height:86px}
+.unis .nota small{white-space:nowrap}
+.panel{background:#fff;padding:16px 20px 18px}
+.panel h3{font-size:24px}
+.panel .tag{font:700 18px var(--mono);color:var(--accent)}
+
+/* seis pasos */
+.pasos{display:grid;grid-template-columns:repeat(6,1fr);gap:0;position:relative;margin-top:26px}
+.pasos::before{content:"";position:absolute;left:8%;right:8%;top:34px;height:6px;background:var(--tone2)}
+.pasos button{background:none;padding:0 6px;display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;font:700 19px/1.2 var(--sans);color:var(--ink);text-align:center}
+.pasos button:hover{background:none;color:var(--accent)}
+.pasos button i{width:72px;height:72px;border-radius:50%;background:var(--ground);border:6px solid var(--tone2);display:flex;align-items:center;justify-content:center;font:800 30px var(--sans);font-style:normal;transition:background .2s,border-color .2s}
+.pasos button[aria-pressed=true]{background:none;color:var(--ink)}
+.pasos button[aria-pressed=true] i{background:var(--hi);border-color:var(--ink)}
+.pasos button.visto i{border-color:var(--accent)}
+.paso-det{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:26px}
+.paso-det>div{background:#fff;padding:16px 20px;min-height:150px}
+.paso-det small{display:block;font:700 18px var(--sans);color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.paso-det p{font-size:22px;line-height:1.4}
+
+/* enunciado */
+.enun{background:#FFFDF6;padding:18px 22px;font-size:22px;line-height:1.55;border-left:10px solid var(--am)}
+.enun .or{transition:background .25s;padding:1px 0}
+.enun .or.lit{background:var(--hi)}
+.reqs{display:flex;flex-direction:column;gap:8px}
+.reqs button{text-align:left;font:600 19px/1.3 var(--sans);padding:10px 14px;display:grid;grid-template-columns:52px 1fr;background:#fff}
+.reqs button b{font-family:var(--mono);color:var(--accent)}
+.reqs button[aria-pressed=true]{background:var(--ink);color:var(--ground)}
+.reqs button[aria-pressed=true] b{color:var(--hi)}
+
+/* generador de clases candidatas */
+.modos{display:flex;gap:8px;flex-wrap:wrap}
+.modos button{font-size:18px;padding:9px 12px}
+.modos button[data-m=c][aria-pressed=true]{background:#8A5A00;color:#fff}
+.modos button[data-m=a][aria-pressed=true]{background:var(--accent);color:#fff}
+.modos button[data-m=v][aria-pressed=true]{background:#2D4FA0;color:#fff}
+.texto{background:#FFFDF6;padding:14px 18px;font-size:21px;line-height:1.75;border-left:10px solid var(--am)}
+.texto .w{cursor:pointer;border-bottom:3px dotted var(--soft);padding:0 2px;border-radius:2px}
+.texto .w:hover{background:var(--tone)}
+.texto .w:focus-visible{outline:3px solid var(--hi)}
+.texto .w.mc{background:var(--am);border-bottom:3px solid #8A5A00;font-weight:700}
+.texto .w.ma{background:var(--ve);border-bottom:3px solid var(--accent)}
+.texto .w.mv{background:var(--az);border-bottom:3px solid #2D4FA0;font-style:italic}
+table.cand{border-collapse:collapse;width:100%;font-size:19px}
+table.cand th{background:var(--ink);color:var(--ground);text-align:left;padding:8px 12px;font-weight:600}
+table.cand td{padding:7px 12px;border-bottom:2px solid var(--tone2);vertical-align:top;font-family:var(--mono);font-size:18px;line-height:1.35}
+table.cand td:first-child{font-weight:700;font-size:19px}
+table.cand tr.sin td{color:var(--no)}
+.cand-vacio{font-size:20px;color:var(--soft);padding:14px 4px}
+.leyenda{display:flex;gap:16px;font-size:18px;color:var(--soft);flex-wrap:wrap}
+.leyenda span::before{content:"";display:inline-block;width:16px;height:16px;margin-right:6px;vertical-align:-2px}
+.leyenda .lc::before{background:var(--am)}.leyenda .la::before{background:var(--ve)}.leyenda .lv::before{background:var(--az)}
+
+/* UML */
+.uml{display:block;width:1136px;height:360px;margin-top:12px}
+.uml text{font-family:var(--sans);font-size:18px;fill:var(--ink)}
+.uml .nom{font-weight:800;font-size:20px}
+.uml .it{font-style:italic}
+.uml .caja{fill:#fff;stroke:var(--ink);stroke-width:2.5}
+.uml .cab{fill:var(--am);stroke:var(--ink);stroke-width:2.5}
+.uml .div{stroke:var(--ink);stroke-width:2}
+.uml .lin{stroke:var(--ink);stroke-width:3;fill:none}
+.uml .tri{fill:#fff;stroke:var(--ink);stroke-width:3}
+.uml .rom{fill:var(--ink);stroke:var(--ink);stroke-width:2}
+.uml .mult{font-weight:800;font-size:22px;font-family:var(--mono)}
+.uml .marca{fill:none;stroke:none}
+.uml .lit .marca{fill:rgba(255,196,37,.55)}
+.uml .lit.lin,.uml .lit .lin{stroke:#C98A00}
+.uml .lit.tri,.uml .lit .tri{fill:var(--hi);stroke:#C98A00}
+.uml .lit.rom,.uml .lit .rom{fill:#C98A00;stroke:#C98A00}
+.uml .lit.mult,.uml g.lit .mult{fill:#C98A00}
+.uml-b{display:flex;gap:8px;flex-wrap:wrap}
+.uml-b button{font-size:18px;padding:9px 12px}
+
+/* plan de pruebas */
+table.t.plan th,table.t.plan td{padding:7px 12px;font-size:19px;line-height:1.3}
+table.t.plan td:first-child{font:700 19px var(--mono)}
+table.t.plan td:last-child{font-family:var(--mono);white-space:nowrap}
+table.t.plan tr.lit td{background:var(--hi)}
+.rchips{display:flex;gap:8px;flex-wrap:wrap}
+.rchips button{font:700 19px var(--mono);padding:9px 13px}
+
+/* pestañas de código */
+.tabs-row{display:flex;gap:8px;flex-wrap:wrap}
+.tabs-row button{font-size:18px;padding:9px 13px}
+.lado p{font-size:21px;line-height:1.42}
+.lado p+p{margin-top:10px}
+
+/* paso a paso de v2 */
+.mats{display:grid;grid-template-columns:1fr 1fr;gap:16px 14px;margin-top:4px}
+.mats .nota{min-height:58px;padding:9px 12px 10px;transition:background .3s}
+.mats .nota.pr{background:var(--ro)}
+.mats .nota em{font:700 18px var(--sans);font-style:normal;color:var(--no);margin-left:8px}
+.mats .nota small{display:inline}
+.cvar{font:700 21px var(--mono);background:#fff;padding:8px 12px}
+.stepbar{display:flex;gap:10px;align-items:center}
+.stepbar button{font-size:18px;padding:10px 14px}
+
+/* descargas */
+a.dl,button.dl{display:inline-block;background:var(--accent);color:#fff;font:600 18px var(--sans);padding:10px 14px;text-decoration:none;border:0;cursor:pointer}
+a.dl:hover,button.dl:hover{background:var(--ink);color:#fff}
+
+/* romper el código */
+.mut{display:flex;flex-direction:column;gap:8px}
+.mut{gap:6px}
+.mut button{text-align:left;font-size:18px;padding:8px 13px}
+.term .ok{color:var(--ok)}.term .fa{color:#fff;background:#B3261E}
+
+/* git */
+.commits{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:20px}
+.commits .nota{min-height:96px;font-size:18px}
+.commits .nota small{color:#5C4A00}
+
+/* kanban */
+.kan{grid-template-columns:repeat(3,minmax(0,1fr));height:404px;margin-top:12px;border-width:6px;padding:10px}
+.kan .col{min-height:0;overflow-y:auto;gap:12px;padding-top:8px}
+.kan .col.sobre{background:rgba(255,196,37,.18)}
+.kan .tarj{display:grid;grid-template-columns:1fr auto;gap:6px 8px;align-items:start;cursor:grab;transform:none!important}
+.kan .tarj .tx{font:600 18px/1.25 var(--sans);overflow-wrap:anywhere}
+.kan .tarj .qn{grid-column:1;font:700 18px var(--mono);color:#5C4A00}
+.kan .tarj .bt{grid-column:2;grid-row:1/span 2;display:flex;gap:4px}
+.kan .tarj .bt button{font:700 18px var(--mono);padding:4px 9px;background:rgba(19,39,43,.12);color:var(--ink)}
+.kan .tarj .bt button:hover{background:var(--ink);color:#fff}
+.kan .col h4{position:sticky;top:-8px;background:var(--corcho);z-index:1;padding-top:4px}
+.kform{display:flex;gap:8px;align-items:center}
+.kform input{font:500 19px var(--sans);padding:10px 12px;border:0;background:#fff;color:var(--ink)}
+.kform button{font-size:18px;padding:10px 14px}
+.kmsg{font-size:19px;color:var(--soft)}
+
+/* presentación */
+.partes{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:22px}
+.partes .nota{min-height:170px;font-size:19px;font-weight:500}
+.partes .nota b{display:block;font:800 21px var(--sans);margin-bottom:6px}
+.barra{display:flex;height:66px;margin-top:10px}
+.barra div{display:flex;flex-direction:column;justify-content:center;padding:0 10px;font:700 18px var(--sans);color:var(--ink);border-right:3px solid var(--ground);overflow:hidden;white-space:nowrap;transition:flex-grow .5s var(--ease-out)}
+.barra div span{font:700 18px var(--mono)}
+.barra .preg{background:repeating-linear-gradient(45deg,var(--tone2) 0 10px,var(--tone) 10px 20px)}
+.chk{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.chk label{display:grid;grid-template-columns:34px 1fr;align-items:start;font-size:20px;line-height:1.3;background:#fff;padding:8px 12px;cursor:pointer}
+.chk input{width:22px;height:22px;margin:2px 0 0;accent-color:var(--accent)}
+.chk label:has(input:checked){background:var(--ve)}
+.consejos{margin:0;padding:0 0 0 24px;font-size:21px;line-height:1.38}
+.consejos li+li{margin-top:9px}
+.pregs{display:grid;grid-template-columns:repeat(3,1fr);gap:20px 18px;margin-top:22px}
+.pregs .nota{min-height:186px;font-size:20px;display:flex;flex-direction:column;gap:8px}
+.pregs .nota .pbtn{align-self:flex-start;font-size:18px;padding:7px 12px;background:rgba(19,39,43,.14);color:var(--ink);margin-top:auto}
+.pregs .nota .pbtn:hover{background:var(--ink);color:#fff}
+.pregs .nota span.reveal{font-weight:500;font-size:19px;line-height:1.33}
+.pregs .nota.shown .q2{display:none}
+
+/* discusiones */
+.field-hi .q{font-size:58px;line-height:1.05;letter-spacing:-.03em;font-weight:800;max-width:1100px}
+.prop2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.prop2>div{background:var(--ink);color:#fff;padding:18px 22px;min-height:176px}
+.prop2>div.ok{background:var(--accent)}
+.prop2 b{display:block;font:700 22px var(--sans)}.prop2 b code{white-space:normal;font-size:19px}
+.prop2 span{display:block;font-size:21px;margin-top:8px;line-height:1.35}
+.prop2 .pbtn{margin-top:12px;background:#fff;color:var(--ink);font-size:18px;padding:8px 12px}
+.prop2 span.reveal{display:none}.prop2 .shown span.reveal{display:block}
+.discrow{position:absolute;left:72px;right:72px;bottom:32px}
+.discrow .timer .t-num{font-size:124px;min-width:270px}
+.discrow .timer{gap:20px}
+.discrow .timer .row{flex-direction:column;align-items:stretch}
+.dir{display:grid;grid-template-columns:repeat(2,1fr);gap:24px 48px;margin-top:28px}
+.dir h3{font-size:28px}
+.dir p{font-size:23px;margin-top:6px}
+
+/* actividad */
+.mision{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.mision li{display:grid;grid-template-columns:52px 1fr;background:#fff;padding:12px 16px;font-size:21px;line-height:1.35}
+.mision li b.nm{font:800 30px var(--sans);color:var(--accent)}
+.arranque{display:grid;grid-template-columns:1fr;gap:10px}
+.arranque .nota{font-size:19px;font-weight:500;transform:none!important}
+.arranque .nota b{font-weight:800}
+.filtro{display:flex;gap:8px}
+.filtro button{font-size:18px;padding:9px 13px}
+.proys{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px}
+.proys .nota{min-height:74px;font-size:19px;transform:none!important}
+.proys .nota small{font-size:18px}
+.niv{font:700 18px var(--sans);color:var(--accent)}
+.det h3{font-size:28px}
+.det p{font-size:20px;line-height:1.4;margin-top:8px}
+.det dl{display:grid;grid-template-columns:150px 1fr;gap:6px 12px;margin:12px 0 0;font-size:19px;line-height:1.35}
+.det dt{font-weight:700;color:var(--soft)}
+.det dd{margin:0}
+.minimos{display:flex;flex-wrap:wrap;gap:8px}
+.minimos span{background:var(--ink);color:var(--ground);font:600 18px var(--sans);padding:6px 11px}
+.rub td,.rub th{padding:6px 14px!important;font-size:19px!important;line-height:1.3}
+.rub td:last-child,.rub th:last-child{text-align:right;width:90px}
+.rub tr.grupo td{background:var(--tone);font-weight:700}
+.rub td.sub2{padding-left:34px!important}
+table.t.oral th,table.t.oral td{padding:8px 12px;font-size:19px;line-height:1.3}
+table.t.oral td:first-child{font-weight:700;width:220px}
+table.t.oral td:nth-child(2){width:80px;font-family:var(--mono);text-align:center}
+.refs p{padding-left:36px;text-indent:-36px;margin-bottom:10px;font-size:20px;line-height:1.45}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage" data-name="Unidad M · Proyecto integrador" role="region" aria-roledescription="presentación" aria-label="Unidad M: Proyectos prácticos integradores">
+
+<!-- PORTADA -->
+<section class="slide chapter" data-title="Portada">
+  <div class="chwrap">
+    <div class="left">
+      <h1 class="mask"><span>Proyectos prácticos integradores</span></h1>
+      <p class="lead" data-a style="margin-top:22px;max-width:620px">Un proyecto se arma como un tablero: las tareas pasan de «Por hacer» a «Listo», y cada versión que ya corre es un hito.</p>
+      <div class="ext" data-a><span class="on">Diseñar e implementar</span><span class="on">Presentar</span><span class="on">Actividad</span></div>
+      <p class="body" data-a style="margin-top:18px;font-size:20px">TESI 2105, Unidad M<br>Prof. Eduardo O. De Jesús Arroyo · ITPR, Recinto de Manatí</p>
+    </div>
+    <div data-a style="align-self:center">
+      <div class="hitos" id="pt-hitos"></div>
+      <div class="tablero" id="pt-board"></div>
+      <div class="row" style="margin-top:14px"><button class="go" id="pt-go">Mover una tarea</button><span id="pt-msg" style="font-size:19px" aria-live="polite"></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Todo el curso en un programa">
+  <h2 class="mask"><span>Un proyecto junta todo el curso</span></h2>
+  <p class="body sub" data-a style="max-width:1120px">Cada nota es algo que ya estudió. Pulse una para ver dónde aparece en el proyecto de ejemplo de esta unidad: la Biblioteca del recinto.</p>
+  <div style="display:grid;grid-template-columns:470px 1fr;gap:30px;margin-top:22px">
+    <div class="unis" id="u-notas" data-a></div>
+    <div class="panel" data-a>
+      <span class="tag" id="u-tag"></span>
+      <h3 id="u-tit" style="margin-top:4px"></h3>
+      <div id="u-cod" class="g12"></div>
+      <p class="body g12" id="u-txt" style="font-size:21px" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<!-- TEMA 1 -->
+<section class="slide chapter" data-title="Tema 1: Diseño e implementación de un proyecto de POO" data-topic="1">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask" style="font-size:72px"><span>Diseño e implementación de un proyecto de POO</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:640px">Del enunciado a un programa que corre, en seis pasos y tres versiones.</p>
+    <div class="ext" data-a></div></div>
+    <div data-a style="align-self:center"><div class="tablero" id="ch1-board"></div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Del problema al programa">
+  <h2 class="mask"><span>Seis pasos, del problema al programa</span></h2>
+  <p class="body sub" data-a>Pulse cada paso. Los primeros cuatro se hacen en papel, antes de escribir código.</p>
+  <div class="pasos" id="ps" data-a></div>
+  <div class="paso-det" data-a>
+    <div><small>La pregunta</small><p id="ps-q"></p></div>
+    <div><small>Lo que se produce</small><p id="ps-p"></p></div>
+    <div><small>En la Biblioteca</small><p id="ps-b"></p></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Paso 1: los requisitos">
+  <h2 class="mask"><span>Paso 1: el enunciado y sus requisitos</span></h2>
+  <div style="display:grid;grid-template-columns:600px 1fr;gap:32px;margin-top:22px">
+    <div data-a>
+      <div class="enun" id="enun"><span class="or" data-s="1">La biblioteca del recinto presta libros y laptops a los estudiantes.</span> <span class="or" data-s="2">Cada material tiene un código y un título.</span> <span class="or" data-s="3">Un libro tiene un autor y se presta por 14 días; una laptop tiene una memoria RAM y se presta por 3 días.</span> <span class="or" data-s="4">La biblioteca agrega materiales, busca un material por su código, lo presta y lo devuelve.</span> <span class="or" data-s="5">Un material prestado no se puede prestar otra vez.</span> <span class="or" data-s="6">Al cerrar, el sistema guarda el catálogo en un archivo y lo carga al abrir.</span> <span class="or" data-s="7">Si el archivo no existe, el programa avisa sin caerse.</span></div>
+      <p class="small" style="margin-top:12px;font-size:19px">Requisitos no funcionales del proyecto: C++17, compila sin avisos con <code style="font-size:18px">-Wall -Wextra</code>, datos en un archivo de texto.</p>
+    </div>
+    <div data-a>
+      <p class="body" style="font-size:21px;margin-bottom:10px">Cada requisito es una oración que se puede comprobar. Pulse uno para ver de dónde sale.</p>
+      <div class="reqs" id="reqs"></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Paso 2: clases candidatas">
+  <h2 class="mask"><span>Paso 2: sustantivos y verbos</span></h2>
+  <div style="display:grid;grid-template-columns:600px 1fr;gap:28px;margin-top:16px">
+    <div data-a>
+      <div class="modos" id="gen-m"><button data-m="c">Clase (sustantivo)</button><button data-m="a">Atributo (dato)</button><button data-m="v">Método (verbo)</button><button data-m="x">Borrar</button></div>
+      <div class="texto g12" id="gen-t"></div>
+      <div class="row g12"><button class="go" id="gen-cmp">Comparar con la propuesta</button><button id="gen-ver">Ver la propuesta</button><button id="gen-lim">Limpiar</button></div>
+    </div>
+    <div data-a>
+      <div class="leyenda"><span class="lc">clase</span><span class="la">atributo</span><span class="lv">método</span></div>
+      <div id="gen-tab" class="g12"></div>
+      <p class="msg g12" id="gen-msg" aria-live="polite">Escoja un tipo arriba y pulse las palabras subrayadas del enunciado.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Paso 3: el diagrama UML">
+  <h2 class="mask"><span>Paso 3: el diagrama UML de clases</span></h2>
+  <div class="uml-b g16" id="uml-b" data-a><button data-u="cl">Una caja, una clase</button><button data-u="vis">− privado, + público</button><button data-u="abs">Cursiva: abstracta</button><button data-u="her">Triángulo: herencia</button><button data-u="com">Rombo: composición</button><button data-u="mul">1 y *</button></div>
+  <div data-a>
+  <svg class="uml" id="uml" viewBox="0 0 1136 360" role="img" aria-label="Diagrama UML: Biblioteca contiene muchos Material; Libro y Laptop heredan de Material">
+    <!-- Biblioteca -->
+    <g id="u-bib" data-k="cl">
+      <rect class="cab" x="2" y="12" width="300" height="38"/><text class="nom" x="152" y="38" text-anchor="middle">Biblioteca</text>
+      <rect class="caja" x="2" y="50" width="300" height="272"/>
+      <g data-k="vis"><rect class="marca" x="6" y="54" width="22" height="262"/></g>
+      <text x="12" y="76">− materiales: vector</text><line class="div" x1="2" y1="88" x2="302" y2="88"/>
+      <text x="12" y="112">+ agregar(m)</text><text x="12" y="140">+ buscar(codigo): Material&amp;</text><text x="12" y="168">+ prestar(codigo)</text><text x="12" y="196">+ devolver(codigo)</text><text x="12" y="224">+ total(): int</text><text x="12" y="252">+ disponibles(): int</text><text x="12" y="280">+ cargar(nombre)</text><text x="12" y="308">+ guardar(nombre)</text>
+    </g>
+    <!-- composición -->
+    <g id="u-com" data-k="com"><line class="lin" x1="330" y1="170" x2="420" y2="170"/><polygon class="rom" points="302,170 316,161 330,170 316,179"/></g>
+    <g data-k="mul"><text class="mult" x="334" y="156">1</text><text class="mult" x="398" y="156">*</text></g>
+    <!-- Material -->
+    <g id="u-mat" data-k="cl">
+      <g data-k="abs"><rect class="cab" x="420" y="2" width="330" height="40"/><text class="nom it" x="585" y="29" text-anchor="middle">Material</text></g>
+      <rect class="caja" x="420" y="42" width="330" height="314"/>
+      <g data-k="vis"><rect class="marca" x="424" y="46" width="22" height="306"/></g>
+      <text x="430" y="64">− codigo: string</text><text x="430" y="85">− titulo: string</text><text x="430" y="106">− prestado: bool</text>
+      <line class="div" x1="420" y1="115" x2="750" y2="115"/>
+      <text x="430" y="136">+ Material(c, t)</text><text x="430" y="157">+ obtenerCodigo(): string</text><text x="430" y="178">+ estaPrestado(): bool</text><text x="430" y="199">+ prestar()</text><text x="430" y="220">+ devolver()</text><text x="430" y="241">+ registro(): string</text><text x="430" y="262">+ mostrar()</text>
+      <g data-k="abs"><rect class="marca" x="424" y="268" width="322" height="84"/><text class="it" x="430" y="285">+ tipo(): string</text><text class="it" x="430" y="306">+ dato(): string</text><text class="it" x="430" y="327">+ diasPrestamo(): int</text></g>
+    </g>
+    <!-- herencia -->
+    <g data-k="her"><polyline class="lin" points="840,92 790,92 790,250 840,250"/><line class="lin" x1="790" y1="170" x2="770" y2="170"/><polygon class="tri" points="751,170 770,159 770,181"/></g>
+    <!-- Libro -->
+    <g id="u-lib" data-k="cl">
+      <rect class="cab" x="840" y="2" width="294" height="36"/><text class="nom" x="987" y="27" text-anchor="middle">Libro</text>
+      <rect class="caja" x="840" y="38" width="294" height="138"/>
+      <g data-k="vis"><rect class="marca" x="844" y="42" width="22" height="130"/></g>
+      <text x="850" y="60">− autor: string</text><line class="div" x1="840" y1="70" x2="1134" y2="70"/>
+      <text x="850" y="91">+ Libro(c, t, a)</text><text x="850" y="112">+ tipo(): string</text><text x="850" y="133">+ dato(): string</text><text x="850" y="154">+ diasPrestamo(): int</text>
+    </g>
+    <!-- Laptop -->
+    <g id="u-lap" data-k="cl">
+      <rect class="cab" x="840" y="196" width="294" height="36"/><text class="nom" x="987" y="221" text-anchor="middle">Laptop</text>
+      <rect class="caja" x="840" y="232" width="294" height="124"/>
+      <g data-k="vis"><rect class="marca" x="844" y="236" width="22" height="116"/></g>
+      <text x="850" y="254">− ram: int</text><line class="div" x1="840" y1="263" x2="1134" y2="263"/>
+      <text x="850" y="283">+ Laptop(c, t, r)</text><text x="850" y="303">+ tipo(): string</text><text x="850" y="323">+ dato(): string</text><text x="850" y="343">+ diasPrestamo(): int</text>
+    </g>
+  </svg>
+  </div>
+  <p class="msg g12" id="uml-msg" data-a aria-live="polite"></p>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: es un o tiene un">
+  <p class="q mask"><span>¿La Biblioteca hereda de Material o contiene materiales?</span></p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:27px">Usen la prueba de la oración: «un Libro es un Material» suena bien. ¿Y «una Biblioteca es un Material»?</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b><code>Biblioteca : public Material</code></b><span>herencia: «es un»</span></div><div class="ok" data-rv-box><b><code>vector&lt;unique_ptr&lt;Material&gt;&gt; materiales;</code></b><span>composición: «tiene muchos»</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">Contiene: una biblioteca no es un material. Herencia solo cuando «es un» es verdad.</span></div></div></div>
+</section>
+
+<section class="slide" data-title="Paso 4: el plan de pruebas">
+  <h2 class="mask"><span>Paso 4: las pruebas se escriben antes</span></h2>
+  <p class="body sub" data-a style="max-width:1120px">Cada prueba dice qué se hace y qué se espera. Pulse un requisito: ¿quedó alguno sin prueba?</p>
+  <div class="rchips g16" id="pl-r" data-a></div>
+  <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px" data-a>
+    <table class="t plan" id="plan">
+      <tr><th>Prueba</th><th>Qué se hace</th><th>Resultado esperado</th><th>Requisito</th></tr>
+      <tr data-r="R2"><td>P1</td><td>Crear un libro</td><td>diasPrestamo() da 14</td><td>R2</td></tr>
+      <tr data-r="R2"><td>P2</td><td>Crear una laptop</td><td>diasPrestamo() da 3</td><td>R2</td></tr>
+      <tr data-r="R4"><td>P3</td><td>Prestar el libro</td><td>estaPrestado() da true</td><td>R4</td></tr>
+      <tr data-r="R5"><td>P4</td><td>Prestarlo otra vez</td><td>lanza una excepción</td><td>R5</td></tr>
+      <tr data-r="R3"><td>P5</td><td>Buscar «NO-EXISTE»</td><td>lanza una excepción</td><td>R3</td></tr>
+      <tr data-r="R6"><td>P6</td><td>Prestar, guardar y volver a cargar</td><td>sigue prestado</td><td>R6</td></tr>
+      <tr data-r="R7"><td>P7</td><td>Cargar «no_existe.txt»</td><td>lanza una excepción</td><td>R7</td></tr>
+    </table>
+  </div>
+  <p class="msg g12" id="pl-msg" data-a aria-live="polite"></p>
+</section>
+
+<section class="slide" data-title="Paso 5: v1, las clases">
+  <h2 class="mask"><span>Paso 5, v1: las clases y la herencia</span></h2>
+  <div data-tabs="v1a" data-a style="margin-top:16px">
+    <div class="tabs-row"><button data-tab="v1a">Material</button><button data-tab="v1b">Libro</button><button data-tab="v1c">Laptop</button><button data-tab="v1d">main</button></div>
+    <div style="display:grid;grid-template-columns:780px 1fr;gap:26px;margin-top:14px;height:342px">
+      <pre class="code c18" data-panel="v1a">class Material {
+public:
+    virtual ~Material() = default;
+    virtual string tipo() const = 0;
+    virtual string dato() const = 0;
+    virtual int diasPrestamo() const = 0;
+    ...
+private:
+    string codigo;
+    string titulo;
+    bool prestado = false;
+};</pre>
+      <div class="lado" data-panel="v1a"><p><b>= 0</b> deja la función sin cuerpo: <code>Material</code> es abstracta y nadie puede crear «un material» a secas.</p><p>Los datos quedan en <code>private</code>: encapsulación.</p></div>
+      <pre class="code c18" data-panel="v1b" hidden>class Libro : public Material {
+public:
+    Libro(const string&amp; c, const string&amp; t, const string&amp; a)
+        : Material(c, t), autor(a) {}
+    string tipo() const override { return "Libro"; }
+    string dato() const override { return autor; }
+    int diasPrestamo() const override { return 14; }
+
+private:
+    string autor;
+};</pre>
+      <div class="lado" data-panel="v1b" hidden><p>El constructor de <code>Libro</code> le pasa el código y el título al de <code>Material</code>.</p><p><code>override</code> le pide a g++ que confirme que esa función sí reemplaza una de la base.</p></div>
+      <pre class="code c18" data-panel="v1c" hidden>class Laptop : public Material {
+public:
+    Laptop(const string&amp; c, const string&amp; t, int r)
+        : Material(c, t), ram(r) {}
+    string tipo() const override { return "Laptop"; }
+    string dato() const override { return to_string(ram) + " GB"; }
+    int diasPrestamo() const override { return 3; }
+
+private:
+    int ram;
+};</pre>
+      <div class="lado" data-panel="v1c" hidden><p>Misma forma, otras respuestas: 3 días y la RAM como dato.</p><p>Añadir un tipo nuevo (revistas, calculadoras) es escribir otra clase, sin tocar <code>Material</code>.</p></div>
+      <pre class="code c18" data-panel="v1d" hidden>int main() {
+    Libro  a("LIB-101", "Programacion en C++", "R. Rivera");
+    Laptop b("LAP-01", "Equipo sala 1", 8);
+
+    vector&lt;Material*&gt; lista = {&amp;a, &amp;b};
+    b.prestar();
+    for (Material* m : lista)
+        m-&gt;mostrar();
+    return 0;
+}</pre>
+      <div class="lado" data-panel="v1d" hidden><p><code>m-&gt;mostrar()</code> es la misma línea para los dos, pero cada objeto contesta <code>tipo()</code> a su manera: polimorfismo.</p><p>v1 ya compila y corre. Es el primer hito.</p></div>
+    </div>
+  </div>
+  <div class="term t19 g12" data-a><span class="p">$ ./v1</span>
+[LIB-101] Libro: Programacion en C++ | R. Rivera | 14 dias
+[LAP-01] Laptop: Equipo sala 1 | 8 GB | 3 dias | PRESTADO</div>
+</section>
+
+<section class="slide" data-title="unique_ptr: un dueño que borra">
+  <h2 class="mask"><span>¿Cómo se guardan Libros y Laptops juntos?</span></h2>
+  <p class="body sub" data-a style="max-width:1120px">La Biblioteca necesita una lista de materiales de distintos tipos. Compare tres maneras; las tres usan este <code>Material</code> abstracto, con un destructor que avisa.</p>
+  <div data-tabs="up1" data-a style="margin-top:16px">
+    <div class="tabs-row"><button data-tab="up1">1. vector&lt;Material&gt;</button><button data-tab="up2">2. new y delete</button><button data-tab="up3">3. unique_ptr</button></div>
+    <div style="display:grid;grid-template-columns:640px 1fr;gap:28px;margin-top:14px">
+      <div data-panel="up1"><pre class="code c18">vector&lt;Material&gt; lista;
+lista.push_back(Libro());</pre><div class="term t18 g12"><span class="e">error: invalid new-expression of abstract class type 'Material'</span></div></div>
+      <div data-panel="up1" class="lado"><p class="lead" style="font-size:27px">No sirve.</p><p class="g12">Un vector de <code>Material</code> guarda objetos <code>Material</code>, y <code>Material</code> es abstracta: no se puede crear. Hace falta guardar punteros.</p></div>
+      <div data-panel="up2" hidden><pre class="code c18">Material* p = new Libro();
+cout &lt;&lt; p-&gt;tipo() &lt;&lt; endl;
+delete p;    // sin esta linea, el libro nunca se borra
+cout &lt;&lt; "Fin de main" &lt;&lt; endl;</pre><div class="term t18 g12">Libro
+Se borra un material
+Fin de main</div></div>
+      <div data-panel="up2" hidden class="lado"><p class="lead" style="font-size:27px">Sirve, si nadie olvida el delete.</p><p class="g12">Sin el <code>delete</code>, AddressSanitizer reporta <code>detected memory leaks</code>. Con muchos materiales y excepciones de por medio, es fácil olvidarlo.</p></div>
+      <div data-panel="up3" hidden><pre class="code c18">vector&lt;unique_ptr&lt;Material&gt;&gt; lista;
+unique_ptr&lt;Material&gt; m = make_unique&lt;Libro&gt;();
+lista.push_back(move(m));
+cout &lt;&lt; lista[0]-&gt;tipo() &lt;&lt; endl;
+cout &lt;&lt; "m quedo vacio: " &lt;&lt; (m == nullptr) &lt;&lt; endl;
+cout &lt;&lt; "Fin de main" &lt;&lt; endl;</pre><div class="term t18 g12">Libro
+m quedo vacio: 1
+Fin de main
+Se borra un material</div></div>
+      <div data-panel="up3" hidden class="lado"><p><code>make_unique&lt;Libro&gt;()</code> crea el objeto; el <code>unique_ptr</code> es su único dueño y lo borra solo al terminar (de <code>&lt;memory&gt;</code>).</p><p><code>move(m)</code> entrega el dueño a la lista: <code>m</code> queda vacío. Así funciona la v2.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="v2: composición y excepciones">
+  <h2 class="mask"><span>v2: la Biblioteca y las excepciones</span></h2>
+  <div data-step="v2" style="display:grid;grid-template-columns:700px 1fr;gap:24px;margin-top:16px">
+    <div data-a>
+      <p class="cap">En <code>main</code>: la Biblioteca ya tiene 4 materiales</p>
+      <pre class="code c18">for (string c : {"LIB-102", "LAP-01", "LIB-102", "LAP-09"}) {
+    try {
+        bib.prestar(c);
+        cout &lt;&lt; "Prestado: " &lt;&lt; c &lt;&lt; endl;
+    } catch (const exception&amp; e) {
+        cout &lt;&lt; "Error: " &lt;&lt; e.what() &lt;&lt; endl;
+    }
+}</pre>
+      <p class="cap">En <code>Material</code>: prestar dos veces es un error</p>
+      <pre class="code c18">void prestar() {
+    if (prestado)
+        throw runtime_error(codigo + " ya esta prestado");
+    prestado = true;
+}</pre>
+    </div>
+    <div data-a>
+      <div class="ws">
+        <div class="mats"><div class="nota" data-id="LIB-101"><small>LIB-101</small><br>Libro<em></em></div><div class="nota az" data-id="LIB-102"><small>LIB-102</small><br>Libro<em></em></div><div class="nota ve" data-id="LAP-01"><small>LAP-01</small><br>Laptop<em></em></div><div class="nota" data-id="LAP-02"><small>LAP-02</small><br>Laptop<em></em></div></div>
+        <div class="msg g12" style="min-height:108px"><b class="mono" data-id="c">c = —</b><br><span data-id="msg">Pulse «Siguiente paso» para recorrer el ciclo.</span></div>
+        <div class="term t18 g12" data-id="out" style="min-height:137px;line-height:1.3"></div>
+      </div>
+      <div class="stepbar g12"><button class="go" data-s="next">Siguiente paso</button><button data-s="reset">Reiniciar</button><span class="stepn"></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="v3: el catálogo en un archivo">
+  <h2 class="mask"><span>v3: el catálogo vive en un archivo</span></h2>
+  <div data-tabs="v3a" data-a style="margin-top:14px">
+    <div class="tabs-row"><button data-tab="v3a">Cargar</button><button data-tab="v3b">Guardar</button><button data-tab="v3c">Corrida 1</button><button data-tab="v3d">catalogo.txt</button><button data-tab="v3e">Corrida 2</button><button data-tab="v3f">Sin archivo</button><button data-tab="v3g">Archivo dañado</button></div>
+    <div style="display:grid;grid-template-columns:770px 1fr;gap:24px;margin-top:12px;height:370px">
+      <pre class="code c18" data-panel="v3a" style="line-height:1.38">void cargar(const string&amp; nombre) {
+    ifstream arch(nombre);
+    if (!arch)
+        throw runtime_error("no se pudo abrir " + nombre);
+    string tipo, codigo, titulo, dato, estado;
+    while (getline(arch, tipo, ';') &amp;&amp; getline(arch, codigo, ';') &amp;&amp;
+           getline(arch, titulo, ';') &amp;&amp; getline(arch, dato, ';') &amp;&amp;
+           getline(arch, estado)) {
+        unique_ptr&lt;Material&gt; m;
+        if (tipo == "Libro")
+            m = make_unique&lt;Libro&gt;(codigo, titulo, dato);
+        else  // stoi("8 GB") devuelve 8
+            m = make_unique&lt;Laptop&gt;(codigo, titulo, stoi(dato));
+        ...</pre>
+      <div class="lado" data-panel="v3a"><p>Cada línea del archivo es un material, con sus campos separados por <code>;</code>.</p><p>Si el archivo no abre, <code>cargar</code> no imprime nada: lanza una excepción y que <code>main</code> decida.</p></div>
+      <pre class="code c18" data-panel="v3b" hidden>string registro() const {
+    return tipo() + ";" + codigo + ";" + titulo + ";" + dato() + ";" +
+           (prestado ? "1" : "0");
+}
+
+void guardar(const string&amp; nombre) const {
+    ofstream arch(nombre);
+    if (!arch)
+        throw runtime_error("no se pudo escribir " + nombre);
+    for (const auto&amp; m : materiales)
+        arch &lt;&lt; m-&gt;registro() &lt;&lt; endl;
+}</pre>
+      <div class="lado" data-panel="v3b" hidden><p><code>registro()</code> está en <code>Material</code>: cada objeto sabe escribirse en una línea.</p><p><code>guardar()</code> está en <code>Biblioteca</code> y solo recorre la lista. Ninguna clase hace el trabajo de la otra.</p></div>
+      <div class="term t19" data-panel="v3c" hidden><span class="p">$ g++ -std=c++17 -Wall -Wextra -o biblio main.cpp
+$ ./biblio</span>
+Prestado: LIB-102
+Prestado: LAP-01
+Disponibles: 1 de 4</div>
+      <div class="lado" data-panel="v3c" hidden><p><code>main</code> carga el catálogo, presta LIB-102 y LAP-01, y lo guarda al terminar.</p><p>LAP-02 ya venía prestada en el archivo: por eso queda 1 de 4.</p></div>
+      <div class="term t19" data-panel="v3d" hidden><span class="p">$ cat catalogo.txt</span>
+Libro;LIB-101;Programacion en C++;R. Rivera;0
+Libro;LIB-102;Redes para todos;A. Colon;1
+Laptop;LAP-01;Equipo sala 1;8 GB;1
+Laptop;LAP-02;Equipo sala 2;16 GB;1</div>
+      <div class="lado" data-panel="v3d" hidden><p>El último campo es <code>prestado</code>: 1 o 0.</p><p>Antes de la corrida 1, LIB-102 y LAP-01 tenían 0. El programa terminó, pero el préstamo quedó escrito.</p></div>
+      <div class="term t19" data-panel="v3e" hidden><span class="p">$ ./biblio</span>
+Error: LIB-102 ya esta prestado
+Error: LAP-01 ya esta prestado
+Disponibles: 1 de 4</div>
+      <div class="lado" data-panel="v3e" hidden><p>Misma orden, otro resultado: el programa se acuerda de la corrida anterior porque la leyó del archivo.</p><p>La excepción de <code>prestar()</code> se atrapa y el programa sigue.</p></div>
+      <div class="term t19" data-panel="v3f" hidden><span class="p">$ rm catalogo.txt
+$ ./biblio</span>
+Error: no se pudo abrir catalogo.txt
+<span class="p">$ echo $?</span>
+1</div>
+      <div class="lado" data-panel="v3f" hidden><p>Sin archivo, <code>main</code> atrapa la excepción, avisa y termina con <code>return 1</code>. No se cae.</p></div>
+      <div class="term t19" data-panel="v3g" hidden><span class="p">$ cat catalogo.txt</span>
+Libro;LIB-101;Programacion en C++;R. Rivera;0
+Laptop;LAP-03;Equipo sala 3;ocho GB;0
+<span class="p">$ ./biblio</span>
+Error: stoi</div>
+      <div class="lado" data-panel="v3g" hidden><p><code>stoi("ocho GB")</code> lanza <code>invalid_argument</code>, que también es una <code>exception</code>.</p><p>El mensaje «stoi» dice poco. Un buen proyecto diría en qué línea del archivo está el problema.</p></div>
+    </div>
+  </div>
+  <div class="row g12" data-a style="gap:10px"><span style="font-size:19px;font-weight:600">El proyecto completo:</span><button class="dl" data-f="biblioteca.h">biblioteca.h</button><button class="dl" data-f="main.cpp">main.cpp</button><button class="dl" data-f="pruebas.cpp">pruebas.cpp</button><button class="dl" data-f="catalogo.txt">catalogo.txt</button></div>
+</section>
+
+<section class="slide" data-title="Las pruebas corren solas">
+  <h2 class="mask"><span>Las pruebas se corren después de cada cambio</span></h2>
+  <div style="display:grid;grid-template-columns:810px 1fr;gap:22px;margin-top:16px">
+    <pre class="code c18" data-a>void verificar(bool condicion, const string&amp; nombre) {
+    cout &lt;&lt; (condicion ? "OK     " : "FALLA  ") &lt;&lt; nombre &lt;&lt; endl;
+    if (!condicion)
+        fallas++;
+}
+bool lanzo = false;
+try { libro.prestar(); } catch (const runtime_error&amp;) { lanzo = true; }
+verificar(lanzo, "P4 prestar dos veces lanza una excepcion");</pre>
+    <div data-a>
+      <p style="font-size:20px;font-weight:600;margin-bottom:8px">Rompa el código a propósito:</p>
+      <div class="mut" id="mut"><button data-m="O">Sin cambios</button><button data-m="A">Laptop: 7 días</button><button data-m="B">prestar() sin revisar</button><button data-m="C">registro() siempre «0»</button><button data-m="D">cargar() sin revisar</button></div>
+    </div>
+  </div>
+  <div class="term t18 g12" id="mut-out" data-a style="line-height:1.2"></div>
+</section>
+
+<section class="slide" data-title="Errores al integrar">
+  <h2 class="mask"><span>Cinco errores típicos al integrar</span></h2>
+  <div data-tabs="e1" data-a style="margin-top:20px">
+    <div class="tabs-row"><button data-tab="e1">Clase abstracta</button><button data-tab="e2">override</button><button data-tab="e3">Copiar unique_ptr</button><button data-tab="e4">Excepción sin catch</button><button data-tab="e5">Varios archivos</button></div>
+    <div style="display:grid;grid-template-columns:640px 1fr;gap:30px;margin-top:20px">
+      <div data-panel="e1"><pre class="code c20">Material m("MAT-1", "Sin tipo");</pre><div class="term t18 g12"><span class="e">error: cannot declare variable 'm' to be of abstract type 'Material'
+note:   because the following virtual functions are pure within 'Material':</span></div></div>
+      <div data-panel="e1" class="lado"><p class="lead" style="font-size:28px">No existe «un material» a secas.</p><p class="g12">Cree un <code>Libro</code> o una <code>Laptop</code>. g++ lista después qué funciones quedaron en <code>= 0</code>.</p></div>
+      <div data-panel="e2" hidden><pre class="code c20">int diasPrestamo() override { return 3; }</pre><div class="term t18 g12"><span class="e">error: 'int Laptop::diasPrestamo()' marked 'override', but does not override</span></div></div>
+      <div data-panel="e2" hidden class="lado"><p class="lead" style="font-size:28px">Faltó el <code>const</code>.</p><p class="g12">Sin él es otra función. <code>override</code> atrapa el error al compilar en vez de dejar un 3 que nunca se usa.</p></div>
+      <div data-panel="e3" hidden><pre class="code c20">unique_ptr&lt;Material&gt; m =
+    make_unique&lt;Libro&gt;("L-1", "Prueba", "Autor");
+bib.agregar(m);</pre><div class="term t18 g12"><span class="e">error: use of deleted function 'std::unique_ptr&lt;_Tp, _Dp&gt;::unique_ptr(const std::unique_ptr&lt;_Tp, _Dp&gt;&amp;) [with _Tp = Material; _Dp = std::default_delete&lt;Material&gt;]'</span></div></div>
+      <div data-panel="e3" hidden class="lado"><p class="lead" style="font-size:28px">Un unique_ptr tiene un solo dueño.</p><p class="g12">No se copia: se entrega con <code>bib.agregar(move(m));</code></p></div>
+      <div data-panel="e4" hidden><pre class="code c20">Laptop b("LAP-01", "Equipo sala 1", 8);
+b.prestar();
+b.prestar();</pre><div class="term t18 g12"><span class="e">terminate called after throwing an instance of 'std::runtime_error'
+  what():  LAP-01 ya esta prestado</span></div></div>
+      <div data-panel="e4" hidden class="lado"><p class="lead" style="font-size:28px">Compila, pero el programa se cae.</p><p class="g12">Toda excepción que se lanza necesita un <code>try</code>/<code>catch</code> que la atrape antes de salir de <code>main</code>.</p></div>
+      <div data-panel="e5" hidden><pre class="code c20" data-raw><span class="ln">g++ -std=c++17 -Wall -Wextra -o m5 main5.cpp</span></pre><div class="term t18 g12"><span class="e">main5.cpp:(.text+0x4f): undefined reference to `Registro::anotar(std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; const&amp;)'
+collect2: error: ld returned 1 exit status</span></div></div>
+      <div data-panel="e5" hidden class="lado"><p class="lead" style="font-size:28px">Faltó compilar el .cpp de la clase.</p><p class="g12">Cuando el proyecto se separa en <code>.h</code> y <code>.cpp</code>, todos van en la orden: <code>g++ ... main5.cpp Bib5.cpp</code></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Paso 6: Git, un commit por hito">
+  <h2 class="mask"><span>Paso 6: un commit por cada hito</span></h2>
+  <p class="body sub" data-a style="max-width:1120px">Repaso de la Unidad A: <code>git init</code> una vez; luego <code>git add</code> y <code>git commit</code> cada vez que una versión compila y corre. Pulse cada nota.</p>
+  <div class="commits" id="gt" data-a></div>
+  <pre class="code c20 g16" data-raw id="gt-cmd" data-a></pre>
+  <div class="term t19 g12" id="gt-out" data-a></div>
+</section>
+
+<section class="slide" data-title="El tablero del proyecto">
+  <h2 class="mask"><span>El tablero del proyecto</span></h2>
+  <div class="kform g12" data-a><input id="k-eq" placeholder="Equipo (opcional)" maxlength="30" style="width:190px" aria-label="Nombre del equipo"><input id="k-tx" placeholder="Nueva tarea" maxlength="60" style="width:270px" aria-label="Nueva tarea"><input id="k-qn" placeholder="Quién" maxlength="16" style="width:120px" aria-label="Responsable"><button class="go" id="k-add">Añadir</button><button id="k-exp">Exportar como texto</button><button id="k-rst">Restablecer</button></div>
+  <div class="tablero kan" id="kan" data-a></div>
+  <p class="kmsg" style="margin-top:8px" id="k-msg" data-a aria-live="polite">Mueva las tarjetas con las flechas o arrastrándolas. Se guarda en este navegador: en una computadora compartida, use Restablecer al terminar.</p>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: repartir el trabajo">
+  <p class="q mask"><span>Son tres en el equipo. ¿Cómo se reparten el código?</span></p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:27px">Piensen en lo que pasa la noche antes de entregar si cada uno trabajó solo hasta el final.</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b>Una versión cada uno</b><span>Ana hace v1, Luis v2 y Marta v3</span></div><div class="ok" data-rv-box><b>Unas clases cada uno</b><span>con el UML y los .h acordados primero</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">Por clases, con la interfaz acordada, e integrando cada hito. v2 no puede empezar sin v1.</span></div></div></div>
+</section>
+
+<!-- TEMA 2 -->
+<section class="slide chapter" data-title="Tema 2: Presentación de proyectos" data-topic="2">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask"><span>Presentación de proyectos</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:640px">El último hito del tablero: contarle al grupo qué problema resolvieron, cómo, y demostrar que funciona.</p>
+    <div class="ext" data-a></div></div>
+    <div data-a style="align-self:center"><div class="tablero" id="ch2-board"></div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="La estructura de la presentación">
+  <h2 class="mask"><span>Cinco partes, en este orden</span></h2>
+  <div class="partes" data-a>
+    <div class="nota"><b>1. Problema</b>El enunciado en dos oraciones: quién lo usa y qué resuelve.</div>
+    <div class="nota ve"><b>2. Diseño UML</b>Las clases, la herencia y la composición. Por qué así.</div>
+    <div class="nota az"><b>3. Demostración</b>El programa corriendo: un caso normal y un error controlado.</div>
+    <div class="nota ro"><b>4. Pruebas</b>El plan de pruebas y la corrida con todas en OK.</div>
+    <div class="nota"><b>5. Lecciones</b>Qué fue difícil y qué harían distinto.</div>
+  </div>
+  <p class="body g20" data-a style="font-size:21px"><b>10 minutos de presentación y 5 de preguntas.</b> Así se reparten los 10:</p>
+  <div class="barra" id="barra" data-a></div>
+  <p class="small g12" data-a style="font-size:19px">La demostración se lleva el 40 % del tiempo: es la prueba de que el proyecto existe. Cada miembro del equipo presenta una parte.</p>
+</section>
+
+<section class="slide" data-title="La demostración en vivo">
+  <h2 class="mask"><span>La demostración en vivo</span></h2>
+  <div style="display:grid;grid-template-columns:560px 1fr;gap:34px;margin-top:20px">
+    <div data-a>
+      <h3 style="font-size:24px;margin-bottom:10px">Un guion de tres escenas</h3>
+      <ol class="consejos">
+        <li><b>Lo normal:</b> cargar el catálogo y prestar un libro.</li>
+        <li><b>El error controlado:</b> prestarlo otra vez y mostrar el mensaje, no un programa caído.</li>
+        <li><b>La memoria:</b> cerrar, abrir y ver que el préstamo sigue ahí.</li>
+      </ol>
+      <p class="body" style="font-size:20px;margin-top:16px">No escriban código en vivo. Compilen antes, guarden una copia del archivo de datos original y tengan capturas de la corrida como plan B.</p>
+    </div>
+    <div data-a>
+      <h3 style="font-size:24px;margin-bottom:10px">Antes de presentar <span id="ck-n" style="color:var(--accent)"></span></h3>
+      <ul class="chk" id="ck"></ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Preguntas típicas del público">
+  <h2 class="mask"><span>Las preguntas que siempre llegan</span></h2>
+  <div class="pregs" data-a>
+    <div class="nota" data-rv-box><span class="q2">¿Por qué herencia y no un solo tipo con un campo «tipo»?</span><span class="reveal">Porque cada tipo responde distinto (días, dato). Con un campo habría un if en cada función; con herencia, un tipo nuevo es una clase nueva.</span><button class="pbtn" data-rv="Volver">Cómo responder</button></div>
+    <div class="nota ve" data-rv-box><span class="q2">¿Qué pasa si el archivo no existe o está dañado?</span><span class="reveal">Muéstrelo: la corrida sin archivo y la excepción atrapada. Si hay un caso que no manejan, díganlo como mejora pendiente.</span><button class="pbtn" data-rv="Volver">Cómo responder</button></div>
+    <div class="nota az" data-rv-box><span class="q2">¿Cómo saben que funciona?</span><span class="reveal">Con el plan de pruebas: qué se prueba, qué se espera y la corrida con todas en OK. «Lo probé y sirvió» no es una respuesta.</span><button class="pbtn" data-rv="Volver">Cómo responder</button></div>
+    <div class="nota ro" data-rv-box><span class="q2">¿Qué parte hizo cada uno?</span><span class="reveal">El tablero y el historial de Git lo dicen. Cada miembro debe poder explicar cualquier clase, no solo la suya.</span><button class="pbtn" data-rv="Volver">Cómo responder</button></div>
+    <div class="nota" data-rv-box><span class="q2">¿Qué cambiarían si empezaran de nuevo?</span><span class="reveal">Una lección concreta: «separaríamos antes en .h y .cpp» vale más que «nos organizaríamos mejor».</span><button class="pbtn" data-rv="Volver">Cómo responder</button></div>
+    <div class="nota ve" data-rv-box><span class="q2">¿Cómo añadirían un tipo nuevo, por ejemplo revistas?</span><span class="reveal">Una clase <code>Revista : public Material</code> con sus tres funciones, y una línea más en <code>cargar()</code>. Las demás clases no cambian.</span><button class="pbtn" data-rv="Volver">Cómo responder</button></div>
+  </div>
+</section>
+
+<section class="slide field-hi" data-title="Discusión: la demostración falla">
+  <p class="q mask"><span>La demostración falla frente a todo el grupo. ¿Qué hacen?</span></p>
+  <p class="body gap" data-a style="max-width:1000px;font-size:27px">Le pasa a cualquiera. Lo que se evalúa es cómo reacciona el equipo.</p>
+  <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:64px;align-items:end"><div class="timer" data-timer="120" data-a></div>
+  <div class="prop2" data-a><div><b>Arreglar el código en vivo</b><span>abrir el editor y buscar el error frente a todos</span></div><div class="ok" data-rv-box><b>Explicar y pasar al plan B</b><span>decir qué pasó y seguir con las capturas</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">Plan B: explicar en una oración, mostrar la corrida grabada y seguir. Depurar en vivo se come el tiempo.</span></div></div></div>
+</section>
+
+<section class="slide" data-title="Lo esencial de la unidad">
+  <h2 class="mask"><span>Lo que se lleva de esta unidad</span></h2>
+  <div class="dir" data-a>
+    <div><h3>Del problema al diseño</h3><p>Requisitos que se pueden comprobar; sustantivos y verbos para las clases; un UML antes del código.</p></div>
+    <div><h3>Por incrementos</h3><p>Cada versión compila sin avisos y corre. Un commit por hito: v1, v2, v3.</p></div>
+    <div><h3>Pruebas primero</h3><p>Cada requisito con al menos una prueba, y las pruebas se corren después de cada cambio.</p></div>
+    <div><h3>Presentar</h3><p>Problema, diseño, demostración, pruebas y lecciones. Con guion y con plan B.</p></div>
+  </div>
+</section>
+
+<!-- ACTIVIDAD -->
+<section class="slide chapter" data-title="Actividad de clase: arranque del proyecto" data-topic="3">
+  <div class="chwrap"><div class="left">
+    <h1 class="mask" style="font-size:80px"><span>Actividad de clase</span></h1>
+    <p class="lead" data-a style="margin-top:22px;max-width:640px">El arranque del proyecto final: equipo, proyecto y el documento con el que empieza el tablero.</p>
+    <div class="ext" data-a></div></div>
+    <div data-a style="align-self:center"><div class="tablero" id="ch3-board"></div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Actividad: el documento de arranque">
+  <h2 class="mask"><span>La misión: arrancar el proyecto</span></h2>
+  <div style="display:grid;grid-template-columns:560px 1fr;gap:34px;margin-top:20px">
+    <ol class="mision" data-a>
+      <li><b class="nm">1</b><span>Formen equipos de 2 o 3 personas.</span></li>
+      <li><b class="nm">2</b><span>Escojan un proyecto del catálogo, o propongan uno con los mismos requisitos mínimos.</span></li>
+      <li><b class="nm">3</b><span>Hoy: escriban el enunciado y marquen en papel sustantivos y verbos como en el generador; armen el tablero.</span></li>
+      <li><b class="nm">4</b><span>En la semana entregan por OrbundSIS el documento de arranque en PDF: copien la plantilla en Word o Docs, peguen el diagrama y expórtenlo a PDF. Cuenta 10 de los 20 puntos de «Diseño».</span></li>
+    </ol>
+    <div data-a>
+      <h3 style="font-size:24px;margin-bottom:10px">El documento de arranque</h3>
+      <div class="arranque">
+        <div class="nota"><b>1. Enunciado:</b> 5 a 8 oraciones y la lista de requisitos.</div>
+        <div class="nota ve"><b>2. Lista de clases:</b> atributos y métodos de cada una.</div>
+        <div class="nota az"><b>3. Diagrama UML</b> de clases, con herencia y composición.</div>
+        <div class="nota ro"><b>4. Plan de pruebas:</b> al menos 5 pruebas, cada requisito cubierto.</div>
+        <div class="nota"><b>5. Reparto de tareas:</b> el tablero exportado, con responsables.</div>
+      </div>
+      <div class="row g16"><button class="dl" id="tpl">Descargar la plantilla</button><span style="font-size:20px;font-weight:600">Las fechas se anuncian en OrbundSIS.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Catálogo de proyectos sugeridos">
+  <h2 class="mask"><span>Ocho proyectos para escoger</span></h2>
+  <div class="row g12" data-a style="justify-content:space-between"><div class="filtro" id="cat-f"><button data-f="todos">Todos</button><button data-f="1">Básico</button><button data-f="2">Intermedio</button><button data-f="3">Avanzado (reto)</button></div><div class="minimos"><span>clases</span><span>encapsulación</span><span>constructores</span><span>herencia</span><span>polimorfismo</span><span>composición</span><span>archivos</span><span>excepciones</span><span>pruebas</span></div></div>
+  <div style="display:grid;grid-template-columns:540px 1fr;gap:30px;margin-top:20px">
+    <div class="proys" id="cat-l" data-a></div>
+    <div class="panel det" id="cat-d" data-a></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Rúbrica del proyecto final">
+  <h2 class="mask"><span>Rúbrica del proyecto final</span></h2>
+  <div style="display:grid;grid-template-columns:640px 1fr;gap:36px;margin-top:18px">
+    <table class="t rub" data-a>
+      <tr><th>Criterio</th><th>Puntos</th></tr>
+      <tr class="grupo"><td>Diseño</td><td>20</td></tr>
+      <tr><td class="sub2">Documento de arranque: 5 partes, 2 puntos c/u</td><td>10</td></tr>
+      <tr><td class="sub2">UML final coherente; herencia y composición</td><td>10</td></tr>
+      <tr class="grupo"><td>Implementación</td><td>30</td></tr>
+      <tr><td class="sub2">Todos los requisitos funcionan</td><td>10</td></tr>
+      <tr><td class="sub2">Clases, encapsulación, constructores, polimorfismo (se acepta Material* con destructor que libere)</td><td>10</td></tr>
+      <tr><td class="sub2">Archivos y excepciones</td><td>10</td></tr>
+      <tr class="grupo"><td>Pruebas: plan y programa de pruebas, todas en OK</td><td>15</td></tr>
+      <tr class="grupo"><td>Código limpio: sin avisos, nombres, sangría, Git</td><td>15</td></tr>
+      <tr class="grupo"><td>Presentación oral</td><td>20</td></tr>
+      <tr><th>Total</th><th>100</th></tr>
+    </table>
+    <div data-a>
+      <h3 style="font-size:26px">Qué se entrega al final</h3>
+      <ul style="font-size:21px;line-height:1.45;margin:10px 0 0;padding-left:26px"><li>El código fuente (.h y .cpp) y los archivos de datos.</li><li>El programa de pruebas y una captura con su corrida.</li><li>El diagrama UML final.</li><li>El historial: <code>git log --oneline</code>.</li></ul>
+      <p class="body" style="margin-top:14px;font-size:21px">Por OrbundSIS, en un .zip llamado <code>Equipo_Apellidos_TESI2105_Proyecto.zip</code>.</p>
+      <p class="body" style="margin-top:10px;font-size:21px;font-weight:600">Las fechas se anuncian en OrbundSIS.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Rúbrica de la presentación oral">
+  <h2 class="mask"><span>Rúbrica de la presentación oral</span></h2>
+  <p class="body sub" data-a>Vale 20 de los 100 puntos del proyecto: cinco criterios de 4 puntos.</p>
+  <table class="t oral g16" data-a>
+    <tr><th>Criterio</th><th>Pts.</th><th>4 puntos</th><th>2 puntos</th></tr>
+    <tr><td>Problema y diseño</td><td>4</td><td>Explican el problema y justifican el UML</td><td>Muestran el UML sin explicar las decisiones</td></tr>
+    <tr><td>Demostración</td><td>4</td><td>Corre en vivo: caso normal, error controlado y archivo</td><td>Corre en parte, o solo con capturas sin explicar</td></tr>
+    <tr><td>Pruebas</td><td>4</td><td>Muestran el plan y la corrida con todas en OK</td><td>Mencionan pruebas sin mostrarlas</td></tr>
+    <tr><td>Dominio del equipo</td><td>4</td><td>Todos presentan y responden sobre cualquier clase</td><td>Uno solo responde las preguntas</td></tr>
+    <tr><td>Tiempo y claridad</td><td>4</td><td>Respetan el tiempo; letra y voz claras</td><td>Se pasan del tiempo o no se lee la pantalla</td></tr>
+  </table>
+  <p class="small g12" data-a style="font-size:19px">3 y 1 punto quedan entre esos niveles. 0: la parte no se presentó.</p>
+</section>
+
+<section class="slide" data-title="Referencias">
+  <h2 class="mask"><span>Referencias</span></h2>
+  <div class="refs gap" data-a style="max-width:1100px">
+    <p>cppreference.com. (s. f.). <i>Abstract class</i>. https://en.cppreference.com/w/cpp/language/abstract_class</p>
+    <p>cppreference.com. (s. f.). <i>std::unique_ptr</i>. https://en.cppreference.com/w/cpp/memory/unique_ptr</p>
+    <p>cppreference.com. (s. f.). <i>std::runtime_error</i>. https://en.cppreference.com/w/cpp/error/runtime_error</p>
+    <p>cppreference.com. (s. f.). <i>std::getline</i>. https://en.cppreference.com/w/cpp/string/basic_string/getline</p>
+    <p>Kumar, A. (2024). <i>Hands-on object-oriented programming: Mastering OOP features for real-world software systems development</i>. Apress.</p>
+    <p>Lutz, M. (2025). <i>Learning Python: Powerful object-oriented programming</i>. O’Reilly Media.</p>
+  </div>
+  <p class="body g16" data-a style="font-size:20px">Kumar (2024) y Lutz (2025) son los textos oficiales del prontuario. Los programas, salidas y mensajes se verificaron con g++ 13.3 en Linux.</p>
+</section>
+
+</div></div>
+
+<!-- archivos del proyecto de ejemplo (se descargan desde la lámina de v3) -->
+<script type="text/plain" id="f-biblioteca.h">
+// biblioteca.h - Biblioteca del recinto, v3
+#ifndef BIBLIOTECA_H
+#define BIBLIOTECA_H
+
+#include <fstream>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <vector>
+using namespace std;
+
+class Material {
+public:
+    Material(const string& c, const string& t) : codigo(c), titulo(t) {}
+    virtual ~Material() = default;
+
+    string obtenerCodigo() const { return codigo; }
+    bool estaPrestado() const { return prestado; }
+
+    void prestar() {
+        if (prestado)
+            throw runtime_error(codigo + " ya esta prestado");
+        prestado = true;
+    }
+    void devolver() {
+        if (!prestado)
+            throw runtime_error(codigo + " no estaba prestado");
+        prestado = false;
+    }
+
+    virtual string tipo() const = 0;
+    virtual string dato() const = 0;
+    virtual int diasPrestamo() const = 0;
+
+    string registro() const {
+        return tipo() + ";" + codigo + ";" + titulo + ";" + dato() + ";" +
+               (prestado ? "1" : "0");
+    }
+
+    void mostrar() const {
+        cout << "[" << codigo << "] " << tipo() << ": " << titulo << " | "
+             << dato() << " | " << diasPrestamo() << " dias"
+             << (prestado ? " | PRESTADO" : "") << endl;
+    }
+
+private:
+    string codigo;
+    string titulo;
+    bool prestado = false;
+};
+
+class Libro : public Material {
+public:
+    Libro(const string& c, const string& t, const string& a)
+        : Material(c, t), autor(a) {}
+    string tipo() const override { return "Libro"; }
+    string dato() const override { return autor; }
+    int diasPrestamo() const override { return 14; }
+
+private:
+    string autor;
+};
+
+class Laptop : public Material {
+public:
+    Laptop(const string& c, const string& t, int r)
+        : Material(c, t), ram(r) {}
+    string tipo() const override { return "Laptop"; }
+    string dato() const override { return to_string(ram) + " GB"; }
+    int diasPrestamo() const override { return 3; }
+
+private:
+    int ram;
+};
+
+class Biblioteca {
+public:
+    void agregar(unique_ptr<Material> m) { materiales.push_back(move(m)); }
+
+    Material& buscar(const string& codigo) {
+        for (auto& m : materiales)
+            if (m->obtenerCodigo() == codigo)
+                return *m;
+        throw runtime_error("no existe el material " + codigo);
+    }
+
+    void prestar(const string& codigo)  { buscar(codigo).prestar(); }
+    void devolver(const string& codigo) { buscar(codigo).devolver(); }
+
+    int total() const { return materiales.size(); }
+    int disponibles() const {
+        int n = 0;
+        for (const auto& m : materiales)
+            if (!m->estaPrestado())
+                n++;
+        return n;
+    }
+
+    void cargar(const string& nombre) {
+        ifstream arch(nombre);
+        if (!arch)
+            throw runtime_error("no se pudo abrir " + nombre);
+        string tipo, codigo, titulo, dato, estado;
+        while (getline(arch, tipo, ';') && getline(arch, codigo, ';') &&
+               getline(arch, titulo, ';') && getline(arch, dato, ';') &&
+               getline(arch, estado)) {
+            unique_ptr<Material> m;
+            if (tipo == "Libro")
+                m = make_unique<Libro>(codigo, titulo, dato);
+            else  // stoi("8 GB") devuelve 8
+                m = make_unique<Laptop>(codigo, titulo, stoi(dato));
+            if (estado == "1")
+                m->prestar();
+            agregar(move(m));
+        }
+    }
+
+    void guardar(const string& nombre) const {
+        ofstream arch(nombre);
+        if (!arch)
+            throw runtime_error("no se pudo escribir " + nombre);
+        for (const auto& m : materiales)
+            arch << m->registro() << endl;
+    }
+
+private:
+    vector<unique_ptr<Material>> materiales;
+};
+
+#endif
+</script>
+<script type="text/plain" id="f-main.cpp">
+// main.cpp - Biblioteca del recinto, v3: el catalogo vive en un archivo
+#include "biblioteca.h"
+
+int main() {
+    Biblioteca bib;
+    try {
+        bib.cargar("catalogo.txt");
+    } catch (const exception& e) {
+        cout << "Error: " << e.what() << endl;
+        return 1;
+    }
+
+    for (string c : {"LIB-102", "LAP-01"}) {
+        try {
+            bib.prestar(c);
+            cout << "Prestado: " << c << endl;
+        } catch (const exception& e) {
+            cout << "Error: " << e.what() << endl;
+        }
+    }
+    cout << "Disponibles: " << bib.disponibles() << " de " << bib.total() << endl;
+    bib.guardar("catalogo.txt");
+    return 0;
+}
+</script>
+<script type="text/plain" id="f-pruebas.cpp">
+// pruebas.cpp - plan de pruebas de la Biblioteca del recinto
+#include "biblioteca.h"
+
+int fallas = 0;
+
+void verificar(bool condicion, const string& nombre) {
+    cout << (condicion ? "OK     " : "FALLA  ") << nombre << endl;
+    if (!condicion)
+        fallas++;
+}
+
+int main() {
+    Libro  libro("LIB-1", "Prueba", "Autor");
+    Laptop laptop("LAP-1", "Prueba", 8);
+    verificar(libro.diasPrestamo() == 14, "P1 un libro se presta 14 dias");
+    verificar(laptop.diasPrestamo() == 3, "P2 una laptop se presta 3 dias");
+
+    libro.prestar();
+    verificar(libro.estaPrestado(), "P3 prestar marca el material");
+
+    bool lanzo = false;
+    try { libro.prestar(); } catch (const runtime_error&) { lanzo = true; }
+    verificar(lanzo, "P4 prestar dos veces lanza una excepcion");
+
+    Biblioteca bib;
+    bib.agregar(make_unique<Laptop>("LAP-2", "Prueba", 16));
+    lanzo = false;
+    try { bib.buscar("NO-EXISTE"); } catch (const runtime_error&) { lanzo = true; }
+    verificar(lanzo, "P5 buscar un codigo que no existe lanza una excepcion");
+
+    bib.prestar("LAP-2");
+    bib.guardar("prueba.txt");
+    Biblioteca copia;
+    copia.cargar("prueba.txt");
+    verificar(copia.total() == 1 && copia.buscar("LAP-2").estaPrestado(),
+              "P6 guardar y cargar conserva el prestamo");
+
+    lanzo = false;
+    try { copia.cargar("no_existe.txt"); } catch (const runtime_error&) { lanzo = true; }
+    verificar(lanzo, "P7 cargar un archivo que no existe lanza una excepcion");
+
+    if (fallas == 0)
+        cout << "Todas las pruebas pasaron" << endl;
+    else
+        cout << fallas << " prueba(s) fallaron" << endl;
+    return fallas;
+}
+</script>
+<script type="text/plain" id="f-catalogo.txt">
+Libro;LIB-101;Programacion en C++;R. Rivera;0
+Libro;LIB-102;Redes para todos;A. Colon;0
+Laptop;LAP-01;Equipo sala 1;8 GB;0
+Laptop;LAP-02;Equipo sala 2;16 GB;1
+</script>
+<script src="assets/deck.js"></script>
+<script>
+Deck.steps.v2=[
+ {l:2,set:{c:'c = "LIB-102"'},add:[['LIB-102','pr']],run:function(q){q('LIB-102').querySelector('em').textContent='PRESTADO'},flash:['LIB-102'],msg:'buscar() lo encuentra y prestar() lo marca como prestado.'},
+ {l:3,out:'Prestado: LIB-102',msg:'No hubo excepción: corre la línea siguiente del try.'},
+ {l:2,set:{c:'c = "LAP-01"'},add:[['LAP-01','pr']],run:function(q){q('LAP-01').querySelector('em').textContent='PRESTADO'},flash:['LAP-01'],msg:'Lo mismo con la laptop LAP-01.'},
+ {l:3,out:'Prestado: LAP-01',msg:'Otra vez sin excepción.'},
+ {l:2,set:{c:'c = "LIB-102"'},flash:['LIB-102'],msg:'Ya está prestado: prestar() lanza runtime_error y el cout no corre.'},
+ {l:5,out:'Error: LIB-102 ya esta prestado',msg:'El catch atrapa la excepción, imprime e.what() y el ciclo sigue.'},
+ {l:2,set:{c:'c = "LAP-09"'},msg:'LAP-09 no existe: buscar() no lo encuentra y lanza.'},
+ {l:5,out:'Error: no existe el material LAP-09',msg:'Otra excepción, el mismo catch. Ninguna nota cambió.'},
+ {l:7,out:'Disponibles: 2 de 4',msg:'Fuera del ciclo, main imprime disponibles() y total().'}
+];
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id)};
+function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function each(sel,fn,root){[].forEach.call((root||document).querySelectorAll(sel),fn)}
+function pressed(sel,fn){each(sel,function(b){b.setAttribute('aria-pressed',fn(b))})}
+function store(k,v){try{if(v===undefined){var x=localStorage.getItem(k);return x?JSON.parse(x):null}localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
+function bajar(nombre,texto){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([texto],{type:'text/plain;charset=utf-8'}));a.download=nombre;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)}
+function tablero(el,cols,notas,hl){el.innerHTML=cols.map(function(c,i){return '<div class="col"><h4>'+c+'<span>'+notas[i].length+'</span></h4>'+notas[i].map(function(n){return '<div class="nota'+(n[1]?' '+n[1]:'')+'">'+n[0]+'</div>'}).join('')+'</div>'}).join('');if(hl!==undefined)el.children[hl].style.background='rgba(255,196,37,.16)'}
+
+/* capítulos */
+var EX=['Diseñar e implementar','Presentar','Actividad'];
+each('[data-topic]',function(sl){var t=+sl.dataset.topic,e=sl.querySelector('.ext');if(e)e.innerHTML=EX.map(function(w,i){return '<span class="'+(i+1===t?'on':'')+'">'+(i+1===t?'→ ':'')+w+'</span>'}).join('')});
+var COLS=['Por hacer','En proceso','Listo'];
+tablero($('ch1-board'),COLS,[[['Plan de pruebas','ro'],['v3: archivo','az']],[['UML','ve'],['v2: excepciones','az']],[['Requisitos'],['Clases'],['v1: herencia','az']]],1);
+tablero($('ch2-board'),COLS,[[['Ensayar con reloj','ro'],['Plan B: capturas']],[['Láminas','ve']],[['v1, v2, v3','az'],['Pruebas en OK','ro'],['Git al día']]],0);
+tablero($('ch3-board'),COLS,[[['Escoger proyecto','ve'],['Arranque','ro'],['Reparto']],[['Formar el equipo']],[]],1);
+
+/* portada: un tablero que avanza */
+var PT=[['Requisitos','',2],['UML','ve',2],['v1: herencia','az',2],['v2: excepciones','az',1],['v3: archivo','az',0],['Pruebas','ro',0],['Presentación','',0]];
+var PT0=PT.map(function(x){return x[2]});
+function ptDraw(mv){var n=[[],[],[]];PT.forEach(function(t,i){n[t[2]].push(i)});
+  $('pt-board').innerHTML=COLS.map(function(c,j){return '<div class="col"><h4>'+c+'<span>'+n[j].length+'</span></h4>'+n[j].map(function(i){return '<div class="nota'+(PT[i][1]?' '+PT[i][1]:'')+(i===mv?' llega':'')+'">'+PT[i][0]+'</div>'}).join('')+'</div>'}).join('');
+  var hv=['v1','v2','v3','Entrega'],ok=[PT[2][2]===2,PT[3][2]===2,PT[4][2]===2,PT.every(function(t){return t[2]===2})];
+  $('pt-hitos').innerHTML=hv.map(function(h,i){return (i?'<span class="linea"></span>':'')+'<span class="h'+(ok[i]?' ok':'')+'"><i></i>'+h+'</span>'}).join('')}
+$('pt-go').onclick=function(){var i,mv=-1;for(i=0;i<PT.length&&mv<0;i++)if(PT[i][2]===1)mv=i;if(mv<0)for(i=0;i<PT.length&&mv<0;i++)if(PT[i][2]===0)mv=i;
+  if(mv<0){PT.forEach(function(t,j){t[2]=PT0[j]});ptDraw();$('pt-go').textContent='Mover una tarea';$('pt-msg').textContent='';return}
+  PT[mv][2]++;ptDraw(mv);$('pt-msg').textContent='«'+PT[mv][0]+'» pasa a '+COLS[PT[mv][2]]+'.';
+  if(PT.every(function(t){return t[2]===2})){$('pt-go').textContent='Empezar de nuevo';$('pt-msg').textContent='Todo en «Listo»: proyecto entregado.'}};
+ptDraw();
+
+/* lámina 2: unidades */
+var UN=[
+ {u:'A',t:'Git',c:'ve',tit:'Control de versiones',cod:'<div class="term t18">852b961 v2: Biblioteca con composicion y excepciones\nfe05126 v1: Material, Libro y Laptop con herencia</div>',x:'Un commit por cada versión que ya compila y corre.'},
+ {u:'H',t:'Clases y encapsulación',c:'',tit:'Clases y encapsulación',cod:'<pre class="code c18">private:\n    string codigo;\n    string titulo;\n    bool prestado = false;</pre>',x:'Nadie fuera de Material puede cambiar prestado: solo prestar() y devolver(), que revisan antes.'},
+ {u:'H',t:'Constructores',c:'',tit:'Constructores',cod:'<pre class="code c18">Laptop(const string&amp; c, const string&amp; t, int r)\n    : Material(c, t), ram(r) {}</pre>',x:'La laptop nace completa. Su constructor le pasa a Material lo que le toca.'},
+ {u:'I',t:'Herencia',c:'az',tit:'Herencia',cod:'<pre class="code c18">class Libro : public Material {</pre>',x:'Un Libro es un Material: hereda código, título, prestar() y devolver().'},
+ {u:'I',t:'Polimorfismo',c:'az',tit:'Polimorfismo',cod:'<pre class="code c18">virtual int diasPrestamo() const = 0;\nint diasPrestamo() const override { return 3; }</pre>',x:'La misma llamada contesta 14 o 3 según el objeto.'},
+ {u:'J',t:'Principios de diseño',c:'ve',tit:'Una responsabilidad por clase',cod:'<pre class="code c18">Material&amp; buscar(const string&amp; codigo) {</pre>',x:'La Biblioteca guarda y busca; cada Material sabe prestarse y escribirse. Ninguna hace el trabajo de la otra.'},
+ {u:'K',t:'Archivos',c:'ro',tit:'Archivos',cod:'<pre class="code c18">ofstream arch(nombre);\nfor (const auto&amp; m : materiales)\n    arch &lt;&lt; m-&gt;registro() &lt;&lt; endl;</pre>',x:'El catálogo sobrevive al programa: se guarda al terminar y se carga al empezar.'},
+ {u:'K',t:'Excepciones',c:'ro',tit:'Excepciones',cod:'<pre class="code c18">if (prestado)\n    throw runtime_error(codigo + " ya esta prestado");</pre>',x:'Prestar dos veces no imprime nada desde la clase: lanza, y main decide qué decir.'},
+ {u:'L',t:'Pruebas',c:'az',tit:'Pruebas',cod:'<div class="term t18">OK     P4 prestar dos veces lanza una excepcion\nOK     P5 buscar un codigo que no existe lanza una excepcion</div>',x:'Un programa aparte comprueba cada requisito y dice OK o FALLA.'}];
+$('u-notas').innerHTML=UN.map(function(n,i){return '<button class="nota'+(n.c?' '+n.c:'')+'" data-i="'+i+'"><small>Unidad '+n.u+'</small>'+n.t+'</button>'}).join('');
+function uShow(i){var n=UN[i];$('u-tag').textContent='Unidad '+n.u;$('u-tit').textContent=n.tit;$('u-cod').innerHTML=n.cod;each('#u-cod pre.code',Deck.hl);$('u-txt').textContent=n.x;pressed('#u-notas button',function(b){return +b.dataset.i===i})}
+each('#u-notas button',function(b){b.onclick=function(){uShow(+b.dataset.i)}});uShow(3);
+
+/* seis pasos */
+var PS=[
+ {t:'Requisitos',q:'¿Qué debe hacer el programa, exactamente?',p:'Un enunciado y una lista de requisitos que se pueden comprobar.',b:'7 requisitos: prestar, devolver, no prestar dos veces, guardar en un archivo…',go:4},
+ {t:'Clases y métodos',q:'¿Qué cosas hay y qué hace cada una?',p:'Sustantivos → clases y atributos. Verbos → métodos.',b:'Biblioteca, Material, Libro y Laptop.',go:5},
+ {t:'UML',q:'¿Cómo se relacionan las clases?',p:'Un diagrama de clases con herencia y composición.',b:'Libro y Laptop heredan de Material; la Biblioteca contiene materiales.',go:6},
+ {t:'Plan de pruebas',q:'¿Cómo sabremos que funciona?',p:'Una tabla: prueba, qué se hace, qué se espera, qué requisito cubre.',b:'P1 a P7, escritas antes del código.',go:8},
+ {t:'Incrementos',q:'¿Qué parte se programa primero?',p:'v1, v2, v3: cada versión compila sin avisos y corre.',b:'v1 herencia · v2 excepciones · v3 archivo.',go:9},
+ {t:'Git',q:'¿Cómo se guarda cada versión que funciona?',p:'Un commit por hito, con un mensaje que diga qué se añadió.',b:'4 commits, del documento de arranque a v3.',go:15}];
+$('ps').innerHTML=PS.map(function(p,i){return '<button data-i="'+i+'"><i>'+(i+1)+'</i>'+p.t+'</button>'}).join('');
+function psShow(i){var p=PS[i];$('ps-q').textContent=p.q;$('ps-p').textContent=p.p;$('ps-b').textContent=p.b;each('#ps button',function(b){var j=+b.dataset.i;b.setAttribute('aria-pressed',j===i);if(j===i)b.classList.add('visto')})}
+each('#ps button',function(b){b.onclick=function(){psShow(+b.dataset.i)}});psShow(0);
+
+/* requisitos */
+var RQ=[['R1','Registrar libros (con autor) y laptops (con RAM), con código y título.',[2,3]],['R2','Un libro se presta 14 días; una laptop, 3.',[3]],['R3','Buscar un material por su código.',[4]],['R4','Prestar y devolver un material.',[4]],['R5','No prestar un material que ya está prestado.',[5]],['R6','Guardar el catálogo en un archivo y cargarlo al abrir.',[6]],['R7','Avisar, sin caerse, si el archivo no existe.',[7]]];
+$('reqs').innerHTML=RQ.map(function(r,i){return '<button data-i="'+i+'"><b>'+r[0]+'</b><span>'+r[1]+'</span></button>'}).join('');
+function rqShow(i){each('#enun .or',function(s){s.classList.toggle('lit',RQ[i][2].indexOf(+s.dataset.s)>=0)});pressed('#reqs button',function(b){return +b.dataset.i===i})}
+each('#reqs button',function(b){b.onclick=function(){rqShow(+b.dataset.i)}});rqShow(4);
+
+/* generador de clases candidatas */
+var W=[ /* [texto, k(s|v), clase, atributo|método, dueño, propuesta] */
+ 'La ',['biblioteca','s','Biblioteca','biblioteca','?','c'],' del ',['recinto','s','Recinto','recinto','?',''],' ',['presta','v','','prestar()','Biblioteca','m'],' ',['libros','s','Libro','libros','Biblioteca','c'],' y ',['laptops','s','Laptop','laptops','Biblioteca','c'],' a los ',['estudiantes','s','Estudiante','estudiantes','Biblioteca',''],'. Cada ',['material','s','Material','material','Biblioteca','c'],' tiene un ',['código','s','Codigo','codigo','Material','a'],' y un ',['título','s','Titulo','titulo','Material','a'],'. Un ',['libro','s','Libro','libro','Biblioteca','c'],' tiene un ',['autor','s','Autor','autor','Libro','a'],' y se presta por 14 días; una ',['laptop','s','Laptop','laptop','Biblioteca','c'],' tiene una ',['memoria RAM','s','Memoria','ram','Laptop','a'],' y se presta por 3 días. La ',['biblioteca','s','Biblioteca','biblioteca','?','c'],' ',['agrega','v','','agregar()','Biblioteca','m'],' ',['materiales','s','Material','materiales','Biblioteca','a'],', ',['busca','v','','buscar()','Biblioteca','m'],' un ',['material','s','Material','material','Biblioteca','c'],' por su código, lo ',['presta','v','','prestar()','Biblioteca','m'],' y lo ',['devuelve','v','','devolver()','Biblioteca','m'],'. Un material ',['prestado','s','Prestado','prestado','Material','a'],' no se puede ',['prestar','v','','prestar()','Material','m'],' otra vez. Al cerrar, el ',['sistema','s','Sistema','sistema','?',''],' ',['guarda','v','','guardar()','Biblioteca','m'],' el ',['catálogo','s','Catalogo','catalogo','Biblioteca',''],' en un ',['archivo','s','Archivo','archivo','Biblioteca',''],' y lo ',['carga','v','','cargar()','Biblioteca','m'],' al abrir. Si el archivo no existe, el ',['programa','s','Programa','programa','?',''],' ',['avisa','v','','avisar()','?',''],' sin caerse.'];
+var WS=[],gm='c';
+$('gen-t').innerHTML=W.map(function(x){if(typeof x==='string')return esc(x);WS.push(x);return '<span class="w" tabindex="0" role="button" data-j="'+(WS.length-1)+'">'+esc(x[0])+'</span>'}).join('');
+var MK=WS.map(function(){return ''});
+function genDraw(){
+  each('#gen-t .w',function(s){var m=MK[+s.dataset.j];s.className='w'+(m?' m'+(m==='m'?'v':m):'');s.setAttribute('aria-label',s.textContent+(m?(m==='c'?': clase':m==='a'?': atributo':': método'):''))});
+  var cls=[],at={},me={},sin=[];
+  WS.forEach(function(w,j){if(MK[j]==='c'&&cls.indexOf(w[2])<0)cls.push(w[2])});
+  WS.forEach(function(w,j){var m=MK[j];if(m!=='a'&&m!=='m')return;var o=w[4],nm=w[3],bag=m==='a'?at:me;
+    if(cls.indexOf(o)<0){if(sin.indexOf(nm)<0)sin.push(nm);return}
+    bag[o]=bag[o]||[];if(bag[o].indexOf(nm)<0)bag[o].push(nm)});
+  if(!cls.length&&!sin.length){$('gen-tab').innerHTML='<p class="cand-vacio">La tabla de clases candidatas se arma aquí a medida que marca palabras.</p>';return}
+  var h='<table class="cand"><tr><th>Clase</th><th>Atributos</th><th>Métodos</th></tr>';
+  cls.forEach(function(c){h+='<tr><td>'+c+'</td><td>'+(at[c]||[]).join(', ')+'</td><td>'+(me[c]||[]).join(', ')+'</td></tr>'});
+  if(sin.length)h+='<tr class="sin"><td>¿De qué clase?</td><td colspan="2">'+sin.join(', ')+'</td></tr>';
+  $('gen-tab').innerHTML=h+'</table>'}
+function genMark(s){var j=+s.dataset.j,w=WS[j];
+  if(gm==='x'){MK[j]='';genDraw();return}
+  if(gm==='v'&&w[1]!=='v'){$('gen-msg').textContent='«'+w[0]+'» no es un verbo. Los verbos son las acciones: presta, busca, guarda…';return}
+  if(gm!=='v'&&w[1]==='v'){$('gen-msg').textContent='«'+w[0]+'» es un verbo: márquelo como método.';return}
+  MK[j]=gm==='v'?'m':gm;
+  $('gen-msg').textContent=gm==='c'?'«'+w[0]+'» → clase '+w[2]+'.':gm==='a'?'«'+w[0]+'» → atributo '+w[3]+(w[4]==='?'?'.':' de '+w[4]+'.'):'«'+w[0]+'» → método '+w[3]+(w[4]==='?'?'.':' de '+w[4]+'.');
+  genDraw()}
+each('#gen-t .w',function(s){s.onclick=function(){genMark(s)};s.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();genMark(s)}}});
+function genMode(m){gm=m;pressed('#gen-m button',function(b){return b.dataset.m===m})}
+each('#gen-m button',function(b){b.onclick=function(){genMode(b.dataset.m)}});genMode('c');
+var NOTA='Sin marca: recinto y sistema están fuera del programa; estudiantes no hace falta en esta versión; archivo lo da C++ (ifstream); catálogo es el mismo vector materiales; programa y avisar le tocan a main.';
+$('gen-cmp').onclick=function(){var ok=0,dif=[];WS.forEach(function(w,j){if(MK[j]===w[5])ok++;else if(dif.indexOf(w[0])<0)dif.push(w[0])});
+  $('gen-msg').textContent='Coincide con la propuesta en '+ok+' de '+WS.length+' palabras.'+(dif.length?' Revise: '+dif.slice(0,6).join(', ')+(dif.length>6?'…':'.'):' ¡Igual que la propuesta!')};
+$('gen-ver').onclick=function(){WS.forEach(function(w,j){MK[j]=w[5]});genDraw();$('gen-msg').textContent=NOTA};
+$('gen-lim').onclick=function(){MK=WS.map(function(){return ''});genDraw();$('gen-msg').textContent='Escoja un tipo arriba y pulse las palabras subrayadas del enunciado.'};
+genDraw();
+
+/* UML */
+var UM={cl:'Cada caja es una clase: el nombre arriba, los atributos en el medio y los métodos abajo.',
+ vis:'− es private y + es public. Todos los atributos son privados (encapsulación); los métodos son la parte pública.',
+ abs:'En cursiva: Material es abstracta, y tipo(), dato() y diasPrestamo() son virtuales puras (= 0).',
+ her:'El triángulo vacío apunta a la clase base: Libro es un Material, Laptop es un Material.',
+ com:'El rombo lleno, del lado de Biblioteca, es composición: la Biblioteca es dueña de sus materiales y se destruyen con ella.',
+ mul:'1 y *: una Biblioteca tiene muchos materiales (cero o más). En el código es un vector.'};
+function umShow(k){each('#uml [data-k]',function(g){g.classList.toggle('lit',g.dataset.k===k)});$('uml-msg').textContent=UM[k];pressed('#uml-b button',function(b){return b.dataset.u===k})}
+each('#uml-b button',function(b){b.onclick=function(){umShow(b.dataset.u)}});umShow('her');
+
+/* plan de pruebas */
+var PR={R1:'R1 no tiene prueba propia. ¿Cuál añadiría? Por ejemplo: crear un libro y comprobar que registro() da «Libro;LIB-1;Prueba;Autor;0».',R2:'R2 lo cubren P1 y P2: una prueba por cada tipo de material.',R3:'R3 lo cubre P5, el caso que falla. Falta el caso que funciona: buscar un código que sí existe.',R4:'R4 está cubierto a medias: P3 prueba prestar(), pero ninguna prueba devolver().',R5:'R5 lo cubre P4: se espera una excepción, y la prueba pasa si de verdad se lanza.',R6:'R6 lo cubre P6: guarda, carga en otra Biblioteca y revisa que siga prestado.',R7:'R7 lo cubre P7: cargar un archivo que no existe debe lanzar una excepción.'};
+$('pl-r').innerHTML=Object.keys(PR).map(function(r){return '<button data-r="'+r+'">'+r+'</button>'}).join('');
+function plShow(r){each('#plan tr[data-r]',function(t){t.classList.toggle('lit',t.dataset.r===r)});$('pl-msg').textContent=PR[r];pressed('#pl-r button',function(b){return b.dataset.r===r})}
+each('#pl-r button',function(b){b.onclick=function(){plShow(b.dataset.r)}});plShow('R4');
+
+/* romper el código: salidas reales de g++ con cada cambio */
+var PN=['P1 un libro se presta 14 dias','P2 una laptop se presta 3 dias','P3 prestar marca el material','P4 prestar dos veces lanza una excepcion','P5 buscar un codigo que no existe lanza una excepcion','P6 guardar y cargar conserva el prestamo','P7 cargar un archivo que no existe lanza una excepcion'];
+var MU={O:[-1,'pruebas.cpp tal como está'],A:[1,'Laptop::diasPrestamo() devuelve 7'],B:[3,'prestar() ya no revisa si estaba prestado'],C:[5,'registro() escribe siempre "0"'],D:[6,'cargar() ya no revisa si el archivo abrió']};
+function muShow(k){var f=MU[k][0],h='<span class="p">$ ./pruebas      # '+esc(MU[k][1])+'</span>\n';
+  PN.forEach(function(p,i){h+=(i===f?'<span class="fa">FALLA  '+p+'</span>':'<span class="ok">OK     '+p+'</span>')+'\n'});
+  h+=f<0?'Todas las pruebas pasaron':'1 prueba(s) fallaron';$('mut-out').innerHTML=h;pressed('#mut button',function(b){return b.dataset.m===k})}
+each('#mut button',function(b){b.onclick=function(){muShow(b.dataset.m)}});muShow('O');
+
+/* git */
+var GT=[
+ {h:'50eb92a',m:'Documento de arranque',c:'git add ARRANQUE.txt\ngit commit -m "Documento de arranque: requisitos, UML y plan de pruebas"',o:'[main (root-commit) 50eb92a] Documento de arranque: requisitos, UML y plan de pruebas\n 1 file changed, 2 insertions(+)\n create mode 100644 ARRANQUE.txt'},
+ {h:'fe05126',m:'v1: herencia',c:'git add main.cpp\ngit commit -m "v1: Material, Libro y Laptop con herencia"',o:'[main fe05126] v1: Material, Libro y Laptop con herencia\n 1 file changed, 65 insertions(+)\n create mode 100644 main.cpp'},
+ {h:'852b961',m:'v2: excepciones',c:'git add main.cpp\ngit commit -m "v2: Biblioteca con composicion y excepciones"',o:'[main 852b961] v2: Biblioteca con composicion y excepciones\n 1 file changed, 56 insertions(+), 9 deletions(-)'},
+ {h:'665ea1a',m:'v3: archivo y pruebas',c:'git add .\ngit commit -m "v3: catalogo en archivo y pruebas"',o:'[main 665ea1a] v3: catalogo en archivo y pruebas\n 4 files changed, 192 insertions(+), 98 deletions(-)\n create mode 100644 biblioteca.h\n create mode 100644 catalogo.txt\n create mode 100644 pruebas.cpp'},
+ {h:'log',m:'El historial',c:'git log --oneline',o:'665ea1a v3: catalogo en archivo y pruebas\n852b961 v2: Biblioteca con composicion y excepciones\nfe05126 v1: Material, Libro y Laptop con herencia\n50eb92a Documento de arranque: requisitos, UML y plan de pruebas'}];
+$('gt').innerHTML=GT.map(function(g,i){return '<button class="nota'+(i===4?' ve':'')+'" data-i="'+i+'"><small>'+(g.h==='log'?'git log':g.h)+'</small>'+g.m+'</button>'}).join('');
+function gtShow(i){var g=GT[i];$('gt-cmd').innerHTML=g.c.split('\n').map(function(l){return '<span class="ln">'+esc(l)+'</span>'}).join('');$('gt-out').textContent=g.o;pressed('#gt button',function(b){return +b.dataset.i===i})}
+each('#gt button',function(b){b.onclick=function(){gtShow(+b.dataset.i)}});gtShow(2);
+
+/* kanban */
+var KEY='tesi2105-unidadM-tablero';
+var K0=[{t:'Escribir el enunciado y los requisitos',q:'Ana',c:2},{t:'Lista de clases (sustantivos y verbos)',q:'Luis',c:2},{t:'Diagrama UML',q:'Marta',c:1},{t:'Plan de pruebas',q:'Ana',c:1},{t:'v1: clases y herencia',q:'Luis',c:0},{t:'v2: composición y excepciones',q:'Marta',c:0},{t:'v3: archivo',q:'Ana',c:0},{t:'Ensayar la presentación',q:'Todos',c:0}];
+var KT=store(KEY);if(!Array.isArray(KT))KT=JSON.parse(JSON.stringify(K0));
+var KC=['nota','nota ve','nota az'],kmv=-1;
+function kSave(){store(KEY,KT)}
+function kDraw(){var h='';COLS.forEach(function(c,j){var n=0;KT.forEach(function(t){if(t.c===j)n++});
+  h+='<div class="col" data-c="'+j+'"><h4>'+c+'<span>'+n+'</span></h4>';
+  KT.forEach(function(t,i){if(t.c!==j)return;h+='<div class="'+KC[j]+' tarj'+(i===kmv?' llega':'')+'" draggable="true" data-i="'+i+'"><span class="tx">'+esc(t.t)+'</span><span class="bt"><button data-a="izq" aria-label="Mover a la izquierda"'+(j===0?' disabled':'')+'>←</button><button data-a="der" aria-label="Mover a la derecha"'+(j===2?' disabled':'')+'>→</button><button data-a="del" aria-label="Quitar">×</button></span>'+(t.q?'<span class="qn">'+esc(t.q)+'</span>':'')+'</div>'});
+  h+='</div>'});$('kan').innerHTML=h;kmv=-1}
+$('kan').addEventListener('click',function(e){var b=e.target.closest('button[data-a]');if(!b)return;var i=+b.closest('.tarj').dataset.i,a=b.dataset.a;
+  if(a==='del'){$('k-msg').textContent='Se quitó «'+KT[i].t+'».';KT.splice(i,1)}
+  else{KT[i].c=Math.max(0,Math.min(2,KT[i].c+(a==='der'?1:-1)));kmv=i;$('k-msg').textContent='«'+KT[i].t+'» pasa a '+COLS[KT[i].c]+'.'}
+  kSave();kDraw()});
+var kdrag=-1;
+$('kan').addEventListener('dragstart',function(e){var t=e.target.closest('.tarj');if(!t)return;kdrag=+t.dataset.i;try{e.dataTransfer.setData('text/plain',String(kdrag))}catch(x){}});
+$('kan').addEventListener('dragover',function(e){var c=e.target.closest('.col');if(c&&kdrag>=0){e.preventDefault();each('#kan .col',function(x){x.classList.toggle('sobre',x===c)})}});
+$('kan').addEventListener('drop',function(e){var c=e.target.closest('.col');if(!c||kdrag<0)return;e.preventDefault();KT[kdrag].c=+c.dataset.c;kmv=kdrag;$('k-msg').textContent='«'+KT[kdrag].t+'» pasa a '+COLS[KT[kdrag].c]+'.';kdrag=-1;kSave();kDraw()});
+$('kan').addEventListener('dragend',function(){kdrag=-1;each('#kan .col',function(x){x.classList.remove('sobre')})});
+function kAdd(){var t=$('k-tx').value.trim(),q=$('k-qn').value.trim();if(!t){$('k-msg').textContent='Escriba primero la tarea.';$('k-tx').focus();return}
+  KT.push({t:t,q:q,c:0});kmv=KT.length-1;$('k-tx').value='';$('k-qn').value='';kSave();kDraw();$('k-msg').textContent=q?'Tarea añadida a «Por hacer».':'Tarea añadida sin responsable: escriba en «Quién» la persona que la hará.'}
+$('k-add').onclick=kAdd;$('k-tx').addEventListener('keydown',function(e){if(e.key==='Enter')kAdd()});$('k-qn').addEventListener('keydown',function(e){if(e.key==='Enter')kAdd()});
+function kTexto(){var eq=$('k-eq').value.trim(),s='TABLERO DEL PROYECTO - TESI 2105\n'+(eq?'Equipo: '+eq+'\n':'');COLS.forEach(function(c,j){s+='\n'+c.toUpperCase()+'\n';var n=0;KT.forEach(function(t){if(t.c!==j)return;n++;s+=(j===2?'[x] ':'[ ] ')+t.t+(t.q?' ('+t.q+')':'')+'\n'});if(!n)s+='(vacio)\n'});return s}
+$('k-exp').onclick=function(){var s=kTexto();bajar('tablero_proyecto.txt',s);try{navigator.clipboard.writeText(s).catch(function(){})}catch(e){}$('k-msg').textContent='Se descargó tablero_proyecto.txt con '+KT.length+' tareas. Péguelo en el documento de arranque.'};
+$('k-rst').onclick=function(){KT=JSON.parse(JSON.stringify(K0));$('k-eq').value='';store(KEY+'-equipo','');kSave();kDraw();$('k-msg').textContent='El tablero volvió a las tareas de ejemplo.'};
+window.__kanbanTexto=kTexto;
+$('k-eq').value=store(KEY+'-equipo')||'';$('k-eq').addEventListener('input',function(){store(KEY+'-equipo',$('k-eq').value)});
+kDraw();
+
+/* presentación: tiempo */
+var PA=[['Problema',.1,'var(--am)'],['Diseño UML',.2,'var(--ve)'],['Demostración',.4,'var(--az)'],['Pruebas',.2,'var(--ro)'],['Lecciones',.1,'var(--am)']];
+function mmss(x){var s=Math.round(x*60);return Math.floor(s/60)+':'+('0'+s%60).slice(-2)}
+function tShow(t){$('barra').innerHTML=PA.map(function(p){return '<div style="flex-grow:'+(p[1]*t)+';flex-basis:0;background:'+p[2]+'">'+p[0]+'<span>'+mmss(p[1]*t)+'</span></div>'}).join('');}
+tShow(10);
+
+/* lista de cotejo de la demostración */
+var CK=['El programa compila sin avisos en la computadora del salón','Hay una copia del archivo de datos original','El guion de tres escenas está ensayado','La letra de la terminal se lee desde el fondo','Las capturas del plan B están a mano','Las notificaciones están apagadas','Cada miembro sabe qué parte presenta','Ensayaron con reloj y caben en el tiempo'];
+var CKK='tesi2105-unidadM-cotejo',CS=store(CKK);if(!Array.isArray(CS))CS=[];
+$('ck').innerHTML=CK.map(function(c,i){return '<li><label><input type="checkbox" data-i="'+i+'"'+(CS.indexOf(i)>=0?' checked':'')+'><span>'+c+'</span></label></li>'}).join('');
+function ckCount(){var n=document.querySelectorAll('#ck input:checked').length;$('ck-n').textContent='· '+n+' de '+CK.length}
+each('#ck input',function(x){x.onchange=function(){CS=[];each('#ck input',function(y){if(y.checked)CS.push(+y.dataset.i)});store(CKK,CS);ckCount()}});ckCount();
+
+/* catálogo de proyectos */
+var NV=['','Básico','Intermedio','Avanzado (reto opcional)'];
+var CAT=[
+ {n:'Turnos de la cafetería',d:1,c:'',e:'La cafetería da turnos, toma pedidos de comida y bebida y los entrega en orden.',cl:'Producto (base), Comida, Bebida, Pedido, Cafeteria',h:'cada producto calcula su precio y su tiempo',a:'menu.txt y las ventas del día',x:'producto agotado, turno que no existe',p:'el turno siguiente, el total de un pedido, el producto agotado'},
+ {n:'Inventario del laboratorio',d:1,c:'ve',e:'El laboratorio de computadoras registra sus equipos, su ubicación y si están en servicio.',cl:'Equipo (base), Computadora, Impresora, Laboratorio',h:'cada equipo describe su mantenimiento',a:'inventario.txt',x:'etiqueta repetida, equipo fuera de servicio',p:'añadir, buscar por etiqueta, dar de baja'},
+ {n:'Cooperativa del recinto 2.0',d:2,c:'az',e:'La cooperativa de la Unidad H crece: cuentas de ahorro y cuentas corrientes con sus movimientos.',cl:'Cuenta (base), CuentaAhorro, CuentaCorriente, Cooperativa',h:'cada cuenta calcula su interés o su cargo mensual',a:'cuentas.txt y movimientos.txt',x:'fondos insuficientes, cuenta que no existe',p:'depositar, retirar más del saldo, interés del mes'},
+ {n:'Estacionamiento del recinto',d:2,c:'ro',e:'El estacionamiento registra entradas y salidas y cobra según el tipo de vehículo.',cl:'Vehiculo (base), Auto, Motocicleta, Estacionamiento',h:'cada vehículo calcula su tarifa por hora',a:'entradas.txt',x:'estacionamiento lleno, tablilla repetida',p:'tarifa de cada tipo, lleno, salida sin entrada'},
+ {n:'Inscripción a talleres',d:2,c:'',e:'Los estudiantes se inscriben en talleres presenciales o virtuales con cupo limitado.',cl:'Taller (base), TallerPresencial, TallerVirtual, Participante, Registro',h:'cada taller revisa su cupo y su lugar',a:'talleres.txt e inscritos.txt',x:'cupo lleno, inscripción repetida',p:'inscribir, cupo lleno, darse de baja'},
+ {n:'Taller de reparación de equipos',d:2,c:'ve',e:'El taller abre órdenes de servicio para laptops y celulares y les da seguimiento.',cl:'Equipo (base), Laptop, Celular, OrdenServicio, Taller',h:'cada equipo estima su costo de diagnóstico',a:'ordenes.txt',x:'orden cerrada, equipo sin orden',p:'abrir orden, cambiar estado, cerrar dos veces'},
+ {n:'Agenda de citas de consejería',d:3,c:'az',e:'La oficina programa citas presenciales y virtuales sin choques de horario.',cl:'Cita (base), CitaPresencial, CitaVirtual, Consejero, Agenda',h:'cada cita valida su lugar o su enlace',a:'citas.txt',x:'choque de horario, hora fuera del horario',p:'programar, choque, cancelar, citas del día'},
+ {n:'Liga intramural',d:3,c:'ro',e:'La liga registra equipos, jugadores y resultados, y calcula la tabla de posiciones.',cl:'Persona (base), Jugador, Arbitro, Equipo, Partido, Liga',h:'cada persona se describe a su manera; la tabla se ordena',a:'equipos.txt y resultados.txt',x:'equipo que no existe, resultado repetido',p:'puntos por partido, empates, orden de la tabla'}];
+var cf='todos',cs=0;
+function catDraw(){var h='';CAT.forEach(function(p,i){if(cf!=='todos'&&p.d!==+cf)return;h+='<button class="nota'+(p.c?' '+p.c:'')+'" data-i="'+i+'"><small>'+'●'.repeat(p.d)+'○'.repeat(3-p.d)+' '+(p.d===3?'Avanzado: reto':NV[p.d])+'</small>'+p.n+'</button>'});$('cat-l').innerHTML=h;
+  each('#cat-l button',function(b){b.onclick=function(){catShow(+b.dataset.i)}});
+  if(cf!=='todos'&&CAT[cs].d!==+cf){for(var i=0;i<CAT.length;i++)if(CAT[i].d===+cf){cs=i;break}}catShow(cs);pressed('#cat-f button',function(b){return b.dataset.f===cf})}
+function catShow(i){cs=i;var p=CAT[i];$('cat-d').innerHTML='<span class="niv">'+NV[p.d]+'</span><h3>'+p.n+'</h3><p>'+p.e+(p.d===3?' <b>Reto opcional:</b> más clases y más trabajo; no es requisito.':'')+'</p><dl><dt>Clases</dt><dd>'+p.cl+'</dd><dt>Polimorfismo</dt><dd>'+p.h+'</dd><dt>Archivo</dt><dd>'+p.a+'</dd><dt>Excepciones</dt><dd>'+p.x+'</dd><dt>Pruebas</dt><dd>'+p.p+'</dd></dl>';pressed('#cat-l button',function(b){return +b.dataset.i===i})}
+each('#cat-f button',function(b){b.onclick=function(){cf=b.dataset.f;catDraw()}});catDraw();
+
+/* descargas */
+each('button.dl[data-f]',function(b){b.onclick=function(){bajar(b.dataset.f,$('f-'+b.dataset.f).textContent.replace(/^\n/,''))}});
+var TPL='DOCUMENTO DE ARRANQUE - PROYECTO FINAL\nTESI 2105 Programacion Orientada a Objetos\n\nEquipo: ______________________________\nIntegrantes: _________________________\nProyecto escogido: ___________________\n\n1. ENUNCIADO (5 a 8 oraciones)\n\n\n   Requisitos (uno por linea, que se puedan comprobar):\n   R1:\n   R2:\n   R3:\n\n2. LISTA DE CLASES (sustantivos y verbos)\n   Clase | Atributos | Metodos\n\n\n3. DIAGRAMA UML DE CLASES\n   (pegue la imagen del diagrama: herencia con triangulo, composicion con rombo)\n\n4. PLAN DE PRUEBAS (al menos 5)\n   Prueba | Que se hace | Resultado esperado | Requisito\n   P1:\n   P2:\n\n5. REPARTO DE TAREAS\n   (pegue aqui el tablero exportado: Por hacer / En proceso / Listo)\n';
+$('tpl').onclick=function(){bajar('Documento_arranque_TESI2105.txt',TPL)};
+
+Deck.start();
+})();
+</script>
+</body>
+</html>

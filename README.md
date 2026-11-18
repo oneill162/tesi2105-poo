@@ -20,6 +20,7 @@ Página del curso: https://oneill162.github.io/tesi2105-poo/
 | `unidadH.html` | Unidad H: Clases y objetos (presentación interactiva con el Laboratorio H integrado) |
 | `unidadO.html` | Unidad O: Tecnologías emergentes y ética en POO (presentación interactiva con la actividad de auditoría ética) |
 | `unidadI.html` | Unidad I: Herencia y polimorfismo (presentación interactiva con el Laboratorio I integrado) |
+| `unidadM.html` | Unidad M: Proyectos prácticos integradores (presentación interactiva con la actividad de arranque del proyecto final) |
 | `ejemplos/` | Programas completos de los ejemplos de las presentaciones, verificados con g++ |
 | `assets/deck.css`, `assets/deck.js` | Motor común de las presentaciones: escala, transiciones, barra de navegación, índice, temporizador, paso a paso |
 | `assets/fonts/` | Schibsted Grotesk y JetBrains Mono (licencia SIL OFL), incluidas para no depender de servicios externos |

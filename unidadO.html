@@ -425,7 +425,7 @@ Consultas al vecino mas cercano:
   (7, 5.5) -&gt; china
   (6, 6) -&gt; china
   (8, 3) -&gt; limon
-== Entrenado con catalogo + 3 chinas locales ==
+== Entrenado con catalogo + 3 chinas del pais ==
 Vecino mas cercano: 10 de 10 (100%) en prueba; 4 de 4 chinas verdes
 Centroide: 7 de 10 (70%) en prueba; 1 de 4 chinas verdes
 Consultas al vecino mas cercano: …</div>
@@ -541,8 +541,8 @@ cout &lt;&lt; vecino.predecir(6.5, 3.0) &lt;&lt; "\n";   // olvido entrenar()</p
     <div data-a>
       <p class="body" style="font-size:22px">El formulario para prestar el robot del laboratorio. Marque los datos que de verdad necesita.</p>
       <div class="chips gap14" id="pv-c"></div>
-      <div class="row gap14"><button class="go" id="pv-go">Comparar con una propuesta</button><button id="pv-rs">Limpiar</button></div>
-      <p class="msg gap10" id="pv-m" aria-live="polite">Cada dato que se guarda es un dato que se puede filtrar, perder o usar para otra cosa.</p>
+      <div class="row gap10"><button class="go" id="pv-go">Comparar con una propuesta</button><button id="pv-rs">Limpiar</button></div>
+      <p class="msg gap10" style="font-size:19px" id="pv-m" aria-live="polite">Cada dato que se guarda es un dato que se puede filtrar, perder o usar para otra cosa.</p>
     </div>
     <div data-a>
       <ul class="pl">
@@ -572,8 +572,8 @@ public:
     }
     int getPresentes() const { return presentes; }
 };</pre>
-      <div class="term t18 gap10"><span class="p">r("840-11-2233", "Ana Rivera") y 12 veces r.marcar()</span>
-E-103 asistio 12 veces</div>
+      <div class="term t18 gap10"><span class="p">r("S00-1234", "Ana Rivera") y 12 veces r.marcar()</span>
+E-5423 asistio 12 veces</div>
     </div>
     <div data-a>
       <p class="lead" style="font-size:26px">Los datos personales son <code>private</code>; el análisis recibe un seudónimo.</p>
@@ -607,7 +607,7 @@ china: el ejemplo mas parecido es (8.00, 7.00), a 1.80</div>
     </div>
     <div data-a>
       <div class="row" id="tx-b"><button data-x="n" aria-pressed="true">Caja negra</button><button data-x="s">Con explicación</button></div>
-      <div class="res gap14" style="min-height:190px"><small>Lo que ve la persona afectada</small><p id="tx-r" style="font:600 23px/1.35 var(--mono);margin-top:8px;color:var(--accent)"></p></div>
+      <div class="res gap14" style="min-height:150px"><small>Lo que ve la persona afectada</small><p id="tx-r" style="font:600 20px/1.4 var(--mono);margin-top:8px;color:var(--accent)"></p></div>
       <p class="small gap10">explicar() es un método más de VecinoCercano (explica.cpp).</p><p class="body gap14" style="font-size:21px"><b>Transparencia:</b> se sabe que hay un modelo, qué datos usa y para qué. <b>Explicabilidad:</b> se puede justificar cada respuesta.</p>
     </div>
   </div>
@@ -642,7 +642,7 @@ china: el ejemplo mas parecido es (8.00, 7.00), a 1.80</div>
     <div data-a>
       <h3 id="ue-h" style="font-size:30px"></h3>
       <p class="body" id="ue-p" style="margin-top:10px;font-size:22px" aria-live="polite"></p>
-      <p class="small gap14" style="font-size:18px">Sus obligaciones entran en vigor por etapas y se enmendaron en 2026. Panorama general, no asesoría legal.</p>
+      <p class="small gap14" style="font-size:18px">Sus obligaciones entran en vigor por etapas. El Reglamento (UE) 2026/1744 la enmendó (p. ej., se pospusieron plazos de alto riesgo). Panorama general, no asesoría legal.</p>
     </div>
   </div>
 </section>
@@ -731,7 +731,7 @@ uint32_t resumen(const string&amp; texto) {
 3 R-2 al equipo 5 9f603b0f 9f87dece
 Primer bloque roto: -1
 Primer bloque roto: 1</div>
-      <p class="small gap10" style="font-size:18px">La última línea sale después de <code>registro.en(1).alterar("R-1 al equipo 4")</code>. Sin criptografía real.</p>
+      <p class="small gap10" style="font-size:18px">La última línea sale después de <code>registro.en(1).alterar("R-1 al equipo 4")</code>. Una blockchain real además reparte copias entre muchos equipos y usa un mecanismo de consenso y hashes criptográficos (p. ej., SHA-256).</p>
     </div>
   </div>
 </section>
@@ -744,6 +744,7 @@ Primer bloque roto: 1</div>
     <div class="cadena" id="bc"></div>
   </div>
   <div class="row" data-a style="margin-top:14px;gap:22px"><button id="bc-rs">Restaurar el registro</button><span class="res" style="padding:8px 16px"><span class="mono" style="font-size:22px;font-weight:700" id="bc-r"></span></span></div>
+  <p class="small" data-a style="margin-top:10px;font-size:18px">Una blockchain real además reparte copias entre muchos equipos y usa un mecanismo de consenso y hashes criptográficos (p. ej., SHA-256).</p>
 </section>
 
 <section class="slide field-hi" data-title="Discusión: herencia o composición">
@@ -852,7 +853,7 @@ Primer bloque roto: 1</div>
     <p>Keras. (s. f.). <i>The Model class</i>. https://keras.io/api/models/model/</p>
     <p>Kumar, A. (2024). <i>Hands-on object-oriented programming: Mastering OOP features for real-world software systems development</i>. Apress.</p>
     <p>Lutz, M. (2025). <i>Learning Python: Powerful object-oriented programming</i>. O’Reilly Media.</p>
-    <p>OpenCV. (s. f.). <i>cv::ml::KNearest class reference</i>. https://docs.opencv.org/3.4.4/dd/de1/classcv_1_1ml_1_1KNearest.html</p>
+    <p>OpenCV. (s. f.). <i>cv::ml::KNearest class reference</i>. https://docs.opencv.org/4.x/dd/de1/classcv_1_1ml_1_1KNearest.html</p>
     <p>PyTorch. (s. f.). <i>Module</i>. https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html</p>
     <p>scikit-learn. (s. f.). <i>KNeighborsClassifier</i>. https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html</p>
   </div>
@@ -863,7 +864,8 @@ Primer bloque roto: 1</div>
   <h2 class="mask"><span>Referencias: ética y regulación</span></h2>
   <div class="refs gap" data-a style="max-width:1120px">
     <p>Future of Life Institute. (s. f.). <i>High-level summary of the AI Act</i>. https://artificialintelligenceact.eu/high-level-summary/</p>
-    <p>National Institute of Standards and Technology. (2023). <i>Artificial Intelligence Risk Management Framework (AI RMF 1.0)</i>. https://airc.nist.gov/airmf-resources/airmf/0-ai-rmf-1-0</p>
+    <p>National Institute of Standards and Technology. (2023). <i>Artificial Intelligence Risk Management Framework (AI RMF 1.0)</i>. https://doi.org/10.6028/NIST.AI.100-1</p>
+    <p>Reglamento (UE) 2026/1744 del Parlamento Europeo y del Consejo, de 8 de julio de 2026, por el que se modifica el Reglamento (UE) 2024/1689 (Ómnibus digital sobre la IA). (2026). <i>Diario Oficial de la Unión Europea</i>. https://eur-lex.europa.eu/eli/reg/2026/1744/oj</p>
     <p>Reglamento (UE) 2024/1689 del Parlamento Europeo y del Consejo, por el que se establecen normas armonizadas en materia de inteligencia artificial. (2024). <i>Diario Oficial de la Unión Europea</i>. https://eur-lex.europa.eu/eli/reg/2024/1689/oj</p>
     <p>U.S. Department of Education, Student Privacy Policy Office. (s. f.). <i>What is FERPA?</i> https://studentprivacy.ed.gov/faq/what-ferpa</p>
     <p>White &amp; Case. (2026). <i>EU AI Omnibus enters into force, amending the AI Act</i>. https://www.whitecase.com/insight-alert/eu-ai-omnibus-enters-force-amending-ai-act</p>
@@ -962,7 +964,7 @@ int main() {
         {4.5, 1.0, "limon"}, {5.0, 2.0, "limon"}, {5.5, 1.5, "limon"}, {5.0, 3.0, "limon"},
         {7.5, 8.0, "china"}, {8.0, 7.0, "china"}, {8.5, 9.0, "china"}, {7.0, 7.5, "china"}};
     // Chinas del pais: maduras, pero verdes
-    vector<Ejemplo> locales = {{7.0, 3.0, "china"}, {7.5, 2.0, "china"}, {6.8, 4.0, "china"}};
+    vector<Ejemplo> delPais = {{7.0, 3.0, "china"}, {7.5, 2.0, "china"}, {6.8, 4.0, "china"}};
     // Prueba: fruta que el robot nunca ha visto
     vector<Ejemplo> verdes = {
         {6.8, 3.0, "china"}, {7.2, 2.5, "china"}, {6.5, 3.5, "china"}, {7.6, 4.0, "china"}};
@@ -987,8 +989,8 @@ int main() {
         cout << "  (" << q[0] << ", " << q[1] << ") -> " << vecino.predecir(q[0], q[1]) << "\n";
 
     vector<Ejemplo> mejorado = catalogo;
-    mejorado.insert(mejorado.end(), locales.begin(), locales.end());
-    cout << "== Entrenado con catalogo + 3 chinas locales ==\n";
+    mejorado.insert(mejorado.end(), delPais.begin(), delPais.end());
+    cout << "== Entrenado con catalogo + 3 chinas del pais ==\n";
     for (Modelo* m : modelos) {
         m->entrenar(mejorado);
         informe(*m, prueba, verdes);
@@ -1094,7 +1096,7 @@ $('rg-go').onclick=function(){
 $('rg-rs').onclick=function(){$('rg-a').textContent='La persona que programa decide el criterio.';$('rg-b').textContent='Los ejemplos deciden el criterio.';$('rg-t').textContent='Vecino mas cercano: 6 de 10 (60%) en prueba; 0 de 4 chinas verdes'};
 
 /* anillos IA ML AP */
-var AN={ia:['Inteligencia artificial','El campo de la computación que crea sistemas para tareas que asociamos con la inteligencia humana: reconocer, decidir, conversar. Incluye reglas escritas a mano, como los sistemas expertos.','reglaManual(): un if que alguien escribió. Es IA de reglas, sin aprendizaje.'],
+var AN={ia:['Inteligencia artificial','El campo de la computación que crea sistemas para tareas que asociamos con la inteligencia humana: reconocer, decidir, conversar. Incluye reglas escritas a mano, como los sistemas expertos.','reglaManual(): un if que alguien escribió, sin aprendizaje. Al estilo de la IA de reglas (los sistemas expertos usan cientos de reglas).'],
  ml:['Aprendizaje automático (ML)','Una parte de la IA: en vez de escribir la regla, el programa la obtiene de ejemplos. Con más o mejores ejemplos, cambia su comportamiento sin cambiar el código.','VecinoCercano y Centroide: aprenden de 8 ejemplos de frutas con entrenar().'],
  ap:['Aprendizaje profundo','Una parte del ML que usa redes neuronales de muchas capas. Reconoce imágenes, voz y texto, pero pide muchos datos y mucho cómputo, y es más difícil de explicar.','Reconocer la fruta directamente en la foto de la cámara, sin que nadie mida el diámetro.']};
 var AC={ia:'#CCD8D1',ml:'#9FE3D3',ap:'#3FE0C5'};
@@ -1205,11 +1207,11 @@ $('pv-c').innerHTML=PV.map(function(p,i){return '<button data-i="'+i+'" aria-pre
 all('#pv-c button').forEach(function(b){b.onclick=function(){b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true');b.classList.remove('ok','sobra')}});
 $('pv-go').onclick=function(){var sobra=0,falta=0;all('#pv-c button').forEach(function(b){var need=PV[+b.dataset.i][1],on=b.getAttribute('aria-pressed')==='true';
   b.classList.toggle('ok',!!need);b.classList.toggle('sobra',!need&&on);if(!need&&on)sobra++;if(need&&!on)falta++});
-  $('pv-m').innerHTML='Propuesta (línea verde): identificarle, contactarle y saber su sección. '+(sobra?'Usted marcó <b>'+sobra+'</b> dato'+(sobra>1?'s':'')+' que sobra'+(sobra>1?'n':'')+' (línea roja). ':'No marcó datos que sobren. ')+(falta?'Le faltó '+falta+'.':'')};
+  $('pv-m').innerHTML='Propuesta (línea verde): identificar y contactar a la persona, y saber su sección. '+(sobra?'Usted marcó <b>'+sobra+'</b> dato'+(sobra>1?'s':'')+' que sobra'+(sobra>1?'n':'')+' (línea roja). ':'No marcó datos que sobren. ')+(falta?'Le faltó '+falta+'.':'')};
 $('pv-rs').onclick=function(){all('#pv-c button').forEach(function(b){b.setAttribute('aria-pressed','false');b.classList.remove('ok','sobra')});$('pv-m').textContent='Cada dato que se guarda es un dato que se puede filtrar, perder o usar para otra cosa.'};
 
 /* transparencia */
-var TX={n:'Resultado: limón.<br><br>Su fruta fue descartada.',s:'Resultado: limón.<br><br>Porque el ejemplo más parecido es (5.00, 3.00), limón, a 1.50. Si cree que es un error, pida revisión.'};
+var TX={n:'Resultado: limón. Su fruta fue descartada.',s:'Resultado: limón. Ejemplo más parecido: (5.00, 3.00), a 1.50. Puede pedir revisión.'};
 all('#tx-b button').forEach(function(b){b.onclick=function(){$('tx-r').innerHTML=TX[b.dataset.x];press(all('#tx-b button'),b)}});$('tx-r').innerHTML=TX.n;
 
 /* responsabilidad */
@@ -1222,7 +1224,7 @@ all('#rh-b button').forEach(function(b){b.onclick=function(){$('rh-m').textConte
 var UE=[['Riesgo inaceptable: prohibido','Prácticas que la ley prohíbe, como la puntuación social. Entre ellas, usar IA para inferir las emociones de las personas en el lugar de trabajo o en instituciones educativas, salvo por razones médicas o de seguridad.'],
  ['Alto riesgo: obligaciones estrictas','En educación incluye, entre otros, los sistemas que deciden la admisión, evalúan resultados de aprendizaje o vigilan a estudiantes durante los exámenes. Deben cumplir requisitos de gestión de riesgos, datos y supervisión humana.'],
  ['Riesgo limitado: transparencia','Obligaciones de transparencia más ligeras: por ejemplo, quien conversa con un chatbot debe saber que habla con una IA.'],
- ['Riesgo mínimo: sin obligaciones de esta ley','La mayoría de los usos cotidianos, como un filtro de correo no deseado o el robot que separa frutas en el laboratorio.']];
+ ['Riesgo mínimo: sin obligaciones específicas','La mayoría de los usos cotidianos, como un filtro de correo no deseado o el robot que separa frutas en el laboratorio.']];
 all('#ue-b button').forEach(function(b){b.onclick=function(){var u=UE[+b.dataset.u];$('ue-h').textContent=u[0];$('ue-p').textContent=u[1];press(all('#ue-b button'),b)}});all('#ue-b button')[1].click();
 
 /* diagramas de clases */

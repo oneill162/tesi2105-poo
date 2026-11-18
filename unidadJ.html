@@ -24,7 +24,7 @@ pre.code.c18 .ln{padding:0 18px}
 pre.code.c20{font-size:20px;line-height:1.45;padding:14px 0}
 .t18{font-size:18px!important;line-height:1.4}
 .gap12{margin-top:12px}.gap16{margin-top:16px}.gap20{margin-top:20px}
-code{font-size:.88em}
+code{font-size:max(18px,.88em)}
 
 /* capítulos: la hoja del plano */
 .chwrap{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:44px;height:calc(100% - 96px)}
@@ -38,7 +38,7 @@ code{font-size:.88em}
 .cajetin span:first-child{border-left:0}
 .cajetin span small{display:block;font:600 18px var(--mono);letter-spacing:.06em;opacity:.8}
 .cajetin span.on{color:#fff;background:rgba(255,255,255,.14);box-shadow:inset 0 -5px 0 var(--hi)}
-.sello{display:inline-block;border:4px solid var(--sello);color:var(--sello);font:800 24px var(--sans);letter-spacing:.14em;padding:4px 14px;transform:rotate(-8deg);border-radius:6px;background:rgba(255,255,255,.04)}
+.sello{display:inline-block;white-space:nowrap;border:4px solid var(--sello);color:var(--sello);font:800 24px var(--sans);letter-spacing:.14em;padding:4px 14px;transform:rotate(-8deg);border-radius:6px;background:rgba(255,255,255,.04)}
 .chapter .sello{border-color:var(--sello-bp);color:var(--sello-bp)}
 .sello.sm{font-size:18px;border-width:3px;padding:2px 10px}
 @media (prefers-reduced-motion:no-preference){
@@ -65,6 +65,7 @@ svg.bp .fillw{fill:#F1F6FC}
 .tag.ok{background:var(--accent)}
 .tag.bad{background:#8A2B23}
 .ab{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.ab pre.code.c18{line-height:1.34;padding:10px 0}
 .ab .hd{display:flex;align-items:center;gap:12px;margin-bottom:6px;height:36px}
 .lbl{font:600 19px var(--sans);color:var(--soft)}
 .ops{display:flex;flex-wrap:wrap;gap:8px}
@@ -136,7 +137,8 @@ svg .rel.on text{fill:var(--hi)}
 svg .mod rect.box{fill:rgba(255,255,255,.06);stroke:#F1F6FC;stroke-width:2.5;transition:fill .25s,stroke .25s}
 svg .mod.hit rect.box{fill:rgba(255,138,128,.35);stroke:var(--sello-bp);stroke-width:4}
 .metric{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.metric .res b{font-size:34px}
+.metric .res b{font-size:30px}
+.metric .res{padding:8px 16px}
 .bars{display:grid;grid-template-columns:150px 1fr 60px;gap:8px 12px;align-items:center;font-size:20px}
 .bars .bar{height:28px;background:var(--accent);transition:width .35s var(--ease-out)}
 .bars .bar.h{background:#8A2B23}
@@ -197,9 +199,8 @@ textarea.paste{width:100%;height:150px;font:500 18px/1.35 var(--mono);padding:10
 
 <section class="slide" data-title="Funcionar no es lo mismo que estar bien diseñado">
   <h2 class="mask"><span>Funciona… hasta que hay que cambiarlo</span></h2>
-  <p class="body sub" data-a style="max-width:1136px;font-size:21px">Dos versiones de la caja de la cafetería imprimen lo mismo. Escoja un pedido de cambio.</p>
-  <div class="ops" id="pc-b" data-a style="margin-top:14px"><button data-k="ivu">Subir el IVU</button><button data-k="est">Cambiar el descuento de estudiante</button><button data-k="cafe">Cambiar el precio del café</button></div>
-  <div style="display:grid;grid-template-columns:600px 1fr;gap:22px;margin-top:14px" data-a>
+  <div class="row" data-a style="margin-top:14px;gap:16px"><span class="lbl" style="font-size:20px">Dos versiones de la caja imprimen lo mismo. Pedido de cambio:</span><div class="ops" id="pc-b"><button data-k="ivu">Subir el IVU</button><button data-k="est">Cambiar el descuento de estudiante</button><button data-k="cafe">Cambiar el precio del café</button></div></div>
+  <div style="display:grid;grid-template-columns:600px 1fr;gap:22px;margin-top:8px" data-a>
     <div><div class="hd row" style="margin-bottom:6px"><span class="tag bad">ORIGINAL</span><span class="lbl">un main largo</span></div>
       <pre class="code c18" data-raw id="pc-o"></pre></div>
     <div><div class="hd row" style="margin-bottom:6px"><span class="tag ok">REMODELADO</span><span class="lbl">constantes con nombre</span></div>
@@ -216,7 +217,7 @@ textarea.paste{width:100%;height:150px;font:500 18px/1.35 var(--mono);padding:10
     <p class="hoja">PLANO J-1</p>
     <h1 class="mask"><span>Patrones de diseño (introducción)</span></h1>
     <p class="lead" data-a>Un patrón es un plano probado: una solución que ya funcionó muchas veces para un problema que se repite.</p></div>
-    <div data-a style="align-self:center"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
+    <div data-a style="align-self:center;position:relative"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
       <rect class="thin" x="70" y="20" width="320" height="230"/><rect class="thin" x="45" y="45" width="320" height="230"/>
       <rect x="20" y="70" width="320" height="250" fill="#123F6E" stroke="#F1F6FC" stroke-width="2.5"/>
       <text x="40" y="102" font-size="20" font-weight="600">STRATEGY</text>
@@ -225,7 +226,7 @@ textarea.paste{width:100%;height:150px;font:500 18px/1.35 var(--mono);padding:10
       <rect class="stroke" x="200" y="240" width="120" height="44"/><text x="260" y="269" font-size="18" text-anchor="middle">Fija</text>
       <path class="stroke" d="M100 240 V205 H260 V240 M180 205 V187"/><path class="fillw" d="M180 169 L170 187 L190 187 Z" fill="#123F6E" stroke="#F1F6FC" stroke-width="2.5"/>
       <path class="cota" d="M20 345 H340 M20 336 V354 M340 336 V354"/><text class="cotat" x="180" y="378" font-size="18" text-anchor="middle">nombre · problema · solución</text>
-    </svg><div style="margin:-150px 0 0 250px"><span class="sello anim">APROBADO</span></div></div>
+    </svg><div style="position:absolute;top:2px;left:236px"><span class="sello anim">APROBADO</span></div></div>
   </div>
   <div class="cajetin"></div>
 </section>
@@ -245,7 +246,7 @@ textarea.paste{width:100%;height:150px;font:500 18px/1.35 var(--mono);padding:10
       <dl class="ficha" style="margin:0"><dt>PROBLEMA</dt><dd id="pf-p"></dd><dt>SOLUCIÓN</dt><dd id="pf-s"></dd><dt>CONSECUENCIA</dt><dd id="pf-c"></dd></dl>
     </div>
   </div>
-  <p class="small" data-a style="margin-top:12px;font-size:19px">Un patrón no es código para copiar: es una idea que se adapta. En esta unidad se escriben tres en C++: Singleton, Strategy y Observer.</p>
+  <p class="small" data-a style="margin-top:10px;font-size:19px">Un patrón no es código para copiar: es una idea que se adapta. Aquí se escriben tres en C++.</p>
 </section>
 
 <section class="slide" data-title="Singleton: una sola instancia">
@@ -262,7 +263,9 @@ public:
     Config&amp; operator=(const Config&amp;) = delete;
     string recinto = "Manati";
 };</pre>
-      <p class="body" style="font-size:20px;margin-top:10px">El constructor es privado y la copia está borrada: la única manera de llegar al objeto es <code>instancia()</code>.</p></div>
+      <p class="body" style="font-size:20px;margin-top:10px">El constructor es privado y la copia está borrada: la única manera de llegar al objeto es <code>instancia()</code>.</p>
+      <div class="term t18" style="margin-top:10px"><span class="p">Config c;</span>
+<span class="e">error: 'Config::Config()' is private within this context</span></div></div>
     <div data-a>
       <pre class="code c18">int main() {
     Config&amp; a = Config::instancia();
@@ -275,8 +278,6 @@ public:
       <div class="term t18" style="margin-top:8px">San Juan
 1</div>
       <div class="warn gap12"><b>Úselo con cuidado.</b> Es una variable global disfrazada: <code>a</code> cambió el recinto y <code>b</code> lo vio. Cualquier parte del programa lo cambia y las dependencias quedan ocultas. Casi siempre es mejor crear el objeto en <code>main</code> y pasarlo por referencia.</div>
-      <div class="term t18" style="margin-top:8px"><span class="p">Config c;</span>
-<span class="e">error: 'Config::Config()' is private within this context</span></div>
     </div>
   </div>
 </section>
@@ -577,7 +578,7 @@ note:     'virtual double Tarifa::cobrar(int) const'</span></div></div>
       <div data-panel="e2" hidden><pre class="code c20">double cobra(int) const override {
     return PRECIO_DIA;
 }</pre><div class="term t18" style="margin-top:10px"><span class="e">error: 'double TarifaFija::cobra(int) const' marked 'override', but does not override</span></div></div>
-      <div data-panel="e2" hidden><p class="lead" style="font-size:28px">El nombre es <code>cobrar</code>, no <code>cobra</code>.</p><p class="body sub" style="font-size:22px"><code>override</code> le pide a g++ que confirme que la función de verdad reemplaza una del padre. Sin él, este error compila y la tarifa nunca se usa. Lo mismo pasa si falta el <code>const</code>.</p></div>
+      <div data-panel="e2" hidden><p class="lead" style="font-size:28px">El nombre es <code>cobrar</code>, no <code>cobra</code>.</p><p class="body sub" style="font-size:22px"><code>override</code> le pide a g++ que confirme que la función de verdad reemplaza una del padre. Sin él, g++ toma <code>cobra</code> como una función nueva y el error aparece después, más confuso. Lo mismo pasa si falta el <code>const</code>.</p></div>
       <div data-panel="e3" hidden><pre class="code c20">Config c = Config::instancia();</pre><div class="term t18" style="margin-top:10px"><span class="e">error: use of deleted function 'Config::Config(const Config&amp;)'</span></div></div>
       <div data-panel="e3" hidden><p class="lead" style="font-size:28px">Una copia sería un segundo objeto: el Singleton lo prohíbe.</p><p class="body sub" style="font-size:22px">Se guarda una referencia: <code>Config&amp; c = Config::instancia();</code></p></div>
       <div data-panel="e4" hidden><pre class="code c20">Tarifa* t = new TarifaFija;
@@ -653,14 +654,14 @@ delete t;</pre><div class="term t18" style="margin-top:10px"><span class="w">war
     <p class="hoja">PLANO J-4</p>
     <h1 class="mask long"><span>Refactorización: mejora del código sin cambiar el comportamiento</span></h1>
     <p class="lead" data-a>Remodelar sin mudanza: por dentro todo cambia de lugar, pero la casa hace lo mismo que antes.</p></div>
-    <div data-a style="align-self:center"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
+    <div data-a style="align-self:center;position:relative"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
       <text x="20" y="26" font-size="18" font-weight="600">ANTES</text>
       <rect class="stroke" x="20" y="38" width="400" height="140"/><path class="thin" d="M120 38 V100 L200 140 M260 178 V120 H330 M330 38 V80 M60 120 H170"/>
       <text x="20" y="226" font-size="18" font-weight="600">DESPUÉS</text>
       <rect class="stroke" x="20" y="238" width="400" height="140"/><path class="stroke" d="M150 238 V378 M290 238 V378 M150 308 H290"/>
       <text x="85" y="314" font-size="18" text-anchor="middle">calcular</text><text x="220" y="280" font-size="18" text-anchor="middle">leer</text><text x="220" y="350" font-size="18" text-anchor="middle">validar</text><text x="355" y="314" font-size="18" text-anchor="middle">imprimir</text>
       <path class="cota" d="M432 38 V178 M424 38 H440 M424 178 H440 M432 238 V378 M424 238 H440 M424 378 H440"/>
-    </svg><div style="margin:-226px 0 0 230px"><span class="sello anim">SALIDA IGUAL</span></div></div>
+    </svg><div style="position:absolute;top:180px;left:180px"><span class="sello anim">SALIDA IGUAL</span></div></div>
   </div>
   <div class="cajetin"></div>
 </section>
@@ -670,14 +671,14 @@ delete t;</pre><div class="term t18" style="margin-top:10px"><span class="w">war
   <div style="display:grid;grid-template-columns:760px 1fr;gap:22px;margin-top:14px">
     <pre class="code c18" data-raw data-a id="rf-code"></pre>
     <div data-a>
-      <div class="steps-b ops" id="rf-b" style="flex-direction:column;align-items:stretch"><button data-v="0">Original</button><button data-v="1">1. Renombrar</button><button data-v="2">2. Constantes con nombre</button><button data-v="3">3. Extraer funciones</button></div>
+      <div class="steps-b" id="rf-b" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button data-v="0">Original</button><button data-v="1">1. Renombrar</button><button data-v="2">2. Constantes con nombre</button><button data-v="3">3. Extraer funciones</button></div>
       <div class="row gap12"><button class="go" id="rf-next">Siguiente paso</button></div>
       <div class="term t18 gap12" id="rf-out">Final: 84.3
 Aprobado
 Final: 64.5
 No aprobado</div>
       <div class="igual"><span class="sello sm" id="rf-sello">SALIDA IGUAL</span></div>
-      <p class="msg gap12" id="rf-msg" aria-live="polite" style="font-size:19px;min-height:110px"></p>
+      <p class="msg gap12" id="rf-msg" aria-live="polite" style="font-size:19px"></p>
     </div>
   </div>
 </section>
@@ -869,7 +870,7 @@ Guagua con motor electrico</div>
         <label class="lbl" for="cp-m" style="display:block;margin-top:6px">Tipos de motor: <b class="mono" id="cp-mv">2</b></label><input type="range" id="cp-m" min="1" max="5" value="2">
         <div class="bars gap12"><span>Herencia</span><div><div class="bar h" id="cp-bh"></div></div><b id="cp-h">6</b><span>Composición</span><div><div class="bar" id="cp-bc"></div></div><b id="cp-c">5</b></div>
       </div>
-      <p class="msg gap12" style="font-size:19px">La herencia sigue siendo correcta para «es un» (Auto es un Vehiculo). Para «tiene un» o «usa un», componga.</p>
+      <p class="msg gap12" style="font-size:19px">Herencia para «es un»; composición para «tiene un».</p>
     </div>
   </div>
 </section>
@@ -878,7 +879,7 @@ Guagua con motor electrico</div>
   <p class="q mask"><span>Marta trabaja en la Biblioteca y estudia en el recinto. ¿Cómo se modela?</span></p>
   <p class="body gap" data-a style="max-width:1050px;font-size:26px">Piensen en qué pasa el día que se gradúa y sigue trabajando.</p>
   <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:56px;align-items:end"><div class="timer" data-timer="120" data-a></div>
-  <div class="prop2" data-a><div><b>Herencia</b><span>class EmpleadoEstudiante : public Empleado, public Estudiante</span></div><div class="ok" data-rv-box><b>Composición</b><span>una Persona que tiene roles</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">Composición: una Persona con una lista de roles. Al graduarse se le quita un rol; con herencia habría que crear otro objeto de otra clase.</span></div></div></div>
+  <div class="prop2" data-a><div><b>Herencia</b><span>una clase que hereda de Empleado y de Estudiante</span></div><div class="ok" data-rv-box><b>Composición</b><span>una Persona que tiene roles</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">Composición: una Persona con una lista de roles. Al graduarse se le quita un rol; con herencia habría que crear otro objeto de otra clase.</span></div></div></div>
 </section>
 
 <section class="slide" data-title="Lo esencial de la unidad">
@@ -899,13 +900,13 @@ Guagua con motor electrico</div>
     <p class="hoja">PLANO J-LAB</p>
     <h1 class="mask"><span>Laboratorio&nbsp;J</span></h1>
     <p class="lead" data-a>Remodelación sin mudanza: la caja de la cafetería funciona, pero es espagueti. Usted la remodela y la salida no puede cambiar ni un centavo.</p></div>
-    <div data-a style="align-self:center"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
+    <div data-a style="align-self:center;position:relative"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
       <rect class="stroke" x="20" y="30" width="400" height="300"/><rect class="stroke" x="40" y="50" width="200" height="40"/><text x="140" y="77" font-size="19" text-anchor="middle">CAJA</text>
       <circle class="stroke" cx="110" cy="200" r="34"/><circle class="stroke" cx="250" cy="200" r="34"/><circle class="stroke" cx="180" cy="285" r="30"/>
       <rect class="stroke" x="320" y="70" width="80" height="160"/><text x="360" y="155" font-size="18" text-anchor="middle">MENU</text>
       <path class="fillw" d="M300 330 h60 v-6 h-60 z" opacity=".9"/>
       <path class="cota" d="M20 360 H420 M20 352 V368 M420 352 V368"/><text class="cotat" x="220" y="392" font-size="18" text-anchor="middle">misma caja, otra distribución</text>
-    </svg><div style="margin:-200px 0 0 150px"><span class="sello anim">EN REMODELACIÓN</span></div></div>
+    </svg><div style="position:absolute;top:262px;left:170px"><span class="sello anim">EN REMODELACIÓN</span></div></div>
   </div>
   <div class="cajetin"></div>
 </section>
@@ -931,7 +932,7 @@ Guagua con motor electrico</div>
 </section>
 
 <section class="slide" data-title="Laboratorio J: las pruebas">
-  <h2 class="mask"><span>Cuatro pruebas: la salida debe ser idéntica</span></h2>
+  <h2 class="mask"><span>Cuatro pruebas de salida idéntica</span></h2>
   <div style="display:grid;grid-template-columns:720px 1fr;gap:24px;margin-top:14px">
     <div class="cases" data-tabs="c1" data-a>
       <div class="row"><button data-tab="c1" id="tb-c1">Caso 1</button><button data-tab="c2" id="tb-c2">Caso 2</button><button data-tab="c3" id="tb-c3">Caso 3</button><button data-tab="c4" id="tb-c4">Caso 4</button></div>
@@ -1030,9 +1031,9 @@ function ptShow(i){$('pt-svg').innerHTML=PT[i];press('#pt-b button',function(b){
 each('#pt-b button',function(b){b.onclick=function(){ptShow(+b.dataset.i)}});ptShow(1);
 
 /* ---------- pedido de cambio ---------- */
-var PC={ivu:{o:[8,10],r:[0],m:'El 0.115 aparece dos veces en el original: en el recibo y en el resumen. Si se cambia uno solo, el resumen del día deja de cuadrar con los recibos.'},
- est:{o:[5,11],r:[1],m:'El 10% del estudiante está escrito dos veces. Olvidar uno no da error: da un resumen con descuentos que no se dieron.'},
- cafe:{o:[1,2],r:[8],m:'El precio del café está en la línea que imprime y en la que suma. En el remodelado, la tabla MENU es el único lugar.'}};
+var PC={ivu:{o:[8,10],r:[0],m:'El 0.115 está en el recibo y en el resumen: si se cambia uno solo, el resumen no cuadra.'},
+ est:{o:[5,11],r:[1],m:'El 10% está escrito dos veces: olvidar uno no da error, da un resumen equivocado.'},
+ cafe:{o:[1,2],r:[8],m:'El precio está en la línea que imprime y en la que suma. Remodelado: solo en MENU.'}};
 var pcO=setCode($('pc-o'),CODE.pc_o),pcR=setCode($('pc-r'),CODE.pc_r);
 function pcShow(k){var p=PC[k];each(pcO,function(l,i){l.classList.toggle('cur',p.o.indexOf(i)>=0)});each(pcR,function(l,i){l.classList.toggle('cur',p.r.indexOf(i)>=0)});
   $('pc-no').textContent=p.o.length;$('pc-nr').textContent=p.r.length;$('pc-msg').textContent=p.m;press('#pc-b button',function(b){return b.dataset.k===k})}
@@ -1050,10 +1051,10 @@ function pfShow(k){var p=PF[k];$('pf-fam').textContent='FAMILIA: '+p[0];$('pf-n'
 each('#pf-b button',function(b){b.onclick=function(){pfShow(b.dataset.p)}});$('pf-sello').classList.add('anim');pfShow('strat');
 
 /* ---------- Strategy ---------- */
-var ST={hora:{n:'TarifaPorHora',f:function(h){return 1.5*h},m:'TarifaPorHora: PRECIO_HORA por cada hora.'},
- fija:{n:'TarifaFija',f:function(){return 5},m:'TarifaFija: PRECIO_DIA sin importar las horas. Estacionamiento es la misma clase; solo cambió el objeto que tiene enchufado.'},
- noche:{n:'TarifaNocturna',f:function(){return 3},m:'Una estrategia nueva es una clase nueva: class TarifaNocturna : public Tarifa, con cobrar() que devuelve PRECIO_NOCHE (3.00). Estacionamiento no se tocó.'}},stT='hora';
-function stDraw(){var h=+$('st-h').value,s=ST[stT];$('st-hv').textContent=h;$('st-e').textContent='e.cambiarTarifa('+s.n.charAt(0).toLowerCase()+s.n.slice(1)+');  e.salida('+h+');';
+var ST={hora:{n:'TarifaPorHora',o:'porHora',f:function(h){return 1.5*h},m:'TarifaPorHora: PRECIO_HORA por cada hora.'},
+ fija:{n:'TarifaFija',o:'fija',f:function(){return 5},m:'TarifaFija: PRECIO_DIA sin importar las horas. Estacionamiento es la misma clase; solo cambió el objeto que tiene enchufado.'},
+ noche:{n:'TarifaNocturna',o:'nocturna',f:function(){return 3},m:'Una estrategia nueva es una clase nueva: class TarifaNocturna : public Tarifa, con cobrar() que devuelve PRECIO_NOCHE (3.00). Estacionamiento no se tocó.'}},stT='hora';
+function stDraw(){var h=+$('st-h').value,s=ST[stT];$('st-hv').textContent=h;$('st-e').textContent='e.cambiarTarifa('+s.o+');  e.salida('+h+');';
   $('st-r').textContent=h+' h: $'+s.f(h).toFixed(2);$('st-msg').textContent=s.m;press('#st-b button',function(b){return b.dataset.t===stT})}
 each('#st-b button',function(b){b.onclick=function(){stT=b.dataset.t;stDraw()}});$('st-h').oninput=stDraw;stDraw();
 
@@ -1138,7 +1139,7 @@ function rlShow(k){$('rl-svg').classList.add('dim');each('#rl-svg .rel',function
 each('#rl-b button',function(b){b.onclick=function(){rlShow(b.dataset.r)}});rlShow('her');
 
 /* ---------- refactorización paso a paso ---------- */
-var RF=[{m:'El original funciona, pero a, b, c, x, y no dicen nada; 0.3, 0.4 y 70 son números magicos; y el bloque del if está copiado dos veces.'},
+var RF=[{m:'El original funciona, pero a, b, c, x, y no dicen nada; 0.3, 0.4 y 70 son números mágicos; y el bloque del if está copiado dos veces.'},
  {m:'1. Renombrar: a, b, c pasan a parcial1, parcial2 y examen; x, a nota. Solo cambian nombres, por eso la salida no puede cambiar.'},
  {m:'2. Constantes con nombre: PESO_PARCIAL, PESO_FINAL y MINIMO. Si cambia el peso del examen, se cambia una sola línea.'},
  {m:'3. Extraer funciones: notaFinal calcula e informar imprime. El código repetido desapareció y main se lee como una lista de pasos.'}],rfV=0,rfPrev=null;
@@ -1159,7 +1160,7 @@ var CL=[['El mismo cálculo del IVU copiado en tres funciones distintas.','DRY',
 function clScore(){var n=Object.keys(clOk).length;$('cl-sc').textContent=n?n+' de 6':''}
 each('#cl .card',function(cd){var c=CL[+cd.dataset.i];each(cd.querySelectorAll('button'),function(b){b.onclick=function(){var ok=b.dataset.x===c[1];
   cd.classList.toggle('ok',ok);cd.classList.toggle('no',!ok);press(cd.querySelectorAll('button'),function(x){return x===b});
-  cd.querySelector('.fb').textContent=ok?c[1]+': '+c[2]:'No es '+b.dataset.x+'. Intente otra.';if(ok)clOk[cd.dataset.i]=1;clScore()}})});
+  cd.querySelector('.fb').textContent=ok?c[1]+': '+c[2]:'No es '+b.dataset.x+'. Intente otra.';if(ok)clOk[cd.dataset.i]=1;else delete clOk[cd.dataset.i];clScore()}})});
 
 /* ---------- cohesión y acoplamiento ---------- */
 var CA={A:{mods:{Caja:[20,30,280,150,['cobrar','calcular IVU','imprimir recibo','guardar en archivo']],Recibo:[360,30,240,104,['imprimir','calcular IVU']],Resumen:[360,210,240,104,['sumar ventas','leer el archivo']],Archivo:[20,250,280,80,['formato de texto']]},
@@ -1203,7 +1204,7 @@ $('vf-go').onclick=function(){var E=CASES[cur].E,raw=$('vf-in').value,h='',ok=fa
     var bad=-1;for(var i=0;i<Math.max(E.length,s.length);i++){if(E[i]!==s[i]){bad=i;break}}
     if(bad<0){ok=hdr;h+=li(true,'Las '+(E.length-1)+' líneas de resultados son idénticas a las del original')}
     else{var n=0;for(var j=0;j<E.length;j++)if(E[j]===s[j])n++;
-      h+=li(true,(bad-1)+' líneas iguales antes de la primera diferencia');
+      h+=li(true,(bad-1)+(bad-1===1?' línea igual':' líneas iguales')+' antes de la primera diferencia');
       if(bad>=s.length)h+=li(false,'Su programa terminó antes. Faltó: <code>'+esc(E[bad])+'</code>');
       else if(bad>=E.length)h+=li(false,'Sobra: <code>'+esc(s[bad])+'</code>');
       else h+=li(false,'Se esperaba <code>'+esc(E[bad])+'</code> y su programa imprimió <code>'+esc(s[bad])+'</code>')}}

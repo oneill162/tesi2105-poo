@@ -62,6 +62,9 @@ button.nota.ro[aria-pressed=true]{background:var(--ro)}button.nota.ve[aria-press
 .tablero .col h4{margin:0;font:800 18px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--field-ink);border-bottom:4px solid var(--hi);padding-bottom:6px;display:flex;justify-content:space-between}
 .tablero .col h4 span{font-family:var(--mono);opacity:.75}
 .tablero .nota{font-size:18px;padding:10px 12px 11px}
+#pt-board .col{gap:9px;padding:8px 8px 10px}
+#pt-board .nota{padding:6px 10px 7px;line-height:1.2}
+#pt-board .nota::before{top:-5px;height:11px}
 @media (prefers-reduced-motion:no-preference){.tablero .nota.llega{animation:llega .55s var(--ease-expo)}}
 @keyframes llega{from{opacity:0;transform:translateX(-40px) rotate(-4deg)}to{opacity:1}}
 /* hitos */

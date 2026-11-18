@@ -561,8 +561,8 @@ $ ./peaje</span>
 1.5</div><p class="lead gap16" style="font-size:27px">Sin <code>const</code> es otra función: no sustituye a la de Vehiculo.</p><p class="body sub" style="font-size:21px">Compila con solo un aviso, y el camión paga $1.50. Es el error más caro: nadie se entera hasta que se revisan las cuentas.</p></div>
       <div data-panel="ov2" hidden><pre class="code c18">class Camion : public Vehiculo {
 public:
-    double tarifa() override { return 3.75; }   // sin const
-};</pre></div>
+    double tarifa() override { return 3.75; }
+};</pre><p class="body gap12" style="font-size:20px">El mismo descuido de antes (sin <code>const</code>), ahora con <code>override</code>.</p></div>
       <div data-panel="ov2" hidden><div class="term t18"><span class="e">error: 'double Camion::tarifa()' marked 'override', but does not override</span></div><p class="lead gap16" style="font-size:27px"><code>override</code> le promete a g++ que la función sustituye a una virtual de la base.</p><p class="body sub" style="font-size:21px">Si la firma no coincide (un <code>const</code> de menos, un parámetro distinto, una letra cambiada), ya no compila. El error sale en su pantalla, no en la caseta.</p></div>
       <div data-panel="ov3" hidden><pre class="code c18">class Camion : public Vehiculo {
 public:
@@ -706,7 +706,7 @@ p.tablilla = "PKP-330";</pre><div class="term t18 gap12"><span class="e">error: 
       <div data-panel="er2" hidden><p class="lead" style="font-size:28px">La base no tiene constructor sin parámetros.</p><p class="body sub" style="font-size:22px">Llámelo en la lista de inicialización: <code>: Vehiculo(t), ejes(e)</code>.</p></div>
       <div data-panel="er3" hidden><pre class="code c19">Auto a;
 cout &lt;&lt; a.tablilla &lt;&lt; endl;    // en main</pre><div class="term t18 gap12"><span class="e">error: 'std::string Vehiculo::tablilla' is protected within this context</span></div></div>
-      <div data-panel="er3" hidden><p class="lead" style="font-size:28px">protected abre la puerta a las derivadas, no a main.</p><p class="body sub" style="font-size:22px">Desde afuera se usa una función pública, como <code>obtenerTablilla()</code>. Con private, el mensaje dice <code>is private within this context</code>.</p></div>
+      <div data-panel="er3" hidden><p class="lead" style="font-size:28px">protected abre la puerta a las derivadas, no a main.</p><p class="body sub" style="font-size:22px">Desde afuera se usa una función pública, como <code>obtenerTablilla()</code>. Con private, g++ dice «is private within this context».</p></div>
       <div data-panel="er4" hidden><pre class="code c19">double tarifa() override { return 3.75; }</pre><div class="term t18 gap12"><span class="e">error: 'double Camion::tarifa()' marked 'override', but does not override</span></div></div>
       <div data-panel="er4" hidden><p class="lead" style="font-size:28px">La firma no es la misma que la de la base.</p><p class="body sub" style="font-size:22px">Compare letra por letra: nombre, parámetros y el <code>const</code> del final.</p></div>
       <div data-panel="er5" hidden><pre class="code c19">Vehiculo* p = new Vehiculo();</pre><div class="term t18 gap12"><span class="e">error: invalid new-expression of abstract class type 'Vehiculo'</span></div></div>

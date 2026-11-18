@@ -44,6 +44,7 @@ pre.code.gap8{margin-top:8px}pre.code.gap12{margin-top:12px}pre.code.gap16{margi
 .ops{display:flex;flex-wrap:wrap;gap:8px}
 .ops button{font:600 18px var(--mono);padding:10px 12px}
 .ops button.sans{font-family:var(--sans)}
+#rc-ops button{padding:8px 9px}
 .etq{font:600 18px var(--sans);color:var(--soft);margin-right:4px}
 
 /* capítulos */
@@ -601,7 +602,7 @@ Fuera del bloque: Recibido: 70112</div>
       <p class="small gap8" style="font-size:18px"><code>leer(archivo)</code> abre el archivo con un <code>ifstream</code> y devuelve su primera línea, o <code>(vacio)</code>.</p>
     </div>
     <div data-a>
-      <div class="ops"><button id="rc-w">f &lt;&lt; "Recibido: 84231\n";</button><button id="rc-c">f.close();</button><button id="rc-r">leer("recibo.txt")</button><button id="rc-x" class="sans">Reiniciar</button></div>
+      <div class="ops" id="rc-ops"><button id="rc-w">f &lt;&lt; "Recibido: 84231\n";</button><button id="rc-c">f.close();</button><button id="rc-r">leer("recibo.txt")</button><button id="rc-x" class="sans">Reiniciar</button></div>
       <div class="bandeja gap12"><div class="tray" id="rc-tray"></div><div class="carp" style="margin-top:42px"><span class="pest">recibo.txt</span><div class="hoja h18" id="rc-file" style="min-height:44px"></div></div></div>
       <div class="term t18 espera gap12" id="rc-out" style="min-height:62px" aria-live="polite"></div>
       <p class="msg gap12" id="rc-msg" aria-live="polite">El archivo existe desde que se abre, pero está vacío.</p>

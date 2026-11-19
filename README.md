@@ -24,6 +24,7 @@ Página del curso: https://oneill162.github.io/tesi2105-poo/
 | `unidadK.html` | Unidad K: Ficheros y excepciones (presentación interactiva con el Laboratorio K integrado y sus archivos de datos) |
 | `unidadJ.html` | Unidad J: Principios de diseño de software (presentación interactiva con el Laboratorio J integrado) |
 | `unidadL.html` | Unidad L: Pruebas y debugging (presentación interactiva con el Laboratorio L integrado) |
+| `unidadN.html` | Unidad N: Fundamentos de seguridad en POO (presentación interactiva con el Laboratorio N integrado; enfoque defensivo) |
 | `ejemplos/` | Programas completos de los ejemplos de las presentaciones, verificados con g++ |
 | `assets/deck.css`, `assets/deck.js` | Motor común de las presentaciones: escala, transiciones, barra de navegación, índice, temporizador, paso a paso |
 | `assets/fonts/` | Schibsted Grotesk y JetBrains Mono (licencia SIL OFL), incluidas para no depender de servicios externos |

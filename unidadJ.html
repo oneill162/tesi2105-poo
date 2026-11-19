@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<link rel="icon" href="data:,">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Unidad J: Principios de diseño de software · TESI 2105</title>
 <meta name="description" content="TESI 2105 Programación Orientada a Objetos. Unidad J: principios de diseño de software, contados como los planos de construcción: patrones, SOLID, UML, refactorización y código limpio. Incluye el Laboratorio J.">
@@ -32,6 +33,9 @@ code{font-size:max(18px,.88em)}
 .hoja{font:600 20px var(--mono);letter-spacing:.14em;color:#9CC3EA}
 .chapter h1{font-size:76px;margin-top:12px}
 .chapter h1.long{font-size:58px}
+.chapter h1.t2{font-size:58px}
+.chapter h1.t2.lg{font-size:50px}
+.chapter h1.t2.xl{font-size:40px}
 .chapter .lead{margin-top:22px;max-width:640px;font-size:29px}
 .cajetin{position:absolute;left:72px;right:72px;bottom:26px;display:grid;grid-template-columns:repeat(7,1fr);border:2px solid rgba(255,255,255,.55)}
 .cajetin span{display:block;padding:7px 12px 8px;border-left:2px solid rgba(255,255,255,.3);color:rgba(241,246,252,.55);font:600 18px var(--sans);white-space:nowrap}
@@ -186,7 +190,7 @@ textarea.paste{width:100%;height:150px;font:500 18px/1.35 var(--mono);padding:10
   <div class="chwrap" style="height:100%">
     <div class="left">
       <p class="hoja" data-a>TESI 2105 · UNIDAD J</p>
-      <h1 class="mask" style="font-size:84px;margin-top:12px"><span>Principios de diseño de software</span></h1>
+      <h1 class="mask" style="font-size:62px;margin-top:12px"><span>Principios de diseño de software</span></h1>
       <p class="lead" data-a>Antes de levantar una casa se dibujan los planos. Antes de escribir mil líneas, también.</p>
       <p class="body" data-a style="margin-top:22px;font-size:20px">Prof. Eduardo O. De Jesús Arroyo<br>Instituto Tecnológico de Puerto Rico, Recinto de Manatí</p>
     </div>
@@ -215,7 +219,7 @@ textarea.paste{width:100%;height:150px;font:500 18px/1.35 var(--mono);padding:10
 <section class="slide chapter" data-title="Tema 1: Patrones de diseño (introducción)" data-topic="1">
   <div class="chwrap"><div class="left">
     <p class="hoja">PLANO J-1</p>
-    <h1 class="mask"><span>Patrones de diseño (introducción)</span></h1>
+    <h1 class="mask t2"><span>Patrones de diseño (introducción)</span></h1>
     <p class="lead" data-a>Un patrón es un plano probado: una solución que ya funcionó muchas veces para un problema que se repite.</p></div>
     <div data-a style="align-self:center;position:relative"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
       <rect class="thin" x="70" y="20" width="320" height="230"/><rect class="thin" x="45" y="45" width="320" height="230"/>
@@ -236,7 +240,7 @@ textarea.paste{width:100%;height:150px;font:500 18px/1.35 var(--mono);padding:10
   <p class="body sub" data-a style="max-width:1130px;font-size:22px">En 1994, Gamma, Helm, Johnson y Vlissides publicaron 23 patrones en tres familias. Cada uno tiene un nombre, el problema que resuelve, la solución y sus consecuencias. Escoja uno.</p>
   <div style="display:grid;grid-template-columns:520px 1fr;gap:24px;margin-top:16px">
     <div class="fam" data-a id="pf-b" style="grid-template-columns:1fr 1fr 1fr;gap:10px">
-      <div><h3>Creación</h3><p>cómo nacen los objetos</p><button data-p="sing">Singleton</button><button data-p="fact">Factory</button></div>
+      <div><h3>Creación</h3><p>cómo nacen los objetos</p><button data-p="sing">Singleton</button><button data-p="fact">Factory Method</button></div>
       <div><h3>Estructura</h3><p>cómo se arman</p><button data-p="adap">Adapter</button><button data-p="comp">Composite</button></div>
       <div><h3>Conducta</h3><p>cómo se reparten el trabajo</p><button data-p="strat">Strategy</button><button data-p="obs">Observer</button></div>
     </div>
@@ -424,7 +428,7 @@ Auditoria: movimiento 1 en 1001</div></div>
 <section class="slide chapter" data-title="Tema 2: Principios de diseño (SOLID)" data-topic="2">
   <div class="chwrap"><div class="left">
     <p class="hoja">PLANO J-2</p>
-    <h1 class="mask"><span>Principios de diseño (SOLID)</span></h1>
+    <h1 class="mask t2"><span>Principios de diseño (SOLID)</span></h1>
     <p class="lead" data-a>Cinco columnas que aguantan el edificio. Si una falla, cada cambio cuesta más.</p></div>
     <div data-a style="align-self:center"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
       <path class="stroke" d="M20 110 L220 30 L420 110 Z"/><rect class="stroke" x="20" y="110" width="400" height="26"/>
@@ -512,6 +516,7 @@ public:
     virtual void imprimir() = 0;
     virtual void escanear() = 0;
     virtual void enviarFax() = 0;
+    virtual ~Dispositivo() = default;
 };
 class ImpresoraSimple : public Dispositivo {
     // obligada a escanear() y enviarFax(),
@@ -520,10 +525,12 @@ class ImpresoraSimple : public Dispositivo {
       <div><div class="hd"><span class="tag ok">DESPUÉS</span><span class="lbl">interfaces pequeñas</span></div><pre class="code c18">class Impresora {
 public:
     virtual void imprimir() = 0;
+    virtual ~Impresora() = default;
 };
 class Escaner {
 public:
     virtual void escanear() = 0;
+    virtual ~Escaner() = default;
 };
 class ImpresoraSimple : public Impresora {
 public:
@@ -542,6 +549,7 @@ public:
       <div><div class="hd"><span class="tag ok">DESPUÉS</span><span class="lbl">depende de una abstracción</span></div><pre class="code c18">class Almacen {              // abstraccion
 public:
     virtual void guardar(const string&amp; l) = 0;
+    virtual ~Almacen() = default;
 };
 class Caja {
     Almacen&amp; almacen;        // cualquiera
@@ -551,7 +559,7 @@ public:
         almacen.guardar(to_string(m));
     }
 };</pre></div></div>
-      <p class="msg gap12" style="font-size:20px"><b>Inversión de dependencias.</b> Caja recibe cualquier <code>Almacen</code>: un archivo, la memoria o uno de prueba.</p></div>
+      <p class="msg gap12" style="font-size:20px"><b>Inversión de dependencias.</b> Los módulos de alto nivel no dependen de los de bajo nivel; ambos dependen de abstracciones. Caja recibe cualquier <code>Almacen</code>.</p></div>
   </div>
 </section>
 
@@ -584,7 +592,7 @@ note:     'virtual double Tarifa::cobrar(int) const'</span></div></div>
       <div data-panel="e4" hidden><pre class="code c20">Tarifa* t = new TarifaFija;
 cout &lt;&lt; t-&gt;cobrar(3) &lt;&lt; endl;
 delete t;</pre><div class="term t18" style="margin-top:10px"><span class="w">warning: deleting object of abstract class type 'Tarifa' which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]</span></div></div>
-      <div data-panel="e4" hidden><p class="lead" style="font-size:28px">Compila, pero borrar por el puntero del padre no llama al destructor del hijo.</p><p class="body sub" style="font-size:22px">Toda interfaz lleva <code>virtual ~Tarifa() = default;</code>, como en el ejemplo de Strategy.</p></div>
+      <div data-panel="e4" hidden><p class="lead" style="font-size:28px">Compila, pero borrar por el puntero del padre es comportamiento indefinido (en la práctica, no se llama al destructor del hijo).</p><p class="body sub" style="font-size:22px">Toda interfaz lleva <code>virtual ~Tarifa() = default;</code>, como en el ejemplo de Strategy.</p></div>
     </div>
   </div>
 </section>
@@ -600,7 +608,7 @@ delete t;</pre><div class="term t18" style="margin-top:10px"><span class="w">war
 <section class="slide chapter" data-title="Tema 3: Modelado de objetos (UML básico)" data-topic="3">
   <div class="chwrap"><div class="left">
     <p class="hoja">PLANO J-3</p>
-    <h1 class="mask"><span>Modelado de objetos (UML básico)</span></h1>
+    <h1 class="mask t2"><span>Modelado de objetos (UML básico)</span></h1>
     <p class="lead" data-a>UML es el plano de las clases: se dibuja antes de construir y lo entiende cualquiera, sepa o no C++.</p></div>
     <div data-a style="align-self:center"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
       <rect class="stroke" x="20" y="40" width="300" height="300"/><path class="stroke" d="M20 92 H320 M20 190 H320"/>
@@ -642,7 +650,7 @@ delete t;</pre><div class="term t18" style="margin-top:10px"><span class="w">war
 </section>
 
 <section class="slide field-hi" data-title="Discusión: composición o agregación">
-  <p class="q mask"><span>Si se bota el Auto, ¿qué pasa con su Motor? ¿Y con los vehículos si se cierra el Garaje?</span></p>
+  <p class="q mask"><span>Si se bota el Auto, ¿y su Motor? ¿Y los vehículos, si cierra el Garaje?</span></p>
   <p class="body gap" data-a style="max-width:1050px;font-size:26px">La pregunta que decide el rombo: ¿la parte puede existir sin el todo?</p>
   <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:56px;align-items:end"><div class="timer" data-timer="120" data-a></div>
   <div class="prop2" data-a><div><b>Rombo lleno ◆</b><span>composición: la parte vive y muere con el todo</span></div><div class="ok" data-rv-box><b>Rombo vacío ◇</b><span>agregación: la parte existe por su cuenta</span><button data-rv="Ocultar" class="pbtn">Respuesta</button><span class="reveal">Motor dentro de Auto: composición (es un miembro, muere con él). Vehiculo* en Garaje: agregación (los autos siguen existiendo).</span></div></div></div>
@@ -652,7 +660,7 @@ delete t;</pre><div class="term t18" style="margin-top:10px"><span class="w">war
 <section class="slide chapter" data-title="Tema 4: Refactorización: mejora del código sin cambiar el comportamiento" data-topic="4">
   <div class="chwrap"><div class="left">
     <p class="hoja">PLANO J-4</p>
-    <h1 class="mask long"><span>Refactorización: mejora del código sin cambiar el comportamiento</span></h1>
+    <h1 class="mask t2 xl"><span>Refactorización: mejora del código sin cambiar el comportamiento</span></h1>
     <p class="lead" data-a>Remodelar sin mudanza: por dentro todo cambia de lugar, pero la casa hace lo mismo que antes.</p></div>
     <div data-a style="align-self:center;position:relative"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
       <text x="20" y="26" font-size="18" font-weight="600">ANTES</text>
@@ -719,7 +727,7 @@ cout &lt;&lt; "Final: " &lt;&lt; x &lt;&lt; endl;</pre>
 <section class="slide chapter" data-title="Tema 5: Principios de código limpio (DRY, KISS, YAGNI)" data-topic="5">
   <div class="chwrap"><div class="left">
     <p class="hoja">PLANO J-5</p>
-    <h1 class="mask"><span>Principios de código limpio (DRY, KISS, YAGNI)</span></h1>
+    <h1 class="mask t2 lg"><span>Principios de código limpio (DRY, KISS, YAGNI)</span></h1>
     <p class="lead" data-a>Tres reglas de obra: no repita, no complique, no construya cuartos que nadie pidió.</p></div>
     <div data-a style="align-self:center"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
       <g font-size="20">
@@ -748,8 +756,8 @@ bool Cuenta::retirar(double m) {
     saldo -= m;
     return true;
 }</pre>
-        <div class="term t18" style="margin-top:8px">antes:   10010
-despues: 10010</div></div>
+        <p class="lbl" style="margin-top:6px;font-size:18px">depositar(500), (-5), (20000), retirar(200), (900):</p><div class="term t18" style="margin-top:4px">antes:   1 0 0 1 0
+despues: 1 0 0 1 0</div></div>
       <div><div class="hd"><span class="tag ok">DESPUÉS</span><span class="lbl">una regla, un lugar</span></div><pre class="code c18">const double LIMITE = 10000;
 bool montoValido(double m) {
     return m &gt; 0 &amp;&amp; m &lt;= LIMITE;
@@ -814,7 +822,7 @@ public:
 <section class="slide chapter" data-title="Tema 6: Principios de diseño de software" data-topic="6">
   <div class="chwrap"><div class="left">
     <p class="hoja">PLANO J-6</p>
-    <h1 class="mask"><span>Principios de diseño de software</span></h1>
+    <h1 class="mask t2"><span>Principios de diseño de software</span></h1>
     <p class="lead" data-a>La síntesis: cuartos con un solo uso, pocas puertas entre ellos y piezas que se cambian sin tumbar paredes.</p></div>
     <div data-a style="align-self:center"><svg class="bp" viewBox="0 0 440 400" width="440" height="400" aria-hidden="true">
       <rect class="stroke" x="20" y="30" width="400" height="300"/><path class="stroke" d="M220 30 V140 M220 180 V330 M20 180 H90 M130 180 H310 M350 180 H420"/>
@@ -864,13 +872,13 @@ public:
     <div data-a>
       <div class="term t18">Guagua con motor gasolina
 Guagua con motor electrico</div>
-      <p class="body gap12" style="font-size:20px">Con herencia, cada combinación es una clase: <code>GuaguaGasolina</code>, <code>GuaguaElectrica</code>… Con composición, el vehículo <b>tiene</b> un motor y se le cambia.</p>
+      <p class="body gap12" style="font-size:19px">Con herencia, cada combinación es una clase (<code>GuaguaGasolina</code>, <code>GuaguaElectrica</code>…). Con composición, el vehículo <b>tiene</b> un motor y se le cambia.</p>
       <div class="sim gap12">
         <label class="lbl" for="cp-v">Tipos de vehículo: <b class="mono" id="cp-vv">3</b></label><input type="range" id="cp-v" min="1" max="6" value="3">
         <label class="lbl" for="cp-m" style="display:block;margin-top:6px">Tipos de motor: <b class="mono" id="cp-mv">2</b></label><input type="range" id="cp-m" min="1" max="5" value="2">
         <div class="bars gap12"><span>Herencia</span><div><div class="bar h" id="cp-bh"></div></div><b id="cp-h">6</b><span>Composición</span><div><div class="bar" id="cp-bc"></div></div><b id="cp-c">5</b></div>
       </div>
-      <p class="msg gap12" style="font-size:19px">Herencia para «es un»; composición para «tiene un».</p>
+      <p class="msg gap12" style="font-size:18px;padding:8px 14px">Herencia para «es un». Aquí «composición» es el principio general (tener en vez de heredar); en UML, este puntero es agregación.</p>
     </div>
   </div>
 </section>
@@ -906,7 +914,7 @@ Guagua con motor electrico</div>
       <rect class="stroke" x="320" y="70" width="80" height="160"/><text x="360" y="155" font-size="18" text-anchor="middle">MENU</text>
       <path class="fillw" d="M300 330 h60 v-6 h-60 z" opacity=".9"/>
       <path class="cota" d="M20 360 H420 M20 352 V368 M420 352 V368"/><text class="cotat" x="220" y="392" font-size="18" text-anchor="middle">misma caja, otra distribución</text>
-    </svg><div style="position:absolute;top:262px;left:170px"><span class="sello anim">EN REMODELACIÓN</span></div></div>
+    </svg><div style="position:absolute;top:104px;left:60px"><span class="sello anim">EN REMODELACIÓN</span></div></div>
   </div>
   <div class="cajetin"></div>
 </section>
@@ -966,7 +974,7 @@ Guagua con motor electrico</div>
     </table>
     <div data-a>
       <h3 style="font-size:24px">El diagrama UML</h3>
-      <p class="body" style="font-size:19px;margin-top:4px;line-height:1.38">A mano (foto legible) o en una herramienta de diagramas. Debe tener <code>Orden</code>, <code>Caja</code> y <code>Articulo</code> con sus tres compartimientos, cada miembro con <code>+</code> o <code>-</code> y su tipo, y las relaciones: <code>Caja</code> usa <code>Orden</code>, <code>Orden</code> usa <code>Articulo</code> del <code>MENU</code>.</p>
+      <p class="body" style="font-size:19px;margin-top:4px;line-height:1.38">A mano (foto legible) o en una herramienta de diagramas. Debe tener <code>Orden</code>, <code>Caja</code> y <code>Articulo</code> con sus tres compartimientos, cada miembro con <code>+</code> o <code>-</code> y su tipo, y las relaciones <code>Caja</code> usa <code>Orden</code> y <code>Orden</code> usa <code>Articulo</code>, dibujadas como dependencias: línea discontinua con flecha abierta (- - -&gt;).</p>
       <h3 style="font-size:24px;margin-top:12px">Qué se entrega</h3>
       <p class="body" style="font-size:19px;margin-top:4px;line-height:1.38">Por OrbundSIS, <code>Apellido_Nombre_TESI2105_LabJ.zip</code> con <code>LabJ_Cafeteria.cpp</code>, el diagrama (PDF o imagen) y una captura de cada prueba. La fecha de entrega se anuncia en OrbundSIS.</p>
       <div class="tone" style="margin-top:12px;padding:12px 18px"><b style="font-size:21px">Reto (+10): Strategy</b><p style="font-size:19px;margin-top:4px;line-height:1.38">Cambie los <code>if</code> del tipo de cliente por una interfaz <code>PoliticaDescuento</code> con <code>DescuentoEstudiante</code>, <code>DescuentoEmpleado</code> y <code>SinDescuento</code>; <code>Orden</code> guarda un puntero a la suya. Para el reto sí puede cambiar <code>Orden</code>. Las cuatro pruebas deben seguir idénticas.</p></div>
@@ -995,7 +1003,7 @@ Guagua con motor electrico</div>
 (function(){
 function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
 window.__CASES={"c1": {"titulo": "Una orden de estudiante", "input": ["2", "1", "1", "2", "3", "1", "0", "1", "2", "0"], "out": ["----- RECIBO -----", "Cliente: estudiante", "2 x Sandwich de pavo: $6.50", "1 x Jugo de china: $2.00", "Subtotal: $8.50", "Descuento: -$0.85", "IVU: $0.88", "Total: $8.53", "…", "----- RESUMEN DEL DIA -----", "Ordenes: 1", "Descuentos: $0.85", "IVU cobrado: $0.88", "Ventas: $8.53", "…", "Caja cerrada"], "E": [">> Version remodelada", "===== CAJA DE LA CAFETERIA =====", "----- RECIBO -----", "Cliente: estudiante", "2 x Sandwich de pavo: $6.50", "1 x Jugo de china: $2.00", "Subtotal: $8.50", "Descuento: -$0.85", "IVU: $0.88", "Total: $8.53", "===== CAJA DE LA CAFETERIA =====", "----- RESUMEN DEL DIA -----", "Ordenes: 1", "Descuentos: $0.85", "IVU cobrado: $0.88", "Ventas: $8.53", "===== CAJA DE LA CAFETERIA =====", "Caja cerrada"]}, "c2": {"titulo": "Empleado, visitante y resumen", "input": ["2", "1", "2", "3", "4", "2", "4", "1", "0", "2", "1", "3", "2", "1", "1", "0", "3", "2", "0"], "out": ["----- RECIBO -----", "Cliente: empleado", "3 x Empanadilla: $5.25", "2 x Cafe con leche: $2.50", "1 x Cafe con leche: $1.25", "Subtotal: $9.00", "Descuento: -$1.35", "IVU: $0.88", "Total: $8.53", "…", "----- RECIBO -----", "Cliente: visitante", "2 x Jugo de china: $4.00", "1 x Sandwich de pavo: $3.25", "Subtotal: $7.25", "IVU: $0.83", "Total: $8.08", "…", "----- RESUMEN DEL DIA -----", "Ordenes: 2", "Descuentos: $1.35", "IVU cobrado: $1.71", "Ventas: $16.61", "…", "Caja cerrada"], "E": [">> Version remodelada", "===== CAJA DE LA CAFETERIA =====", "----- RECIBO -----", "Cliente: empleado", "3 x Empanadilla: $5.25", "2 x Cafe con leche: $2.50", "1 x Cafe con leche: $1.25", "Subtotal: $9.00", "Descuento: -$1.35", "IVU: $0.88", "Total: $8.53", "===== CAJA DE LA CAFETERIA =====", "----- RECIBO -----", "Cliente: visitante", "2 x Jugo de china: $4.00", "1 x Sandwich de pavo: $3.25", "Subtotal: $7.25", "IVU: $0.83", "Total: $8.08", "===== CAJA DE LA CAFETERIA =====", "----- RESUMEN DEL DIA -----", "Ordenes: 2", "Descuentos: $1.35", "IVU cobrado: $1.71", "Ventas: $16.61", "===== CAJA DE LA CAFETERIA =====", "Caja cerrada"]}, "c3": {"titulo": "Entradas que no se cobran", "input": ["2", "2", "1", "7", "2", "0", "0", "5", "0"], "out": ["----- RESUMEN DEL DIA -----", "Ordenes: 0", "Descuentos: $0.00", "IVU cobrado: $0.00", "Ventas: $0.00", "…", "Codigo invalido", "Cantidad invalida", "Orden vacia: no se cobra", "…", "Opcion invalida", "…", "Caja cerrada"], "E": [">> Version remodelada", "===== CAJA DE LA CAFETERIA =====", "----- RESUMEN DEL DIA -----", "Ordenes: 0", "Descuentos: $0.00", "IVU cobrado: $0.00", "Ventas: $0.00", "===== CAJA DE LA CAFETERIA =====", "Codigo invalido", "Cantidad invalida", "Orden vacia: no se cobra", "===== CAJA DE LA CAFETERIA =====", "Opcion invalida", "===== CAJA DE LA CAFETERIA =====", "Caja cerrada"]}, "c4": {"titulo": "Cliente desconocido", "input": ["2", "1", "4", "3", "0", "9", "1", "1", "1", "2", "1", "3", "1", "4", "2", "0", "1", "2", "0"], "out": ["----- RECIBO -----", "Cliente: visitante", "3 x Cafe con leche: $3.75", "Subtotal: $3.75", "IVU: $0.43", "Total: $4.18", "…", "----- RECIBO -----", "Cliente: estudiante", "1 x Sandwich de pavo: $3.25", "1 x Empanadilla: $1.75", "1 x Jugo de china: $2.00", "2 x Cafe con leche: $2.50", "Subtotal: $9.50", "Descuento: -$0.95", "IVU: $0.98", "Total: $9.53", "…", "----- RESUMEN DEL DIA -----", "Ordenes: 2", "Descuentos: $0.95", "IVU cobrado: $1.41", "Ventas: $13.71", "…", "Caja cerrada"], "E": [">> Version remodelada", "===== CAJA DE LA CAFETERIA =====", "----- RECIBO -----", "Cliente: visitante", "3 x Cafe con leche: $3.75", "Subtotal: $3.75", "IVU: $0.43", "Total: $4.18", "===== CAJA DE LA CAFETERIA =====", "----- RECIBO -----", "Cliente: estudiante", "1 x Sandwich de pavo: $3.25", "1 x Empanadilla: $1.75", "1 x Jugo de china: $2.00", "2 x Cafe con leche: $2.50", "Subtotal: $9.50", "Descuento: -$0.95", "IVU: $0.98", "Total: $9.53", "===== CAJA DE LA CAFETERIA =====", "----- RESUMEN DEL DIA -----", "Ordenes: 2", "Descuentos: $0.95", "IVU cobrado: $1.41", "Ventas: $13.71", "===== CAJA DE LA CAFETERIA =====", "Caja cerrada"]}};
-window.__CODE={"um_cuenta": "class Cuenta {\nprivate:\n    int numero;\n    string socio;\n    double saldo = 0.0;\n    static int totalCuentas;\npublic:\n    Cuenta(int n, const string& s);\n    bool depositar(double monto);\n    bool retirar(double monto);\n    double consultarSaldo() const;\n};", "um_veh": "class Vehiculo {\nprotected:\n    string tablilla;\n    int anio;\npublic:\n    Vehiculo(const string& t, int a);\n    virtual double peaje() const = 0;\n    string obtenerTablilla() const;\n    virtual ~Vehiculo() = default;\n};", "rl_her": "class Auto : public Vehiculo {\n    ...\n};\nclass Motocicleta : public Vehiculo {\n    ...\n};", "rl_com": "class Auto : public Vehiculo {\n    Motor motor;\n    ...\n};", "rl_agr": "class Garaje {\n    Vehiculo* lugares[10];\n    int ocupados = 0;\n    ...\n};", "rl_aso": "class Conductor {\n    ...\n    void conducir(Vehiculo& v) {\n        ...\n    }\n};", "rf0": "int main() {\n    cout << fixed << setprecision(1);\n    double a = 85, b = 92, c = 78;\n    double x = a * 0.3 + b * 0.3 + c * 0.4;\n    cout << \"Final: \" << x << endl;\n    if (x >= 70) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    double y = 65 * 0.3 + 70 * 0.3 + 60 * 0.4;\n    cout << \"Final: \" << y << endl;\n    if (y >= 70) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    return 0;\n}", "rf1": "int main() {\n    cout << fixed << setprecision(1);\n    double parcial1 = 85, parcial2 = 92, examen = 78;\n    double nota = parcial1 * 0.3 + parcial2 * 0.3\n                + examen * 0.4;\n    cout << \"Final: \" << nota << endl;\n    if (nota >= 70) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    double nota2 = 65 * 0.3 + 70 * 0.3 + 60 * 0.4;\n    cout << \"Final: \" << nota2 << endl;\n    if (nota2 >= 70) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    return 0;\n}", "rf2": "const double PESO_PARCIAL = 0.3;\nconst double PESO_FINAL   = 0.4;\nconst double MINIMO       = 70;\nint main() {\n    cout << fixed << setprecision(1);\n    double parcial1 = 85, parcial2 = 92, examen = 78;\n    double nota = parcial1 * PESO_PARCIAL + parcial2 * PESO_PARCIAL\n                + examen * PESO_FINAL;\n    cout << \"Final: \" << nota << endl;\n    if (nota >= MINIMO) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    double nota2 = 65 * PESO_PARCIAL + 70 * PESO_PARCIAL\n                 + 60 * PESO_FINAL;\n    cout << \"Final: \" << nota2 << endl;\n    if (nota2 >= MINIMO) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    return 0;\n}", "rf3": "const double PESO_PARCIAL = 0.3;\nconst double PESO_FINAL   = 0.4;\nconst double MINIMO       = 70;\ndouble notaFinal(double p1, double p2, double examen) {\n    return p1 * PESO_PARCIAL + p2 * PESO_PARCIAL\n         + examen * PESO_FINAL;\n}\nvoid informar(double nota) {\n    cout << \"Final: \" << nota << endl;\n    if (nota >= MINIMO) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n}\nint main() {\n    cout << fixed << setprecision(1);\n    informar(notaFinal(85, 92, 78));\n    informar(notaFinal(65, 70, 60));\n    return 0;\n}", "pc_o": "if (c[i] == 4) {\n    cout << ... << q[i] * 1.25 << endl;\n    s = s + q[i] * 1.25;\n}\n...\nif (t == 1) d = s * 0.10;\nif (t == 2) d = s * 0.15;\n...\ndouble i2 = (s - d) * 0.115;\n...\niv = iv + (s - d) * 0.115;\nif (t == 1) ds = ds + s * 0.10;\nif (t == 2) ds = ds + s * 0.15;", "pc_r": "const double IVU                  = 0.115;\nconst double DESCUENTO_ESTUDIANTE = 0.10;\nconst double DESCUENTO_EMPLEADO   = 0.15;\n...\nconst Articulo MENU[CANT_ARTICULOS] = {\n    ...\n    {\"Cafe con leche\",   1.25}\n};"};
+window.__CODE={"um_cuenta": "class Cuenta {\nprivate:\n    int numero;\n    string socio;\n    double saldo = 0.0;\n    static int totalCuentas;\npublic:\n    Cuenta(int n, const string& s);\n    bool depositar(double monto);\n    bool retirar(double monto);\n    double consultarSaldo() const;\n};", "um_veh": "class Vehiculo {\nprotected:\n    string tablilla;\n    int anio;\npublic:\n    Vehiculo(const string& t, int a);\n    virtual double peaje() const = 0;\n    string obtenerTablilla() const;\n    virtual ~Vehiculo() = default;\n};", "rl_her": "class Auto : public Vehiculo {\n    ...\n};\nclass Motocicleta : public Vehiculo {\n    ...\n};", "rl_com": "class Auto : public Vehiculo {\n    Motor motor;\n    ...\n};", "rl_agr": "class Garaje {\n    Vehiculo* lugares[10];\n    int ocupados = 0;\n    ...\n};", "rl_aso": "class Conductor {\n    string nombre;\n    Vehiculo* asignado = nullptr;\n    ...\n};", "rf0": "int main() {\n    cout << fixed << setprecision(1);\n    double a = 85, b = 92, c = 78;\n    double x = a * 0.3 + b * 0.3 + c * 0.4;\n    cout << \"Final: \" << x << endl;\n    if (x >= 70) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    double y = 65 * 0.3 + 70 * 0.3 + 60 * 0.4;\n    cout << \"Final: \" << y << endl;\n    if (y >= 70) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    return 0;\n}", "rf1": "int main() {\n    cout << fixed << setprecision(1);\n    double parcial1 = 85, parcial2 = 92, examen = 78;\n    double nota = parcial1 * 0.3 + parcial2 * 0.3\n                + examen * 0.4;\n    cout << \"Final: \" << nota << endl;\n    if (nota >= 70) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    double nota2 = 65 * 0.3 + 70 * 0.3 + 60 * 0.4;\n    cout << \"Final: \" << nota2 << endl;\n    if (nota2 >= 70) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    return 0;\n}", "rf2": "const double PESO_PARCIAL = 0.3;\nconst double PESO_FINAL   = 0.4;\nconst double MINIMO       = 70;\nint main() {\n    cout << fixed << setprecision(1);\n    double parcial1 = 85, parcial2 = 92, examen = 78;\n    double nota = parcial1 * PESO_PARCIAL + parcial2 * PESO_PARCIAL\n                + examen * PESO_FINAL;\n    cout << \"Final: \" << nota << endl;\n    if (nota >= MINIMO) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    double nota2 = 65 * PESO_PARCIAL + 70 * PESO_PARCIAL\n                 + 60 * PESO_FINAL;\n    cout << \"Final: \" << nota2 << endl;\n    if (nota2 >= MINIMO) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n    return 0;\n}", "rf3": "const double PESO_PARCIAL = 0.3;\nconst double PESO_FINAL   = 0.4;\nconst double MINIMO       = 70;\ndouble notaFinal(double p1, double p2, double examen) {\n    return p1 * PESO_PARCIAL + p2 * PESO_PARCIAL\n         + examen * PESO_FINAL;\n}\nvoid informar(double nota) {\n    cout << \"Final: \" << nota << endl;\n    if (nota >= MINIMO) cout << \"Aprobado\" << endl;\n    else cout << \"No aprobado\" << endl;\n}\nint main() {\n    cout << fixed << setprecision(1);\n    informar(notaFinal(85, 92, 78));\n    informar(notaFinal(65, 70, 60));\n    return 0;\n}", "pc_o": "if (c[i] == 4) {\n    cout << ... << q[i] * 1.25 << endl;\n    s = s + q[i] * 1.25;\n}\n...\nif (t == 1) d = s * 0.10;\nif (t == 2) d = s * 0.15;\n...\ndouble i2 = (s - d) * 0.115;\n...\niv = iv + (s - d) * 0.115;\nif (t == 1) ds = ds + s * 0.10;\nif (t == 2) ds = ds + s * 0.15;", "pc_r": "const double IVU                  = 0.115;\nconst double DESCUENTO_ESTUDIANTE = 0.10;\nconst double DESCUENTO_EMPLEADO   = 0.15;\n...\nconst Articulo MENU[CANT_ARTICULOS] = {\n    ...\n    {\"Cafe con leche\",   1.25}\n};"};
 var C=window.__CASES,ph='';
 Object.keys(C).forEach(function(k){var c=C[k];
   ph+='<div data-panel="'+k+'"'+(k==='c1'?'':' hidden')+'><p style="font-size:19px;font-weight:600">'+esc(c.titulo)+'. Escriba, una por línea:</p><div class="typein">'+c.input.map(esc).join('  ⏎  ')+'</div><p style="font-size:19px;font-weight:600;margin-top:8px">La versión original imprime, entre los menús:</p><div class="term">'+esc(c.out.join('\n'))+'</div></div>'});
@@ -1041,7 +1049,7 @@ each('#pc-b button',function(b){b.onclick=function(){pcShow(b.dataset.k)}});pcSh
 
 /* ---------- familias de patrones ---------- */
 var PF={sing:['CREACIÓN','Singleton','Hace falta exactamente un objeto de una clase, por ejemplo la configuración del programa.','Constructor privado y una función static que siempre devuelve el mismo objeto.','Fácil de usar desde cualquier parte… y por eso mismo, fácil de abusar: es una global.'],
- fact:['CREACIÓN','Factory','El programa no debe saber qué clase concreta crear (TarifaFija o TarifaPorHora).','Una función decide qué objeto crear y devuelve un puntero a la interfaz.','Las clases nuevas se añaden en un solo lugar: la fábrica.'],
+ fact:['CREACIÓN','Factory Method','El programa no debe saber qué clase concreta crear (TarifaFija o TarifaPorHora).','Una función decide qué objeto crear y devuelve un puntero a la interfaz.','Las clases nuevas se añaden en un solo lugar: la fábrica.'],
  adap:['ESTRUCTURA','Adapter','Una clase útil tiene una interfaz distinta a la que el programa espera.','Una clase intermedia traduce las llamadas, como un adaptador de enchufe.','Se reutiliza código viejo sin modificarlo.'],
  comp:['ESTRUCTURA','Composite','Hay partes que contienen otras partes: un menú con submenús, una carpeta con carpetas.','La parte y el grupo comparten la misma interfaz.','El programa trata igual un objeto que un grupo de objetos.'],
  strat:['CONDUCTA','Strategy','Un cálculo tiene varias versiones y se escoge una mientras el programa corre.','Cada versión es una clase con la misma interfaz; el objeto guarda un puntero a la que use.','Versiones nuevas sin tocar la clase que las usa.'],
@@ -1134,7 +1142,7 @@ each('#um-b button',function(b){b.onclick=function(){umShow(b.dataset.c)}});umSh
 var RL={her:['Herencia: Auto ES un Vehiculo','Línea con triángulo vacío que apunta al padre. Auto y Motocicleta heredan tablilla, anio y peaje().'],
  com:['Composición: Auto TIENE un Motor','Rombo lleno del lado del todo. El Motor es un miembro: nace y muere con su Auto.'],
  agr:['Agregación: el Garaje guarda vehículos','Rombo vacío del lado del todo. Guarda punteros: si se cierra el garaje, los vehículos siguen existiendo. 0..10 es la multiplicidad.'],
- aso:['Asociación: Conductor usa un Vehiculo','Una línea simple, con flecha si se navega en un solo sentido. El conductor recibe el vehículo; no es dueño de él.']};
+ aso:['Asociación: Conductor conoce su Vehiculo','Línea simple, con flecha hacia donde se navega: el conductor guarda un puntero a su vehículo asignado, pero no es su dueño. Si solo lo recibiera como parámetro sería una dependencia (línea discontinua).']};
 function rlShow(k){$('rl-svg').classList.add('dim');each('#rl-svg .rel',function(g){g.classList.toggle('on',g.dataset.r===k)});$('rl-h').textContent=RL[k][0];$('rl-msg').textContent=RL[k][1];setCode($('rl-code'),CODE['rl_'+k]);press('#rl-b button',function(b){return b.dataset.r===k})}
 each('#rl-b button',function(b){b.onclick=function(){rlShow(b.dataset.r)}});rlShow('her');
 

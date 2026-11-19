@@ -100,7 +100,7 @@ void programaOriginal() {
                 cout << "IVU: $" << i2 << endl;
                 cout << "Total: $" << s - d + i2 << endl;
                 n++;
-                v = v + s - d + i2;
+                v = v + (s - d + i2);
                 iv = iv + (s - d) * 0.115;
                 if (t == 1) ds = ds + s * 0.10;
                 if (t == 2) ds = ds + s * 0.15;

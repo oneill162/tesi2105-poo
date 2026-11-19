@@ -560,8 +560,8 @@ SELECT * FROM estudiantes WHERE apellido = 'O'Neill';</div>
   <div class="g2" style="grid-template-columns:700px minmax(0,1fr);margin-top:16px">
     <div data-a>
       <pre class="code c18">struct Consulta {
-    string orden;            // fija: la escribe el programador
-    vector&lt;string&gt; datos;    // aparte: lo que tecleo el usuario
+    string orden;            // fija: del programador
+    vector&lt;string&gt; datos;    // aparte: del usuario
 };
 Consulta porApellido(const string&amp; apellido) {
     return {"SELECT * FROM estudiantes WHERE apellido = ?",
@@ -1183,7 +1183,7 @@ Deck.steps.uaf=[
  {l:0,show:['ob'],set:{vu:'0x5020…10 →'},msg:'new reserva un Entrada en el heap y ultima guarda su dirección.'},
  {l:1,show:['pc'],set:{vc:'0x5020…10 →'},msg:'copia guarda la MISMA dirección: dos punteros, un solo objeto. Ninguno de los dos «sabe» del otro.'},
  {l:2,add:[['ob','libre'],['pu','colg'],['pc','colg']],set:{obs:'liberada: ya no es de nadie'},msg:'delete devuelve la memoria. Pero ultima y copia siguen guardando la dirección: quedaron colgando, como la llave de una puerta demolida.'},
- {l:3,show:['out'],out:'Sin ASan: 1676377772 (un número cualquiera)\nERROR: AddressSanitizer: heap-use-after-free\nREAD … colgante.cpp:13 · freed … colgante.cpp:12',msg:'Leer por copia es comportamiento indefinido: da basura, se cae o, peor, lee datos de otro objeto que ocupó ese lugar. ASan dice dónde se usó (línea 13) y dónde se liberó (línea 12).'}];
+ {l:3,show:['out'],out:'Sin ASan: 1676377772 (basura)\nASan: heap-use-after-free\nREAD … :13 · freed … :12',msg:'Leer por copia es comportamiento indefinido: da basura, se cae o, peor, lee datos de otro objeto que ocupó ese lugar. ASan dice dónde se usó (línea 13) y dónde se liberó (línea 12).'}];
 
 /* constructor */
 function pnDraw(){var v=$('pn-in').value,largo=v.length>=4&&v.length<=6,dig=/^[0-9]*$/.test(v)&&v.length>0;

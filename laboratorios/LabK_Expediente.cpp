@@ -90,6 +90,8 @@ Estudiante convertir(const vector<string>& c) {
 //  Para cada linea danada imprime, por ejemplo:
 //  Linea 4 rechazada [invalid_argument]: stod
 //  Linea 4 rechazada [out_of_range]: nota fuera de rango: 105
+//  Al terminar el ciclo imprime cuantas lineas tiene el archivo,
+//  contando el encabezado y las vacias:  Lineas leidas: 8
 vector<Estudiante> leerExpedientes(ifstream& f, int& rechazadas) {
     vector<Estudiante> lista;
     // TODO 5: a) lea con getline la linea 1 (el encabezado) y no la use.
@@ -99,7 +101,9 @@ vector<Estudiante> leerExpedientes(ifstream& f, int& rechazadas) {
     //         c) dentro de un try:  lista.push_back(convertir(separarCampos(linea)));
     //         d) un catch para invalid_argument y otro para out_of_range:
     //            imprima el mensaje de arriba con e.what() y sume 1 a rechazadas.
-    //         e) al salir del ciclo, cierre el archivo con f.close().
+    //         e) al salir del ciclo, imprima
+    //            cout << "Lineas leidas: " << numLinea << endl;
+    //            (numLinea es su contador de lineas) y cierre con f.close().
     return lista;
 }
 

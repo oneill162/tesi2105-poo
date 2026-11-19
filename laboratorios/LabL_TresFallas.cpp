@@ -12,7 +12,8 @@
 //  Complete los 6 TODO, en este orden:
 //    TODO 1 a 3: escriba en pruebasNuevas() una prueba que exponga cada
 //                falla (caso normal, caso limite y caso de error).
-//                Corra la opcion 1: sus pruebas deben salir [FALLO].
+//                Corra la opcion 1 (Caso 0 de la pagina): sus tres
+//                pruebas deben salir [FALLO] y decir "6 de 9".
 //    TODO 4 a 6: corrija cada falla y deje, encima de la linea que
 //                cambio, un comentario con este formato:
 //       // CORREGIDA (falla n): que estaba mal.

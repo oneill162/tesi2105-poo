@@ -6,6 +6,7 @@
 <title>Unidad M: Proyectos prácticos integradores · TESI 2105</title>
 <meta name="description" content="TESI 2105 Programación Orientada a Objetos. Unidad M: proyectos prácticos integradores, contados con el tablero del proyecto. Incluye la actividad de arranque del proyecto final.">
 <link rel="preload" href="assets/fonts/schibsted-grotesk-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="assets/deck.css">
 <style>
 /* Tema de la Unidad M: el tablero del proyecto. Un proyecto es un tablero verde con notas
@@ -263,7 +264,7 @@ a.dl:hover,button.dl:hover{background:var(--ink);color:#fff}
 .det dd{margin:0}
 .minimos{display:flex;flex-wrap:wrap;gap:8px}
 .minimos span{background:var(--ink);color:var(--ground);font:600 18px var(--sans);padding:6px 11px}
-.rub td,.rub th{padding:7px 14px!important;font-size:19px!important;line-height:1.3}
+.rub td,.rub th{padding:6px 14px!important;font-size:19px!important;line-height:1.3}
 .rub td:last-child,.rub th:last-child{text-align:right;width:90px}
 .rub tr.grupo td{background:var(--tone);font-weight:700}
 .rub td.sub2{padding-left:34px!important}
@@ -493,6 +494,36 @@ private:
 [LAP-01] Laptop: Equipo sala 1 | 8 GB | 3 dias | PRESTADO</div>
 </section>
 
+<section class="slide" data-title="unique_ptr: un dueño que borra">
+  <h2 class="mask"><span>¿Cómo se guardan Libros y Laptops juntos?</span></h2>
+  <p class="body sub" data-a style="max-width:1120px">La Biblioteca necesita una lista de materiales de distintos tipos. Compare tres maneras; las tres usan este <code>Material</code> abstracto, con un destructor que avisa.</p>
+  <div data-tabs="up1" data-a style="margin-top:16px">
+    <div class="tabs-row"><button data-tab="up1">1. vector&lt;Material&gt;</button><button data-tab="up2">2. new y delete</button><button data-tab="up3">3. unique_ptr</button></div>
+    <div style="display:grid;grid-template-columns:640px 1fr;gap:28px;margin-top:14px">
+      <div data-panel="up1"><pre class="code c18">vector&lt;Material&gt; lista;
+lista.push_back(Libro());</pre><div class="term t18 g12"><span class="e">error: invalid new-expression of abstract class type 'Material'</span></div></div>
+      <div data-panel="up1" class="lado"><p class="lead" style="font-size:27px">No sirve.</p><p class="g12">Un vector de <code>Material</code> guarda objetos <code>Material</code>, y <code>Material</code> es abstracta: no se puede crear. Hace falta guardar punteros.</p></div>
+      <div data-panel="up2" hidden><pre class="code c18">Material* p = new Libro();
+cout &lt;&lt; p-&gt;tipo() &lt;&lt; endl;
+delete p;    // sin esta linea, el libro nunca se borra
+cout &lt;&lt; "Fin de main" &lt;&lt; endl;</pre><div class="term t18 g12">Libro
+Se borra un material
+Fin de main</div></div>
+      <div data-panel="up2" hidden class="lado"><p class="lead" style="font-size:27px">Sirve, si nadie olvida el delete.</p><p class="g12">Sin el <code>delete</code>, AddressSanitizer reporta <code>detected memory leaks</code>. Con muchos materiales y excepciones de por medio, es fácil olvidarlo.</p></div>
+      <div data-panel="up3" hidden><pre class="code c18">vector&lt;unique_ptr&lt;Material&gt;&gt; lista;
+unique_ptr&lt;Material&gt; m = make_unique&lt;Libro&gt;();
+lista.push_back(move(m));
+cout &lt;&lt; lista[0]-&gt;tipo() &lt;&lt; endl;
+cout &lt;&lt; "m quedo vacio: " &lt;&lt; (m == nullptr) &lt;&lt; endl;
+cout &lt;&lt; "Fin de main" &lt;&lt; endl;</pre><div class="term t18 g12">Libro
+m quedo vacio: 1
+Fin de main
+Se borra un material</div></div>
+      <div data-panel="up3" hidden class="lado"><p><code>make_unique&lt;Libro&gt;()</code> crea el objeto; el <code>unique_ptr</code> es su único dueño y lo borra solo al terminar (de <code>&lt;memory&gt;</code>).</p><p><code>move(m)</code> entrega el dueño a la lista: <code>m</code> queda vacío. Así funciona la v2.</p></div>
+    </div>
+  </div>
+</section>
+
 <section class="slide" data-title="v2: composición y excepciones">
   <h2 class="mask"><span>v2: la Biblioteca y las excepciones</span></h2>
   <div data-step="v2" style="display:grid;grid-template-columns:700px 1fr;gap:24px;margin-top:16px">
@@ -646,9 +677,9 @@ collect2: error: ld returned 1 exit status</span></div></div>
 
 <section class="slide" data-title="El tablero del proyecto">
   <h2 class="mask"><span>El tablero del proyecto</span></h2>
-  <div class="kform g12" data-a><input id="k-tx" placeholder="Nueva tarea" maxlength="60" style="width:390px" aria-label="Nueva tarea"><input id="k-qn" placeholder="Quién" maxlength="16" style="width:150px" aria-label="Responsable"><button class="go" id="k-add">Añadir</button><button id="k-exp">Exportar como texto</button><button id="k-rst">Restablecer</button></div>
+  <div class="kform g12" data-a><input id="k-eq" placeholder="Equipo (opcional)" maxlength="30" style="width:190px" aria-label="Nombre del equipo"><input id="k-tx" placeholder="Nueva tarea" maxlength="60" style="width:270px" aria-label="Nueva tarea"><input id="k-qn" placeholder="Quién" maxlength="16" style="width:120px" aria-label="Responsable"><button class="go" id="k-add">Añadir</button><button id="k-exp">Exportar como texto</button><button id="k-rst">Restablecer</button></div>
   <div class="tablero kan" id="kan" data-a></div>
-  <p class="kmsg" style="margin-top:8px" id="k-msg" data-a aria-live="polite">Mueva las tarjetas con las flechas o arrastrándolas. El tablero se guarda en este navegador.</p>
+  <p class="kmsg" style="margin-top:8px" id="k-msg" data-a aria-live="polite">Mueva las tarjetas con las flechas o arrastrándolas. Se guarda en este navegador: en una computadora compartida, use Restablecer al terminar.</p>
 </section>
 
 <section class="slide field-hi" data-title="Discusión: repartir el trabajo">
@@ -677,7 +708,7 @@ collect2: error: ld returned 1 exit status</span></div></div>
     <div class="nota ro"><b>4. Pruebas</b>El plan de pruebas y la corrida con todas en OK.</div>
     <div class="nota"><b>5. Lecciones</b>Qué fue difícil y qué harían distinto.</div>
   </div>
-  <div class="row g20" data-a><span style="font-size:20px;font-weight:600">Tiempo total:</span><button data-t="10" class="tbtn">10 minutos</button><button data-t="15" class="tbtn">15 minutos</button><button data-t="20" class="tbtn">20 minutos</button><span style="font-size:19px;color:var(--soft)">más 5 de preguntas</span></div>
+  <p class="body g20" data-a style="font-size:21px"><b>10 minutos de presentación y 5 de preguntas.</b> Así se reparten los 10:</p>
   <div class="barra" id="barra" data-a></div>
   <p class="small g12" data-a style="font-size:19px">La demostración se lleva el 40 % del tiempo: es la prueba de que el proyecto existe. Cada miembro del equipo presenta una parte.</p>
 </section>
@@ -746,8 +777,8 @@ collect2: error: ld returned 1 exit status</span></div></div>
     <ol class="mision" data-a>
       <li><b class="nm">1</b><span>Formen equipos de 2 o 3 personas.</span></li>
       <li><b class="nm">2</b><span>Escojan un proyecto del catálogo, o propongan uno con los mismos requisitos mínimos.</span></li>
-      <li><b class="nm">3</b><span>Hoy en clase: el enunciado, el generador de clases y el tablero de esta unidad.</span></li>
-      <li><b class="nm">4</b><span>En la semana entregan por OrbundSIS el documento de arranque, en PDF.</span></li>
+      <li><b class="nm">3</b><span>Hoy: escriban el enunciado y marquen en papel sustantivos y verbos como en el generador; armen el tablero.</span></li>
+      <li><b class="nm">4</b><span>En la semana entregan por OrbundSIS el documento de arranque en PDF: copien la plantilla en Word o Docs, peguen el diagrama y expórtenlo a PDF. Cuenta 10 de los 20 puntos de «Diseño».</span></li>
     </ol>
     <div data-a>
       <h3 style="font-size:24px;margin-bottom:10px">El documento de arranque</h3>
@@ -755,7 +786,7 @@ collect2: error: ld returned 1 exit status</span></div></div>
         <div class="nota"><b>1. Enunciado:</b> 5 a 8 oraciones y la lista de requisitos.</div>
         <div class="nota ve"><b>2. Lista de clases:</b> atributos y métodos de cada una.</div>
         <div class="nota az"><b>3. Diagrama UML</b> de clases, con herencia y composición.</div>
-        <div class="nota ro"><b>4. Plan de pruebas:</b> al menos 6 pruebas, cada requisito cubierto.</div>
+        <div class="nota ro"><b>4. Plan de pruebas:</b> al menos 5 pruebas, cada requisito cubierto.</div>
         <div class="nota"><b>5. Reparto de tareas:</b> el tablero exportado, con responsables.</div>
       </div>
       <div class="row g16"><button class="dl" id="tpl">Descargar la plantilla</button><span style="font-size:20px;font-weight:600">Las fechas se anuncian en OrbundSIS.</span></div>
@@ -765,7 +796,7 @@ collect2: error: ld returned 1 exit status</span></div></div>
 
 <section class="slide" data-title="Catálogo de proyectos sugeridos">
   <h2 class="mask"><span>Ocho proyectos para escoger</span></h2>
-  <div class="row g12" data-a style="justify-content:space-between"><div class="filtro" id="cat-f"><button data-f="todos">Todos</button><button data-f="1">Básico</button><button data-f="2">Intermedio</button><button data-f="3">Avanzado</button></div><div class="minimos"><span>clases</span><span>encapsulación</span><span>constructores</span><span>herencia</span><span>archivos</span><span>excepciones</span><span>pruebas</span></div></div>
+  <div class="row g12" data-a style="justify-content:space-between"><div class="filtro" id="cat-f"><button data-f="todos">Todos</button><button data-f="1">Básico</button><button data-f="2">Intermedio</button><button data-f="3">Avanzado (reto)</button></div><div class="minimos"><span>clases</span><span>encapsulación</span><span>constructores</span><span>herencia</span><span>polimorfismo</span><span>composición</span><span>archivos</span><span>excepciones</span><span>pruebas</span></div></div>
   <div style="display:grid;grid-template-columns:540px 1fr;gap:30px;margin-top:20px">
     <div class="proys" id="cat-l" data-a></div>
     <div class="panel det" id="cat-d" data-a></div>
@@ -778,11 +809,11 @@ collect2: error: ld returned 1 exit status</span></div></div>
     <table class="t rub" data-a>
       <tr><th>Criterio</th><th>Puntos</th></tr>
       <tr class="grupo"><td>Diseño</td><td>20</td></tr>
-      <tr><td class="sub2">Requisitos, lista de clases y UML coherente con el código</td><td>10</td></tr>
-      <tr><td class="sub2">Herencia y composición bien escogidas</td><td>10</td></tr>
+      <tr><td class="sub2">Documento de arranque: 5 partes, 2 puntos c/u</td><td>10</td></tr>
+      <tr><td class="sub2">UML final coherente; herencia y composición</td><td>10</td></tr>
       <tr class="grupo"><td>Implementación</td><td>30</td></tr>
       <tr><td class="sub2">Todos los requisitos funcionan</td><td>10</td></tr>
-      <tr><td class="sub2">Clases, encapsulación, constructores y polimorfismo</td><td>10</td></tr>
+      <tr><td class="sub2">Clases, encapsulación, constructores, polimorfismo (se acepta Material* con destructor que libere)</td><td>10</td></tr>
       <tr><td class="sub2">Archivos y excepciones</td><td>10</td></tr>
       <tr class="grupo"><td>Pruebas: plan y programa de pruebas, todas en OK</td><td>15</td></tr>
       <tr class="grupo"><td>Código limpio: sin avisos, nombres, sangría, Git</td><td>15</td></tr>
@@ -1108,7 +1139,7 @@ var PS=[
  {t:'UML',q:'¿Cómo se relacionan las clases?',p:'Un diagrama de clases con herencia y composición.',b:'Libro y Laptop heredan de Material; la Biblioteca contiene materiales.',go:6},
  {t:'Plan de pruebas',q:'¿Cómo sabremos que funciona?',p:'Una tabla: prueba, qué se hace, qué se espera, qué requisito cubre.',b:'P1 a P7, escritas antes del código.',go:8},
  {t:'Incrementos',q:'¿Qué parte se programa primero?',p:'v1, v2, v3: cada versión compila sin avisos y corre.',b:'v1 herencia · v2 excepciones · v3 archivo.',go:9},
- {t:'Git',q:'¿Cómo se guarda cada versión que funciona?',p:'Un commit por hito, con un mensaje que diga qué se añadió.',b:'4 commits, del documento de arranque a v3.',go:14}];
+ {t:'Git',q:'¿Cómo se guarda cada versión que funciona?',p:'Un commit por hito, con un mensaje que diga qué se añadió.',b:'4 commits, del documento de arranque a v3.',go:15}];
 $('ps').innerHTML=PS.map(function(p,i){return '<button data-i="'+i+'"><i>'+(i+1)+'</i>'+p.t+'</button>'}).join('');
 function psShow(i){var p=PS[i];$('ps-q').textContent=p.q;$('ps-p').textContent=p.p;$('ps-b').textContent=p.b;each('#ps button',function(b){var j=+b.dataset.i;b.setAttribute('aria-pressed',j===i);if(j===i)b.classList.add('visto')})}
 each('#ps button',function(b){b.onclick=function(){psShow(+b.dataset.i)}});psShow(0);
@@ -1144,7 +1175,7 @@ function genMark(s){var j=+s.dataset.j,w=WS[j];
   MK[j]=gm==='v'?'m':gm;
   $('gen-msg').textContent=gm==='c'?'«'+w[0]+'» → clase '+w[2]+'.':gm==='a'?'«'+w[0]+'» → atributo '+w[3]+(w[4]==='?'?'.':' de '+w[4]+'.'):'«'+w[0]+'» → método '+w[3]+(w[4]==='?'?'.':' de '+w[4]+'.');
   genDraw()}
-each('#gen-t .w',function(s){s.onclick=function(){genMark(s)};s.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();genMark(s)}}});
+each('#gen-t .w',function(s){s.onclick=function(){genMark(s)};s.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();genMark(s)}}});
 function genMode(m){gm=m;pressed('#gen-m button',function(b){return b.dataset.m===m})}
 each('#gen-m button',function(b){b.onclick=function(){genMode(b.dataset.m)}});genMode('c');
 var NOTA='Sin marca: recinto y sistema están fuera del programa; estudiantes no hace falta en esta versión; archivo lo da C++ (ifstream); catálogo es el mismo vector materiales; programa y avisar le tocan a main.';
@@ -1209,19 +1240,20 @@ $('kan').addEventListener('dragover',function(e){var c=e.target.closest('.col');
 $('kan').addEventListener('drop',function(e){var c=e.target.closest('.col');if(!c||kdrag<0)return;e.preventDefault();KT[kdrag].c=+c.dataset.c;kmv=kdrag;$('k-msg').textContent='«'+KT[kdrag].t+'» pasa a '+COLS[KT[kdrag].c]+'.';kdrag=-1;kSave();kDraw()});
 $('kan').addEventListener('dragend',function(){kdrag=-1;each('#kan .col',function(x){x.classList.remove('sobre')})});
 function kAdd(){var t=$('k-tx').value.trim(),q=$('k-qn').value.trim();if(!t){$('k-msg').textContent='Escriba primero la tarea.';$('k-tx').focus();return}
-  KT.push({t:t,q:q,c:0});kmv=KT.length-1;$('k-tx').value='';$('k-qn').value='';kSave();kDraw();$('k-msg').textContent='Tarea añadida a «Por hacer».'}
+  KT.push({t:t,q:q,c:0});kmv=KT.length-1;$('k-tx').value='';$('k-qn').value='';kSave();kDraw();$('k-msg').textContent=q?'Tarea añadida a «Por hacer».':'Tarea añadida sin responsable: escriba en «Quién» la persona que la hará.'}
 $('k-add').onclick=kAdd;$('k-tx').addEventListener('keydown',function(e){if(e.key==='Enter')kAdd()});$('k-qn').addEventListener('keydown',function(e){if(e.key==='Enter')kAdd()});
-function kTexto(){var s='TABLERO DEL PROYECTO - TESI 2105\n';COLS.forEach(function(c,j){s+='\n'+c.toUpperCase()+'\n';var n=0;KT.forEach(function(t){if(t.c!==j)return;n++;s+=(j===2?'[x] ':'[ ] ')+t.t+(t.q?' ('+t.q+')':'')+'\n'});if(!n)s+='(vacio)\n'});return s}
+function kTexto(){var eq=$('k-eq').value.trim(),s='TABLERO DEL PROYECTO - TESI 2105\n'+(eq?'Equipo: '+eq+'\n':'');COLS.forEach(function(c,j){s+='\n'+c.toUpperCase()+'\n';var n=0;KT.forEach(function(t){if(t.c!==j)return;n++;s+=(j===2?'[x] ':'[ ] ')+t.t+(t.q?' ('+t.q+')':'')+'\n'});if(!n)s+='(vacio)\n'});return s}
 $('k-exp').onclick=function(){var s=kTexto();bajar('tablero_proyecto.txt',s);try{navigator.clipboard.writeText(s).catch(function(){})}catch(e){}$('k-msg').textContent='Se descargó tablero_proyecto.txt con '+KT.length+' tareas. Péguelo en el documento de arranque.'};
-$('k-rst').onclick=function(){KT=JSON.parse(JSON.stringify(K0));kSave();kDraw();$('k-msg').textContent='El tablero volvió a las tareas de ejemplo.'};
+$('k-rst').onclick=function(){KT=JSON.parse(JSON.stringify(K0));$('k-eq').value='';store(KEY+'-equipo','');kSave();kDraw();$('k-msg').textContent='El tablero volvió a las tareas de ejemplo.'};
 window.__kanbanTexto=kTexto;
+$('k-eq').value=store(KEY+'-equipo')||'';$('k-eq').addEventListener('input',function(){store(KEY+'-equipo',$('k-eq').value)});
 kDraw();
 
 /* presentación: tiempo */
 var PA=[['Problema',.1,'var(--am)'],['Diseño UML',.2,'var(--ve)'],['Demostración',.4,'var(--az)'],['Pruebas',.2,'var(--ro)'],['Lecciones',.1,'var(--am)']];
 function mmss(x){var s=Math.round(x*60);return Math.floor(s/60)+':'+('0'+s%60).slice(-2)}
-function tShow(t){$('barra').innerHTML=PA.map(function(p){return '<div style="flex-grow:'+(p[1]*t)+';flex-basis:0;background:'+p[2]+'">'+p[0]+'<span>'+mmss(p[1]*t)+'</span></div>'}).join('');pressed('.tbtn',function(b){return +b.dataset.t===t})}
-each('.tbtn',function(b){b.onclick=function(){tShow(+b.dataset.t)}});tShow(10);
+function tShow(t){$('barra').innerHTML=PA.map(function(p){return '<div style="flex-grow:'+(p[1]*t)+';flex-basis:0;background:'+p[2]+'">'+p[0]+'<span>'+mmss(p[1]*t)+'</span></div>'}).join('');}
+tShow(10);
 
 /* lista de cotejo de la demostración */
 var CK=['El programa compila sin avisos en la computadora del salón','Hay una copia del archivo de datos original','El guion de tres escenas está ensayado','La letra de la terminal se lee desde el fondo','Las capturas del plan B están a mano','Las notificaciones están apagadas','Cada miembro sabe qué parte presenta','Ensayaron con reloj y caben en el tiempo'];
@@ -1231,9 +1263,9 @@ function ckCount(){var n=document.querySelectorAll('#ck input:checked').length;$
 each('#ck input',function(x){x.onchange=function(){CS=[];each('#ck input',function(y){if(y.checked)CS.push(+y.dataset.i)});store(CKK,CS);ckCount()}});ckCount();
 
 /* catálogo de proyectos */
-var NV=['','Básico','Intermedio','Avanzado'];
+var NV=['','Básico','Intermedio','Avanzado (reto opcional)'];
 var CAT=[
- {n:'Turnos de la cafetería',d:1,c:'',e:'La cafetería da turnos, toma pedidos de comida y bebida y los entrega en orden.',cl:'Pedido (base), Comida, Bebida, Cafeteria',h:'Comida y Bebida calculan su precio y su tiempo de preparación',a:'menu.txt y las ventas del día',x:'producto agotado, turno que no existe',p:'el turno siguiente, el total de un pedido, el producto agotado'},
+ {n:'Turnos de la cafetería',d:1,c:'',e:'La cafetería da turnos, toma pedidos de comida y bebida y los entrega en orden.',cl:'Producto (base), Comida, Bebida, Pedido, Cafeteria',h:'cada producto calcula su precio y su tiempo',a:'menu.txt y las ventas del día',x:'producto agotado, turno que no existe',p:'el turno siguiente, el total de un pedido, el producto agotado'},
  {n:'Inventario del laboratorio',d:1,c:'ve',e:'El laboratorio de computadoras registra sus equipos, su ubicación y si están en servicio.',cl:'Equipo (base), Computadora, Impresora, Laboratorio',h:'cada equipo describe su mantenimiento',a:'inventario.txt',x:'etiqueta repetida, equipo fuera de servicio',p:'añadir, buscar por etiqueta, dar de baja'},
  {n:'Cooperativa del recinto 2.0',d:2,c:'az',e:'La cooperativa de la Unidad H crece: cuentas de ahorro y cuentas corrientes con sus movimientos.',cl:'Cuenta (base), CuentaAhorro, CuentaCorriente, Cooperativa',h:'cada cuenta calcula su interés o su cargo mensual',a:'cuentas.txt y movimientos.txt',x:'fondos insuficientes, cuenta que no existe',p:'depositar, retirar más del saldo, interés del mes'},
  {n:'Estacionamiento del recinto',d:2,c:'ro',e:'El estacionamiento registra entradas y salidas y cobra según el tipo de vehículo.',cl:'Vehiculo (base), Auto, Motocicleta, Estacionamiento',h:'cada vehículo calcula su tarifa por hora',a:'entradas.txt',x:'estacionamiento lleno, tablilla repetida',p:'tarifa de cada tipo, lleno, salida sin entrada'},
@@ -1242,15 +1274,15 @@ var CAT=[
  {n:'Agenda de citas de consejería',d:3,c:'az',e:'La oficina programa citas presenciales y virtuales sin choques de horario.',cl:'Cita (base), CitaPresencial, CitaVirtual, Consejero, Agenda',h:'cada cita valida su lugar o su enlace',a:'citas.txt',x:'choque de horario, hora fuera del horario',p:'programar, choque, cancelar, citas del día'},
  {n:'Liga intramural',d:3,c:'ro',e:'La liga registra equipos, jugadores y resultados, y calcula la tabla de posiciones.',cl:'Persona (base), Jugador, Arbitro, Equipo, Partido, Liga',h:'cada persona se describe a su manera; la tabla se ordena',a:'equipos.txt y resultados.txt',x:'equipo que no existe, resultado repetido',p:'puntos por partido, empates, orden de la tabla'}];
 var cf='todos',cs=0;
-function catDraw(){var h='';CAT.forEach(function(p,i){if(cf!=='todos'&&p.d!==+cf)return;h+='<button class="nota'+(p.c?' '+p.c:'')+'" data-i="'+i+'"><small>'+'●'.repeat(p.d)+'○'.repeat(3-p.d)+' '+NV[p.d]+'</small>'+p.n+'</button>'});$('cat-l').innerHTML=h;
+function catDraw(){var h='';CAT.forEach(function(p,i){if(cf!=='todos'&&p.d!==+cf)return;h+='<button class="nota'+(p.c?' '+p.c:'')+'" data-i="'+i+'"><small>'+'●'.repeat(p.d)+'○'.repeat(3-p.d)+' '+(p.d===3?'Avanzado: reto':NV[p.d])+'</small>'+p.n+'</button>'});$('cat-l').innerHTML=h;
   each('#cat-l button',function(b){b.onclick=function(){catShow(+b.dataset.i)}});
   if(cf!=='todos'&&CAT[cs].d!==+cf){for(var i=0;i<CAT.length;i++)if(CAT[i].d===+cf){cs=i;break}}catShow(cs);pressed('#cat-f button',function(b){return b.dataset.f===cf})}
-function catShow(i){cs=i;var p=CAT[i];$('cat-d').innerHTML='<span class="niv">'+NV[p.d]+'</span><h3>'+p.n+'</h3><p>'+p.e+'</p><dl><dt>Clases</dt><dd>'+p.cl+'</dd><dt>Polimorfismo</dt><dd>'+p.h+'</dd><dt>Archivo</dt><dd>'+p.a+'</dd><dt>Excepciones</dt><dd>'+p.x+'</dd><dt>Pruebas</dt><dd>'+p.p+'</dd></dl>';pressed('#cat-l button',function(b){return +b.dataset.i===i})}
+function catShow(i){cs=i;var p=CAT[i];$('cat-d').innerHTML='<span class="niv">'+NV[p.d]+'</span><h3>'+p.n+'</h3><p>'+p.e+(p.d===3?' <b>Reto opcional:</b> más clases y más trabajo; no es requisito.':'')+'</p><dl><dt>Clases</dt><dd>'+p.cl+'</dd><dt>Polimorfismo</dt><dd>'+p.h+'</dd><dt>Archivo</dt><dd>'+p.a+'</dd><dt>Excepciones</dt><dd>'+p.x+'</dd><dt>Pruebas</dt><dd>'+p.p+'</dd></dl>';pressed('#cat-l button',function(b){return +b.dataset.i===i})}
 each('#cat-f button',function(b){b.onclick=function(){cf=b.dataset.f;catDraw()}});catDraw();
 
 /* descargas */
 each('button.dl[data-f]',function(b){b.onclick=function(){bajar(b.dataset.f,$('f-'+b.dataset.f).textContent.replace(/^\n/,''))}});
-var TPL='DOCUMENTO DE ARRANQUE - PROYECTO FINAL\nTESI 2105 Programacion Orientada a Objetos\n\nEquipo: ______________________________\nIntegrantes: _________________________\nProyecto escogido: ___________________\n\n1. ENUNCIADO (5 a 8 oraciones)\n\n\n   Requisitos (uno por linea, que se puedan comprobar):\n   R1:\n   R2:\n   R3:\n\n2. LISTA DE CLASES (sustantivos y verbos)\n   Clase | Atributos | Metodos\n\n\n3. DIAGRAMA UML DE CLASES\n   (adjunte la imagen: herencia con triangulo, composicion con rombo)\n\n4. PLAN DE PRUEBAS (al menos 6)\n   Prueba | Que se hace | Resultado esperado | Requisito\n   P1:\n   P2:\n\n5. REPARTO DE TAREAS\n   (pegue aqui el tablero exportado: Por hacer / En proceso / Listo)\n';
+var TPL='DOCUMENTO DE ARRANQUE - PROYECTO FINAL\nTESI 2105 Programacion Orientada a Objetos\n\nEquipo: ______________________________\nIntegrantes: _________________________\nProyecto escogido: ___________________\n\n1. ENUNCIADO (5 a 8 oraciones)\n\n\n   Requisitos (uno por linea, que se puedan comprobar):\n   R1:\n   R2:\n   R3:\n\n2. LISTA DE CLASES (sustantivos y verbos)\n   Clase | Atributos | Metodos\n\n\n3. DIAGRAMA UML DE CLASES\n   (pegue la imagen del diagrama: herencia con triangulo, composicion con rombo)\n\n4. PLAN DE PRUEBAS (al menos 5)\n   Prueba | Que se hace | Resultado esperado | Requisito\n   P1:\n   P2:\n\n5. REPARTO DE TAREAS\n   (pegue aqui el tablero exportado: Por hacer / En proceso / Listo)\n';
 $('tpl').onclick=function(){bajar('Documento_arranque_TESI2105.txt',TPL)};
 
 Deck.start();

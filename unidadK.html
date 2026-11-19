@@ -6,6 +6,7 @@
 <title>Unidad K: Ficheros y excepciones · TESI 2105</title>
 <meta name="description" content="TESI 2105 Programación Orientada a Objetos. Unidad K: ficheros y excepciones en C++, contados con el archivero de la Oficina de Registro. Incluye el Laboratorio K.">
 <link rel="preload" href="assets/fonts/schibsted-grotesk-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="assets/deck.css">
 <style>
 /* Tema de la Unidad K: el archivero de la Oficina de Registro.
@@ -51,6 +52,8 @@ pre.code.gap8{margin-top:8px}pre.code.gap12{margin-top:12px}pre.code.gap16{margi
 .chwrap{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:56px;height:100%}
 .chwrap .left{display:flex;flex-direction:column;min-width:0}
 .chapter h1{font-size:88px}
+.chapter.ancho .chwrap{grid-template-columns:minmax(0,1fr) 360px}
+.chapter.ancho h1{font-size:58px;line-height:1}
 .chapter .ext{display:flex;flex-wrap:wrap;gap:12px 26px;margin-top:auto;font-size:22px;font-weight:700}
 .chapter .ext span{opacity:.5;white-space:nowrap}
 .chapter .ext span.on{opacity:1}
@@ -213,13 +216,16 @@ a.dl.dat:hover{background:var(--ink);color:#fff}
 .lineas .lnf:hover{background:var(--tone)}
 .lineas .lnf.lit{background:var(--hi)}
 .lineas .lnf b{display:inline-block;width:34px;color:#A49B78;font-weight:500}
+.tabs6{gap:8px}.tabs6 button{font-size:18px;padding:10px 12px}
 .cases [data-tab]{font:600 18px var(--sans);padding:9px 14px}
 .cases [data-tab].pass::after{content:" ✓";color:#2E9E5B}
 .cases .ct{font-size:23px;line-height:1.2}
-.cases .cc{display:grid;grid-template-columns:240px 1fr;gap:16px;margin-top:6px;align-items:start}
+.cases .cc{margin-top:4px}
+.cases .tec{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.cases .tec kbd.arch-k{margin-top:0}
 .cases .cl{font-size:18px;line-height:1.3;font-weight:600}
 .cases .cl.nota{font-weight:400;color:var(--soft);margin-top:6px}
-.cases [data-panel] .term{font-size:18px;line-height:1.22;white-space:pre-wrap;padding:10px 14px;margin-top:6px}
+.cases [data-panel] .term{font-size:17px;line-height:1.22;white-space:pre-wrap;padding:10px 14px;margin-top:6px}
 kbd.arch-k{display:block;font:600 18px/1.25 var(--mono);background:#fff;padding:6px 8px;border-bottom:3px solid var(--tone2);margin-top:6px;overflow-wrap:anywhere}
 textarea.paste{width:100%;height:118px;font:500 16px/1.4 var(--mono);padding:10px 12px;border:0;background:#fff;color:var(--ink);resize:none;display:block}
 .checks{list-style:none;margin:8px 0 0;padding:0;font-size:18px;line-height:1.4;max-height:222px;overflow:auto}
@@ -298,9 +304,9 @@ cout &lt;&lt; "En memoria: " &lt;&lt; enMemoria
 </section>
 
 <!-- TEMA 1 -->
-<section class="slide chapter" data-title="Tema 1: Operaciones de entrada/salida con ficheros" data-topic="1">
+<section class="slide chapter ancho" data-title="Tema 1: Operaciones de entrada/salida con ficheros" data-topic="1">
   <div class="chwrap"><div class="left">
-    <h1 class="mask"><span>Operaciones de entrada/salida con ficheros</span></h1>
+    <h1 class="mask"><span>Operaciones de entrada/<wbr>salida con ficheros</span></h1>
     <p class="lead" data-a style="margin-top:22px;max-width:620px">Abrir la gaveta, comprobar que abrió, sacar o guardar expedientes y cerrarla. Con <code>&lt;fstream&gt;</code>, un archivo se usa como <code>cin</code> y <code>cout</code>.</p>
     <div class="ext" data-a></div></div>
     <div data-a style="align-self:center">
@@ -549,7 +555,7 @@ while (!f.eof()) {
 
 <section class="slide" data-title="Con getline y la forma correcta">
   <h2 class="mask"><span>Que la lectura misma sea la condición</span></h2>
-  <p class="body sub" data-a style="font-size:22px;max-width:1120px"><code>eof()</code> se vuelve true solo después de que una lectura falla. Por eso se pregunta tarde. Con <code>getline</code> el síntoma cambia, pero el error es el mismo.</p>
+  <p class="body sub" data-a style="font-size:22px;max-width:1120px"><code>eof()</code> se vuelve true cuando una lectura intenta pasar del final, no antes. Por eso se pregunta tarde. Con <code>getline</code> el síntoma cambia, pero el error es el mismo.</p>
   <div data-tabs="ef1" data-a style="margin-top:16px">
     <div class="row"><button data-tab="ef1">Con getline</button><button data-tab="ef2">La forma correcta</button></div>
     <div class="g2" style="grid-template-columns:640px 1fr;margin-top:14px">
@@ -564,7 +570,7 @@ while (!f.eof()) {
       <div data-panel="ef1"><div class="term t18">1: [numero,nombre,nota1,nota2,nota3]
 2: [84231,Ana Rivera,90,85,92]
 3: [70112,Luis Ortiz,78,81,70]
-4: []</div><p class="msg gap12">La cuarta vuelta: <code>getline</code> falla, deja <code>linea</code> vacía y el programa procesa una línea que no existe. En el laboratorio sería un estudiante fantasma.</p></div>
+4: []</div><p class="msg gap12">La cuarta vuelta: <code>getline</code> falla, deja <code>linea</code> vacía y el programa procesa una línea que no existe. Si el programa no saltara las líneas vacías, sería un estudiante fantasma; en el laboratorio, <code>Lineas leidas</code> daría una de más.</p></div>
       <div data-panel="ef2" hidden><pre class="code c18">ifstream f("notas.txt");
 int numero;  string nombre;
 double n1, n2, n3;
@@ -578,7 +584,7 @@ while (f &gt;&gt; numero &gt;&gt; nombre &gt;&gt; n1 &gt;&gt; n2 &gt;&gt; n3) {
 2: 70112 Luis</div><p class="msg gap12">La lectura devuelve el flujo, y el flujo en un <code>while</code> vale false si la lectura falló. Se lee, y solo si salió bien se usa el dato.</p></div>
     </div>
   </div>
-  <p class="regla" data-a style="margin-top:16px"><code>while (getline(f, linea))</code> y <code>while (f &gt;&gt; x)</code>: así se lee un archivo completo.</p>
+  <p class="regla" data-a style="margin-top:8px"><code>while (getline(f, linea))</code> y <code>while (f &gt;&gt; x)</code>: así se lee un archivo completo.</p>
 </section>
 
 <section class="slide" data-title="Cerrar: close() y RAII">
@@ -618,14 +624,14 @@ Fuera del bloque: Recibido: 70112</div>
 </section>
 
 <!-- TEMA 2 -->
-<section class="slide chapter" data-title="Tema 2: Manejo de excepciones (try-catch)" data-topic="2">
+<section class="slide chapter ancho" data-title="Tema 2: Manejo de excepciones (try-catch)" data-topic="2">
   <div class="chwrap"><div class="left">
     <h1 class="mask"><span>Manejo de excepciones (try-catch)</span></h1>
     <p class="lead" data-a style="margin-top:22px;max-width:620px">Cuando un expediente no aparece, quien lo busca no lo resuelve: lo lleva a la ventanilla de quien sabe qué hacer.</p>
     <div class="ext" data-a></div></div>
     <div data-a style="align-self:center">
       <div class="exped" style="font-size:20px">expediente 90517 <small>NO APARECE</small></div>
-      <pre class="code c19" style="margin-top:14px">try {
+      <pre class="code c18" style="margin-top:14px">try {
     buscar(90517);
 } catch (const exception&amp; e) {
     cout &lt;&lt; e.what();
@@ -680,7 +686,7 @@ int main() {
     </div>
     <div data-a>
       <div class="arbol" id="se-a"><div data-n="exception">exception</div><div class="lv1" data-n="logic_error">logic_error</div><div class="lv2" data-n="invalid_argument">invalid_argument</div><div class="lv2" data-n="out_of_range">out_of_range</div><div class="lv1" data-n="runtime_error">runtime_error</div><div class="lv2 dim" data-n="propia">ArchivoNoEncontrado (la suya)</div></div>
-      <p class="small gap8" style="font-size:18px">Todas heredan de <code>exception</code> (<code>&lt;stdexcept&gt;</code>). Por eso <code>catch (const exception&amp; e)</code> las atrapa todas.</p>
+      <p class="small gap8" style="font-size:18px">Todas heredan de <code>exception</code>, que está en <code>&lt;exception&gt;</code> (<code>&lt;stdexcept&gt;</code> la incluye). Por eso <code>catch (const exception&amp; e)</code> las atrapa todas.</p>
     </div>
   </div>
 </section>
@@ -798,7 +804,7 @@ try {
 <section class="slide" data-title="Errores típicos con archivos y excepciones">
   <h2 class="mask"><span>Seis errores y lo que dice g++</span></h2>
   <div data-tabs="r1" data-a style="margin-top:20px">
-    <div class="row"><button data-tab="r1">Falta &lt;fstream&gt;</button><button data-tab="r2">Escribir en un ifstream</button><button data-tab="r3">catch por valor</button><button data-tab="r4">La base sin mensaje</button><button data-tab="r5">Nadie la atrapa</button><button data-tab="r6">noexcept que lanza</button></div>
+    <div class="row tabs6"><button data-tab="r1">Falta &lt;fstream&gt;</button><button data-tab="r2">Escribir en un ifstream</button><button data-tab="r3">catch por valor</button><button data-tab="r4">La base sin mensaje</button><button data-tab="r5">Nadie la atrapa</button><button data-tab="r6">noexcept</button></div>
     <div class="g2" style="grid-template-columns:600px 1fr;margin-top:20px">
       <div data-panel="r1"><pre class="code c19">#include &lt;iostream&gt;
 using namespace std;
@@ -835,10 +841,11 @@ cout &lt;&lt; n &lt;&lt; endl;</pre><div class="term t18 gap8"><span class="e">t
       <div data-panel="r6" hidden><pre class="code c19">double promedio(double suma, int n) noexcept {
     if (n == 0) throw runtime_error("sin notas");
     return suma / n;
-}</pre><div class="term t18 gap8"><span class="w">warning: 'throw' will always call 'terminate' [-Wterminate]</span></div><p class="cap" style="margin-top:10px">Y si se llama con <code>promedio(0, 0)</code>:</p><div class="term t18"><span class="e">terminate called after throwing an instance of 'std::runtime_error'
+}</pre><div class="term t18 gap8"><span class="w">warning: 'throw' will always call 'terminate'
+[-Wterminate]</span></div><p class="cap" style="margin-top:10px">Y si se llama con <code>promedio(0, 0)</code>:</p><div class="term t18"><span class="e">terminate called after throwing an instance of 'std::runtime_error'
   what():  sin notas</span>
 <span class="p">Aborted</span></div></div>
-      <div data-panel="r6" hidden><p class="lead" style="font-size:28px"><code>noexcept</code> promete que la función no lanza.</p><p class="body sub" style="font-size:22px">Si lanza de todos modos, no hay <code>catch</code> que valga: el programa termina. Póngalo solo donde de verdad nada puede fallar, como en un destructor.</p></div>
+      <div data-panel="r6" hidden><p class="lead" style="font-size:28px"><code>noexcept</code> promete que la función no lanza.</p><p class="body sub" style="font-size:22px">Si lanza de todos modos, no hay <code>catch</code> que valga: el programa termina. Póngalo solo donde de verdad nada puede fallar, como en una función que solo suma o copia números.</p></div>
     </div>
   </div>
 </section>
@@ -882,7 +889,7 @@ cout &lt;&lt; n &lt;&lt; endl;</pre><div class="term t18 gap8"><span class="e">t
     <li><b class="nm">2</b><span><code>abrirDatos</code>: abre, comprueba <code>is_open()</code> y, si falla, lanza la excepción propia.</span></li>
     <li><b class="nm">3</b><span><code>separarCampos</code>: <code>stringstream</code> y <code>getline</code> con <code>','</code>.</span></li>
     <li><b class="nm">4</b><span><code>convertir</code>: revisa que haya 5 campos y convierte con <code>stoi</code> y <code>convertirNota</code>.</span></li>
-    <li><b class="nm">5</b><span><code>leerExpedientes</code>: un <code>try</code> por línea, dos <code>catch</code>, y <code>close()</code>.</span></li>
+    <li><b class="nm">5</b><span><code>leerExpedientes</code>: un <code>try</code> por línea, dos <code>catch</code>, <code>Lineas leidas</code> y <code>close()</code>.</span></li>
     <li><b class="nm">6</b><span><code>escribirInforme</code>: crea <code>informe.txt</code> con un <code>ofstream</code> y lo cierra.</span></li>
   </ol>
   <div class="row" data-a style="margin-top:14px;gap:8px">
@@ -912,7 +919,7 @@ cout &lt;&lt; n &lt;&lt; endl;</pre><div class="term t18 gap8"><span class="e">t
 
 <section class="slide" data-title="Laboratorio K: las pruebas">
   <h2 class="mask"><span>Cuatro pruebas del programa</span></h2>
-  <div style="display:grid;grid-template-columns:720px 1fr;gap:26px;margin-top:16px">
+  <div style="display:grid;grid-template-columns:800px 1fr;gap:24px;margin-top:14px">
     <div class="cases" data-tabs="c1" data-a>
       <div class="row"><button data-tab="c1" id="tb-c1">Caso 1</button><button data-tab="c2" id="tb-c2">Caso 2</button><button data-tab="c3" id="tb-c3">Caso 3</button><button data-tab="c4" id="tb-c4">Caso 4</button></div>
       <div id="cases-panels" style="margin-top:12px"></div>
@@ -945,7 +952,7 @@ cout &lt;&lt; n &lt;&lt; endl;</pre><div class="term t18 gap8"><span class="e">t
       <h3 style="font-size:28px">Qué se entrega</h3>
       <p class="body" style="margin-top:8px;font-size:21px">Por OrbundSIS, en un .zip llamado <code>Apellido_Nombre_TESI2105_LabK.zip</code>:</p>
       <ul style="font-size:21px;line-height:1.45;margin:10px 0 0;padding-left:26px"><li>El archivo <code>LabK_Expediente.cpp</code> completo.</li><li>El <code>informe.txt</code> que escribió su programa con el Caso 1.</li><li>Cuatro capturas de la terminal: una por prueba.</li></ul>
-      <p class="body" style="margin-top:12px;font-size:21px">La fecha de entrega se anuncia en OrbundSIS.</p>
+      <p class="body" style="margin-top:10px;font-size:20px">Corra otra vez el Caso 1 justo antes de entregar <code>informe.txt</code>. La fecha de entrega se anuncia en OrbundSIS.</p>
       <div class="tone" style="margin-top:16px;padding:16px 22px"><b style="font-size:23px">Reto (+10)</b><p style="font-size:20px;margin-top:6px">Al final, pregunte si desea añadir un estudiante. Lea número, nombre y tres notas, valídelos con <code>convertir</code> dentro de un <code>try</code> y, solo si pasan, añádalos al archivo de datos con <code>ios::app</code>. Aquí sí puede modificar <code>main</code>.</p></div>
     </div>
   </div>
@@ -975,21 +982,21 @@ function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
 var B='===== EXPEDIENTE ACADEMICO - OFICINA DE REGISTRO =====';
 window.__CASES={
  c1:{titulo:'Archivo principal',teclee:'LabK_estudiantes.txt',
-  out:'Linea 4 rechazada [invalid_argument]: stod\nLinea 7 rechazada [invalid_argument]: se esperaban 5 campos y hay 4\n----- Resumen -----\n84231 Ana Rivera: 89.00\n70112 Luis Ortiz: 76.33\n65020 Yadiel Cruz: 65.67\n88140 Sofia Medina: 97.67\n91002 Camila Vega: 84.33\nEstudiantes leidos: 5\nLineas rechazadas: 2\nPromedio del grupo: 82.60\nMejor promedio: 88140 Sofia Medina (97.67)\nInforme guardado en informe.txt (5 estudiantes)\nFin del programa',
-  chk:[B,'Linea 4 rechazada [invalid_argument]: stod','Linea 7 rechazada [invalid_argument]: se esperaban 5 campos y hay 4','----- Resumen -----','84231 Ana Rivera: 89.00','70112 Luis Ortiz: 76.33','65020 Yadiel Cruz: 65.67','88140 Sofia Medina: 97.67','91002 Camila Vega: 84.33','Estudiantes leidos: 5','Lineas rechazadas: 2','Promedio del grupo: 82.60','Mejor promedio: 88140 Sofia Medina (97.67)','Informe guardado en informe.txt (5 estudiantes)','Fin del programa']},
+  out:'Linea 4 rechazada [invalid_argument]: stod\nLinea 7 rechazada [invalid_argument]: se esperaban 5 campos y hay 4\nLineas leidas: 8\n----- Resumen -----\n84231 Ana Rivera: 89.00\n70112 Luis Ortiz: 76.33\n65020 Yadiel Cruz: 65.67\n88140 Sofia Medina: 97.67\n91002 Camila Vega: 84.33\nEstudiantes leidos: 5\nLineas rechazadas: 2\nPromedio del grupo: 82.60\nMejor promedio: 88140 Sofia Medina (97.67)\nInforme guardado en informe.txt (5 estudiantes)\nFin del programa',
+  chk:[B,'Linea 4 rechazada [invalid_argument]: stod','Linea 7 rechazada [invalid_argument]: se esperaban 5 campos y hay 4','Lineas leidas: 8','----- Resumen -----','84231 Ana Rivera: 89.00','70112 Luis Ortiz: 76.33','65020 Yadiel Cruz: 65.67','88140 Sofia Medina: 97.67','91002 Camila Vega: 84.33','Estudiantes leidos: 5','Lineas rechazadas: 2','Promedio del grupo: 82.60','Mejor promedio: 88140 Sofia Medina (97.67)','Informe guardado en informe.txt (5 estudiantes)','Fin del programa']},
  c2:{titulo:'Números fuera de rango',teclee:'LabK_seccion2.txt',
-  out:'Linea 3 rechazada [out_of_range]: stoi\nLinea 4 rechazada [out_of_range]: nota fuera de rango: 105\n----- Resumen -----\n50211 Pedro Santiago: 88.33\n62930 Jose Rosado: 76.00\nEstudiantes leidos: 2\nLineas rechazadas: 2\nPromedio del grupo: 82.17\nMejor promedio: 50211 Pedro Santiago (88.33)\nInforme guardado en informe.txt (2 estudiantes)\nFin del programa',
-  chk:[B,'Linea 3 rechazada [out_of_range]: stoi','Linea 4 rechazada [out_of_range]: nota fuera de rango: 105','----- Resumen -----','50211 Pedro Santiago: 88.33','62930 Jose Rosado: 76.00','Estudiantes leidos: 2','Lineas rechazadas: 2','Promedio del grupo: 82.17','Mejor promedio: 50211 Pedro Santiago (88.33)','Informe guardado en informe.txt (2 estudiantes)','Fin del programa']},
+  out:'Linea 3 rechazada [out_of_range]: stoi\nLinea 4 rechazada [out_of_range]: nota fuera de rango: 105\nLineas leidas: 5\n----- Resumen -----\n50211 Pedro Santiago: 88.33\n62930 Jose Rosado: 76.00\nEstudiantes leidos: 2\nLineas rechazadas: 2\nPromedio del grupo: 82.17\nMejor promedio: 50211 Pedro Santiago (88.33)\nInforme guardado en informe.txt (2 estudiantes)\nFin del programa',
+  chk:[B,'Linea 3 rechazada [out_of_range]: stoi','Linea 4 rechazada [out_of_range]: nota fuera de rango: 105','Lineas leidas: 5','----- Resumen -----','50211 Pedro Santiago: 88.33','62930 Jose Rosado: 76.00','Estudiantes leidos: 2','Lineas rechazadas: 2','Promedio del grupo: 82.17','Mejor promedio: 50211 Pedro Santiago (88.33)','Informe guardado en informe.txt (2 estudiantes)','Fin del programa']},
  c3:{titulo:'Línea vacía, campos de más y una nota negativa',teclee:'LabK_seccion3.txt',
-  out:'Linea 4 rechazada [invalid_argument]: stoi\nLinea 5 rechazada [invalid_argument]: se esperaban 5 campos y hay 6\nLinea 6 rechazada [out_of_range]: nota fuera de rango: -5\n----- Resumen -----\n40125 Gabriel Ortiz: 85.00\n40550 Ivan Morales: 97.67\nEstudiantes leidos: 2\nLineas rechazadas: 3\nPromedio del grupo: 91.33\nMejor promedio: 40550 Ivan Morales (97.67)\nInforme guardado en informe.txt (2 estudiantes)\nFin del programa',
-  chk:[B,'Linea 4 rechazada [invalid_argument]: stoi','Linea 5 rechazada [invalid_argument]: se esperaban 5 campos y hay 6','Linea 6 rechazada [out_of_range]: nota fuera de rango: -5','----- Resumen -----','40125 Gabriel Ortiz: 85.00','40550 Ivan Morales: 97.67','Estudiantes leidos: 2','Lineas rechazadas: 3','Promedio del grupo: 91.33','Mejor promedio: 40550 Ivan Morales (97.67)','Informe guardado en informe.txt (2 estudiantes)','Fin del programa']},
+  out:'Linea 4 rechazada [invalid_argument]: stoi\nLinea 5 rechazada [invalid_argument]: se esperaban 5 campos y hay 6\nLinea 6 rechazada [out_of_range]: nota fuera de rango: -5\nLineas leidas: 7\n----- Resumen -----\n40125 Gabriel Ortiz: 85.00\n40550 Ivan Morales: 97.67\nEstudiantes leidos: 2\nLineas rechazadas: 3\nPromedio del grupo: 91.33\nMejor promedio: 40550 Ivan Morales (97.67)\nInforme guardado en informe.txt (2 estudiantes)\nFin del programa',
+  chk:[B,'Linea 4 rechazada [invalid_argument]: stoi','Linea 5 rechazada [invalid_argument]: se esperaban 5 campos y hay 6','Linea 6 rechazada [out_of_range]: nota fuera de rango: -5','Lineas leidas: 7','----- Resumen -----','40125 Gabriel Ortiz: 85.00','40550 Ivan Morales: 97.67','Estudiantes leidos: 2','Lineas rechazadas: 3','Promedio del grupo: 91.33','Mejor promedio: 40550 Ivan Morales (97.67)','Informe guardado en informe.txt (2 estudiantes)','Fin del programa']},
  c4:{titulo:'El archivo no existe',teclee:'LabK_seccion9.txt',
   out:'Error: no se encontro el archivo LabK_seccion9.txt\nFin del programa',
   chk:[B,'Error: no se encontro el archivo LabK_seccion9.txt','Fin del programa']}
 };
 var C=window.__CASES,ph='';
 Object.keys(C).forEach(function(k){
- ph+='<div data-panel="'+k+'"'+(k==='c1'?'':' hidden')+'><h3 class="ct">Caso '+k.slice(1)+': '+esc(C[k].titulo)+'</h3><div class="cc"><div><p class="cl">Cuando pida el archivo, teclee:</p><kbd class="arch-k">'+esc(C[k].teclee)+'</kbd><p class="cl nota">y Enter.'+(k==='c4'?' Ese archivo no existe a propósito.':'')+'</p></div><div><p class="cl">Debe ver, después del encabezado:</p><div class="term">'+esc(C[k].out)+'</div></div></div></div>'});
+ ph+='<div data-panel="'+k+'"'+(k==='c1'?'':' hidden')+'><h3 class="ct">Caso '+k.slice(1)+': '+esc(C[k].titulo)+'</h3><div class="cc"><div class="tec"><p class="cl">Cuando pida el archivo, teclee</p><kbd class="arch-k">'+esc(C[k].teclee)+'</kbd><p class="cl">y Enter.'+(k==='c4'?' Ese archivo no existe a propósito.':'')+'</p></div><p class="cl" style="margin-top:6px">Debe ver, después del encabezado:</p><div class="term">'+esc(C[k].out)+'</div></div></div>'});
 document.getElementById('cases-panels').innerHTML=ph;
 
 /* Archivos de datos del laboratorio (los mismos de laboratorios/) */
@@ -1050,7 +1057,7 @@ Deck.steps.esc=[
  {l:0,add:[['gav','abierta']],set:{gest:'abierta',vac:'(vacío)'},msg:'Abre la gaveta: crea registro.txt. Si ya existía, lo vacía.'},
  {l:1,msg:'is_open() es true: la gaveta abrió. No entra al if.'},
  {l:5,show:['l1'],hide:['vac'],flash:['l1'],msg:'f << escribe igual que cout <<, pero en el archivo.'},
- {l:6,show:['l2'],flash:['l2'],msg:'endl añade el salto de línea al final de cada expediente.'},
+ {l:6,show:['l2'],flash:['l2'],msg:'endl añade el salto de línea y vacía el búfer.'},
  {l:7,rem:[['gav','abierta']],set:{gest:'cerrada'},show:['sello'],msg:'close() pasa todo al disco y cierra la gaveta.'},
  {l:8,out:'Se guardaron 2 expedientes',msg:'En la pantalla sale solo lo que va a cout. Lo demás quedó en registro.txt.'}];
 

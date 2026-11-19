@@ -6,6 +6,7 @@
 <title>Unidad I: Herencia y polimorfismo · TESI 2105</title>
 <meta name="description" content="TESI 2105 Programación Orientada a Objetos. Unidad I: herencia y polimorfismo en C++, contados con la estación de peaje de la autopista. Incluye el Laboratorio I.">
 <link rel="preload" href="assets/fonts/schibsted-grotesk-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="assets/deck.css">
 <style>
 /* Tema de la Unidad I: la estación de peaje de la autopista.
@@ -50,7 +51,7 @@ pre.code.gap8{margin-top:8px}pre.code.gap12{margin-top:12px}pre.code.gap16{margi
 .chwrap{display:grid;grid-template-columns:minmax(0,1fr) 480px;gap:44px;height:100%}
 .chwrap .left{display:flex;flex-direction:column;min-width:0}
 .chapter h1{font-size:84px}
-.chapter h1.largo{font-size:70px;line-height:1}
+.chapter h1.largo{font-size:60px;line-height:1}
 .chapter .ext{display:flex;flex-wrap:wrap;gap:12px 15px;margin-top:auto;font-size:18px;font-weight:700}
 .chapter .ext span{opacity:.5;white-space:nowrap}
 .chapter .ext span.on{opacity:1}
@@ -191,10 +192,10 @@ a.dl:hover{background:var(--ink)}
 .cases [data-tab]{font:600 18px var(--sans);padding:9px 14px}
 .cases [data-tab].pass::after{content:" ✓";color:#2E9E5B}
 .cases .ct{font-size:24px;line-height:1.2}
-.cases .cc{display:grid;grid-template-columns:250px 1fr;gap:16px;margin-top:10px;align-items:start}
+.cases .cc{display:grid;grid-template-columns:200px 1fr;gap:16px;margin-top:10px;align-items:start}
 .cases .cl{font-size:18px;line-height:1.3;font-weight:600}
 .cases .cl.nota{font-weight:400;color:var(--soft);margin-top:6px}
-.cases [data-panel] .term{font-size:17px;line-height:1.35;white-space:pre-wrap;padding:10px 14px;margin-top:6px}
+.cases [data-panel] .term{font-size:18px;line-height:1.35;white-space:pre-wrap;padding:10px 14px;margin-top:6px}
 .typein{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:5px}
 .typein li{display:flex;gap:5px;flex-wrap:wrap;background:var(--tone);padding:5px 8px}
 .typein kbd{font:600 18px/1.25 var(--mono);background:#fff;padding:2px 7px;border-bottom:3px solid var(--tone2)}
@@ -458,7 +459,7 @@ cout &lt;&lt; "Se fue" &lt;&lt; endl;</pre>
 </section>
 
 <section class="slide field-hi" data-title="Discusión: ¿clase nueva o un bool?">
-  <p class="q mask"><span>¿La guagua escolar debe ser otra clase derivada de Guagua, o basta un <code>bool escolar</code>?</span></p>
+  <p class="q mask"><span>¿Guagua escolar: otra clase derivada o un <code>bool escolar</code>?</span></p>
   <p class="body gap" data-a style="max-width:1000px;font-size:26px">Piensen en qué cambia entre las dos: ¿datos nuevos, conducta nueva, o solo un número?</p>
   <div class="cols discrow" style="grid-template-columns:auto 1fr;gap:56px;align-items:end"><div class="timer" data-timer="120" data-a></div>
   <div class="prop2" data-a data-rv-box><div><b><code>class GuaguaEscolar : public Guagua</code></b><span>otra clase, con su propia tarifa()</span></div><div class="ok"><b><code>bool escolar</code></b><span>un dato que cambia la tarifa</span><button data-rv="Ocultar" class="pbtn">Respuesta</button></div>
@@ -518,6 +519,7 @@ int main() {
       <pre class="code c18" id="fp-code" style="line-height:1.42">vector&lt;Vehiculo*&gt; fila = {
     new Vehiculo("ABC-123"), new Camion("TRK-450", 3),
     new Motora("MTR-077"),   new Camion("CRG-901", 5) };
+cout &lt;&lt; fixed &lt;&lt; setprecision(2);
 double total = 0;
 for (Vehiculo* v : fila) {     // no pregunta el tipo
     cout &lt;&lt; v-&gt;obtenerTablilla() &lt;&lt; "  $"
@@ -773,7 +775,7 @@ cout &lt;&lt; a.tablilla &lt;&lt; endl;    // en main</pre><div class="term t18 
 
 <section class="slide" data-title="Laboratorio I: las pruebas">
   <h2 class="mask"><span>Cinco pruebas del programa</span></h2>
-  <div style="display:grid;grid-template-columns:720px 1fr;gap:26px;margin-top:16px">
+  <div style="display:grid;grid-template-columns:760px 1fr;gap:24px;margin-top:16px">
     <div class="cases" data-tabs="c1" data-a>
       <div class="row"><button data-tab="c1" id="tb-c1">Caso 1</button><button data-tab="c2" id="tb-c2">Caso 2</button><button data-tab="c3" id="tb-c3">Caso 3</button><button data-tab="c4" id="tb-c4">Caso 4</button><button data-tab="c5" id="tb-c5">Caso 5</button></div>
       <div id="cases-panels" style="margin-top:12px"></div>
@@ -808,7 +810,7 @@ cout &lt;&lt; a.tablilla &lt;&lt; endl;    // en main</pre><div class="term t18 
       <ul style="font-size:21px;line-height:1.45;margin:10px 0 0;padding-left:26px"><li>El archivo <code>LabI_Peaje.cpp</code> completo.</li><li>Cinco capturas de la terminal: una por prueba.</li></ul>
       <p class="body" style="margin-top:12px;font-size:21px">La fecha de entrega se anuncia en OrbundSIS.</p>
       <p class="body" style="margin-top:10px;font-size:20px">Las pruebas confirman que el programa funciona; la nota de cada parte sale de leer su código.</p>
-      <div class="tone" style="margin-top:16px;padding:16px 22px"><b style="font-size:23px">Reto (+10)</b><p style="font-size:20px;margin-top:6px">Añada otra clase derivada, por ejemplo <code>Ambulancia</code>, que no paga ($0.00), y el tipo 5 en <code>llegaVehiculo</code>. Sin tocar <code>mostrar</code>, <code>cobrarFila</code> ni <code>vaciarFila</code>: si hay que cambiarlas, no es polimorfismo.</p></div>
+      <div class="tone" style="margin-top:10px;padding:12px 20px"><b style="font-size:23px">Reto (+10)</b><p style="font-size:20px;margin-top:4px">Añada otra clase derivada, por ejemplo <code>Ambulancia</code>, que no paga ($0.00), y el tipo 5 en <code>llegaVehiculo</code>. Sin tocar <code>mostrar</code>, <code>cobrarFila</code> ni <code>vaciarFila</code>: si hay que cambiarlas, no es polimorfismo. (En el reto sí se permite cambiar <code>llegaVehiculo</code>: la condición <code>t &gt; 4</code> y el mensaje).</p></div>
     </div>
   </div>
 </section>
@@ -1050,14 +1052,14 @@ function fpFila(){ $('fp-fila').innerHTML=FP.map(function(f,i){return '<div clas
 function fpReset(){FPi=0;FPt=0;FPbusy=false;FPP.tok++;$('fp-out').textContent='';$('fp-tot').textContent='$0.00';FPP.coloca('auto',0,-300);FPP.arm.classList.remove('up');FPP.win.classList.remove('on');
   pantalla($('fp-pan'),'Fila de 4 · Vehiculo*','$0.00','');lineas($('fp-code'),[0,1,2]);$('fp-go').disabled=false;$('fp-go').textContent='Cobrar el siguiente';fpFila()}
 $('fp-go').onclick=function(){
-  if(FPi>=FP.length||FPbusy)return;var f=FP[FPi];FPbusy=true;lineas($('fp-code'),[4]);
+  if(FPi>=FP.length||FPbusy)return;var f=FP[FPi];FPbusy=true;lineas($('fp-code'),[5]);
   pantalla($('fp-pan'),'v = fila['+FPi+'] · Vehiculo*','','');
   FPP.pasa(f.k,f.a,function(){
     FPt=Math.round((FPt+f.p)*100)/100;
     pantalla($('fp-pan'),f.tab+' · el objeto es '+f.cl,'$'+f.p.toFixed(2),f.cl+'::tarifa()');
-    $('fp-out').textContent+=f.tab+'  $'+f.p.toFixed(2)+'\n';$('fp-tot').textContent='$'+FPt.toFixed(2);lineas($('fp-code'),[5,6,7]);
+    $('fp-out').textContent+=f.tab+'  $'+f.p.toFixed(2)+'\n';$('fp-tot').textContent='$'+FPt.toFixed(2);lineas($('fp-code'),[6,7,8]);
   },function(){FPbusy=false;FPi++;fpFila();
-    if(FPi>=FP.length){$('fp-out').textContent+='Total: $'+FPt.toFixed(2);lineas($('fp-code'),[9,10]);$('fp-go').disabled=true;pantalla($('fp-pan'),'Fila cobrada · delete de cada uno','$'+FPt.toFixed(2),'')}});
+    if(FPi>=FP.length){$('fp-out').textContent+='Total: $'+FPt.toFixed(2);lineas($('fp-code'),[10,11]);$('fp-go').disabled=true;pantalla($('fp-pan'),'Fila cobrada · delete de cada uno','$'+FPt.toFixed(2),'')}});
   fpFila();
 };
 $('fp-re').onclick=fpReset;fpReset();
@@ -1080,7 +1082,7 @@ var AB={t:false,p:false};
 function abShow(){
   [].forEach.call($('ab-b').querySelectorAll('button'),function(b){b.setAttribute('aria-pressed',AB[b.dataset.f])});
   var falta=[];if(!AB.t)falta.push("note:     'virtual double Vehiculo::tarifa() const'");if(!AB.p)falta.push("note:     'virtual std::string Vehiculo::tipo() const'");
-  if(!falta.length){$('ab-out').innerHTML='Motora $0.75';$('ab-msg').innerHTML='Escribió las dos: <code>Motora</code> ya es una clase <b>concreta</b> y se puede crear.';return}
+  if(!falta.length){$('ab-out').innerHTML='(compila sin errores)';$('ab-msg').innerHTML='Escribió las dos: <code>Motora</code> ya es una clase <b>concreta</b> y se puede crear.';return}
   $('ab-out').innerHTML='<span class="e">error: cannot declare variable \'m\' to be of abstract type \'Motora\'</span>\n<span class="p">note:   because the following virtual functions are pure within \'Motora\':\n'+falta.join('\n')+'</span>';
   $('ab-msg').innerHTML='Una clase con alguna función <code>= 0</code> sin escribir es <b>abstracta</b>: no se crean objetos de ella. Mientras falte una, Motora también lo es; g++ lista las que faltan.';
 }
@@ -1097,7 +1099,7 @@ grupo('if-b','data-x',function(k){var r=IF[k];$('if-out').innerHTML=r[0]?esc(r[1
 var LP=new Plaza($('lab-plaza'));LP.coloca('guagua',true);LP.win.classList.add('on');
 
 /* verificador */
-function norm(x){return x.replace(/\r/g,'').replace(/[ \t   ]+/g,' ').toLowerCase()}
+function norm(x){return x.replace(/\r/g,'').replace(/[ \t   ]+/g,' ')}
 function comprobar(chk,raw){
   var lines=norm(raw).split('\n').map(function(x){return x.trim()}),ln=0,col=0;
   return chk.map(function(c){var t=norm(c).trim();
